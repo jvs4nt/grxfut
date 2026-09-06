@@ -4,6 +4,8 @@
 
 **Depende de:** nada. Primeira fase.
 
+**Status:** pronto
+
 ## Implementar
 
 - Next.js (App Router) + TypeScript + React

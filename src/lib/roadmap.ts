@@ -3,14 +3,21 @@ import path from "node:path";
 
 const ROADMAP_DIR = path.join(process.cwd(), "roadmap");
 
+export type PhaseStatus = "pronto" | "pendente";
+
 export type RoadmapPhase = {
   slug: string;
   order: number;
   title: string;
   objective: string;
   dependsOn: string;
+  status: PhaseStatus;
   content: string;
 };
+
+function parseStatus(value: string): PhaseStatus {
+  return /^pronto\b/i.test(value) ? "pronto" : "pendente";
+}
 
 function firstMatch(content: string, pattern: RegExp) {
   return content.match(pattern)?.[1]?.trim() ?? "";
@@ -54,6 +61,7 @@ export async function listPhases(): Promise<RoadmapPhase[]> {
         title: firstMatch(content, /^#\s+(.+)$/m) || dir.name,
         objective: stripMarkdown(firstMatch(content, /\*\*Objetivo:\*\*\s*(.+)/)),
         dependsOn: stripMarkdown(firstMatch(content, /\*\*Depende de:\*\*\s*(.+)/)),
+        status: parseStatus(firstMatch(content, /\*\*Status:\*\*\s*(.+)/)),
         content,
       };
     }),

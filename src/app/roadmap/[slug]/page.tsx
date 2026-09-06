@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Markdown } from "@/components/markdown";
+import { PhaseStatusFlag } from "@/components/phase-status-flag";
 import { getPhase, listPhases } from "@/lib/roadmap";
 
 export const dynamic = "force-dynamic";
@@ -35,9 +36,12 @@ export default async function RoadmapPhasePage({
         >
           ← Roadmap
         </Link>
-        <p className="w-fit rounded-full border border-amber-500/30 bg-amber-500/10 px-3 py-1 text-xs font-medium text-amber-200">
-          Rota provisória
-        </p>
+        <div className="flex flex-wrap items-center gap-2">
+          <p className="w-fit rounded-full border border-amber-500/30 bg-amber-500/10 px-3 py-1 text-xs font-medium text-amber-200">
+            Rota provisória
+          </p>
+          <PhaseStatusFlag status={phase.status} />
+        </div>
       </header>
 
       <article className="rounded-2xl border border-zinc-800 bg-zinc-900/40 p-6 sm:p-8">

@@ -4,6 +4,8 @@
 
 **Depende de:** [3. Auth](../03-auth/README.md).
 
+**Status:** pendente
+
 ## Implementar
 
 - Admin cria usuário: username, senha, role (`admin` \| `member`), tier

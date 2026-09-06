@@ -4,6 +4,8 @@
 
 **Depende de:** [2. Schema](../02-schema/README.md).
 
+**Status:** pendente
+
 ## Implementar
 
 - Tela de login (usuário e senha) — sem cadastro público, sem OAuth, sem “esqueci a senha”

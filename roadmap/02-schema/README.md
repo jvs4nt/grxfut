@@ -4,6 +4,8 @@
 
 **Depende de:** [1. Bootstrap](../01-bootstrap/README.md).
 
+**Status:** pendente
+
 ## Implementar
 
 Tabelas e regras:

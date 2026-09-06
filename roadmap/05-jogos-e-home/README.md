@@ -4,6 +4,8 @@
 
 **Depende de:** [4. Usuários e tiers](../04-usuarios-e-tiers/README.md).
 
+**Status:** pendente
+
 ## Implementar
 
 - Admin define/edita data, horário e local do jogo

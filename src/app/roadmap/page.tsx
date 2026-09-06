@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Markdown } from "@/components/markdown";
+import { PhaseStatusFlag } from "@/components/phase-status-flag";
 import { extractSection, getRoadmapIndex, listPhases } from "@/lib/roadmap";
 
 export const dynamic = "force-dynamic";
@@ -8,6 +9,7 @@ export default async function RoadmapPage() {
   const [index, phases] = await Promise.all([getRoadmapIndex(), listPhases()]);
   const mvp = extractSection(index, "MVP");
   const outOfScope = extractSection(index, "Fora do MVP");
+  const readyCount = phases.filter((phase) => phase.status === "pronto").length;
 
   return (
     <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-10 px-6 py-12">
@@ -24,7 +26,8 @@ export default async function RoadmapPage() {
           <code className="rounded bg-zinc-900 px-1.5 py-0.5 font-mono text-sm text-zinc-200">
             roadmap/
           </code>
-          . Clique numa fase para ver o que implementar e testar.
+          . Clique numa fase para ver o que implementar e testar.{" "}
+          {readyCount}/{phases.length} prontas.
         </p>
       </header>
 
@@ -44,15 +47,22 @@ export default async function RoadmapPage() {
             <li key={phase.slug}>
               <Link
                 href={`/roadmap/${phase.slug}`}
-                className="block rounded-2xl border border-zinc-800 bg-zinc-900/60 p-5 transition hover:border-emerald-500/40 hover:bg-zinc-900"
+                className={`block rounded-2xl border p-5 transition hover:bg-zinc-900 ${
+                  phase.status === "pronto"
+                    ? "border-emerald-500/30 bg-emerald-500/5 hover:border-emerald-500/50"
+                    : "border-zinc-800 bg-zinc-900/60 hover:border-emerald-500/40"
+                }`}
               >
-                <div className="flex items-baseline justify-between gap-4">
+                <div className="flex items-center justify-between gap-4">
                   <h3 className="text-lg font-semibold text-zinc-50">
                     {phase.title}
                   </h3>
-                  <span className="shrink-0 font-mono text-xs text-zinc-500">
-                    {String(phase.order).padStart(2, "0")}
-                  </span>
+                  <div className="flex shrink-0 items-center gap-2">
+                    <PhaseStatusFlag status={phase.status} />
+                    <span className="font-mono text-xs text-zinc-500">
+                      {String(phase.order).padStart(2, "0")}
+                    </span>
+                  </div>
                 </div>
                 {phase.objective ? (
                   <p className="mt-2 text-sm leading-6 text-zinc-400">

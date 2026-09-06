@@ -4,6 +4,8 @@
 
 **Depende de:** [6. Presença](../06-presenca-e-membros/README.md) (quem entra) e [4. Tiers](../04-usuarios-e-tiers/README.md) (balanceamento). Pagamento ([7](../07-pagamento-e-modal/README.md)) pode já existir, mas não entra na regra do sorteio.
 
+**Status:** pendente
+
 ## Implementar
 
 - Admin dispara o sorteio do **próximo fut**

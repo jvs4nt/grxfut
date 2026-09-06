@@ -4,6 +4,8 @@
 
 **Depende de:** [8. Sorteio](../08-sorteio/README.md) (MVP funcional em local).
 
+**Status:** pendente
+
 ## Implementar
 
 - Projeto na Vercel (Next.js App Router)

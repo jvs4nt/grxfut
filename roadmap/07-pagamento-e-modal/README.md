@@ -4,6 +4,8 @@
 
 **Depende de:** [6. Presença e membros](../06-presenca-e-membros/README.md).
 
+**Status:** pendente
+
 ## Implementar
 
 - Default de todo jogador no próximo fut: `CALOTE` (vermelho)

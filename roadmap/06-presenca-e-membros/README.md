@@ -4,6 +4,8 @@
 
 **Depende de:** [5. Jogos e home](../05-jogos-e-home/README.md).
 
+**Status:** pendente
+
 ## Implementar
 
 - Membro confirma presença no **próximo fut**

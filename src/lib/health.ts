@@ -56,7 +56,7 @@ async function checkRoadmap(): Promise<HealthCheck & { phases: number }> {
       ok: phases.length > 0,
       detail:
         phases.length > 0
-          ? `${phases.length} fases no filesystem`
+          ? `${phases.filter((phase) => phase.status === "pronto").length}/${phases.length} prontas`
           : "Nenhuma fase encontrada em roadmap/",
       phases: phases.length,
     };
