@@ -1,0 +1,58 @@
+# GARUX — Roadmap
+
+Caminho até o MVP. Regras de produto em [doc.md](../doc.md). Stack e banco em [stack.md](../stack.md).
+
+Cada fase tem pasta própria com o que implementar e o que testar.
+
+## MVP
+
+O MVP fecha quando Admin e Membro completam o fluxo do spec:
+
+- Login com usuário e senha; sem cadastro público
+- Admin cria usuários, define data/horário/local, cancela a semana, altera tiers, marca pagamento e sorteia times
+- Membro vê a home (data + calendário + lista de pagamento), confirma presença, vê membros/pagamentos e recebe o modal de cobrança
+- Sorteio persistido: dois times, balanceado por tier, no máximo um Capitão por time; ímpar vira reserva do sorteio
+
+## Ordem de implementação
+
+As fases seguem dependência: não adiantar tela de sorteio sem presença e tiers, nem pagamento sem jogo.
+
+```mermaid
+flowchart LR
+  bootstrap[1_Bootstrap]
+  schema[2_Schema]
+  auth[3_Auth]
+  users[4_Usuarios_e_tiers]
+  matches[5_Jogos]
+  rsvp[6_Presenca]
+  pay[7_Pagamento]
+  draw[8_Sorteio]
+  ship[9_Deploy]
+  bootstrap --> schema --> auth --> users --> matches
+  matches --> rsvp --> pay --> draw --> ship
+```
+
+| Fase | Feature | Depende de |
+| --- | --- | --- |
+| 1 | [Bootstrap](01-bootstrap/README.md) | — |
+| 2 | [Schema e migrations](02-schema/README.md) | 1 |
+| 3 | [Auth e papéis](03-auth/README.md) | 2 |
+| 4 | [Usuários e tiers](04-usuarios-e-tiers/README.md) | 3 |
+| 5 | [Jogos e home](05-jogos-e-home/README.md) | 4 |
+| 6 | [Presença e membros](06-presenca-e-membros/README.md) | 5 |
+| 7 | [Pagamento e modal](07-pagamento-e-modal/README.md) | 6 |
+| 8 | [Sorteio](08-sorteio/README.md) | 6 e 7 |
+| 9 | [Deploy](09-deploy/README.md) | 8 |
+
+Fase 8 depende de presença (quem entra no sorteio) e de tiers (balanceamento). Pagamento pode estar pronto em paralelo depois da 6, mas o modal usa o mesmo “próximo fut”.
+
+## Fora do MVP
+
+Não entra nesta versão:
+
+- Recuperação de senha por e-mail
+- OAuth / login social
+- Cadastro público
+- Histórico financeiro além da flag do próximo fut
+- Notificações externas (e-mail, WhatsApp, push)
+- Ranking, estatísticas ou terceiro time
