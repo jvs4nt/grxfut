@@ -1,0 +1,11 @@
+---
+description: Ler e atualizar context.md após cada execução
+alwaysApply: true
+---
+
+# context.md
+
+- No começo de tarefa de implementação, ler [context.md](../../context.md).
+- Ao concluir trabalho, reescrever **Último** e **Pendente**. Atualizar **Resumo** só se o sistema mudar (rotas, auth, stack).
+- Manter no máximo 40 linhas. Sem código, diffs ou segredos (nada de valores de `.env`).
+- Não substitui `doc.md`, `stack.md` nem o roadmap; é o briefing operacional do agente.

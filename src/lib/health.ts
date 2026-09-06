@@ -17,7 +17,7 @@ export type HealthReport = {
   env: HealthCheck & { databaseUrl: boolean; databaseHost: string | null };
   database: HealthCheck;
   roadmap: HealthCheck & { phases: number };
-  schema: HealthCheck & { state: "pending" };
+  schema: HealthCheck & { state: "pending" | "ready"; tables: number };
 };
 
 function databaseHost(url: string) {
@@ -49,6 +49,70 @@ async function checkDatabase(): Promise<HealthCheck> {
   }
 }
 
+const REQUIRED_TABLES = [
+  "users",
+  "matches",
+  "attendances",
+  "payments",
+  "draws",
+  "draw_players",
+] as const;
+
+function executeRows(result: unknown) {
+  if (Array.isArray(result)) {
+    return result as Record<string, unknown>[];
+  }
+
+  if (result && typeof result === "object" && "rows" in result) {
+    return (result as { rows: Record<string, unknown>[] }).rows;
+  }
+
+  return [];
+}
+
+async function checkSchema(): Promise<
+  HealthCheck & { state: "pending" | "ready"; tables: number }
+> {
+  try {
+    const db = getDb();
+    const result = await db.execute(sql`
+      select table_name
+      from information_schema.tables
+      where table_schema = 'public'
+        and table_name in (
+          'users',
+          'matches',
+          'attendances',
+          'payments',
+          'draws',
+          'draw_players'
+        )
+    `);
+    const found = new Set(
+      executeRows(result).map((row) => String(row.table_name)),
+    );
+    const tables = REQUIRED_TABLES.filter((name) => found.has(name)).length;
+    const ready = tables === REQUIRED_TABLES.length;
+
+    return {
+      ok: ready,
+      detail: ready
+        ? `${tables} tabelas no Neon`
+        : `${tables}/${REQUIRED_TABLES.length} tabelas`,
+      state: ready ? "ready" : "pending",
+      tables,
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      detail:
+        error instanceof Error ? error.message : "Falha ao ler o schema",
+      state: "pending",
+      tables: 0,
+    };
+  }
+}
+
 async function checkRoadmap(): Promise<HealthCheck & { phases: number }> {
   try {
     const phases = await listPhases();
@@ -73,9 +137,10 @@ async function checkRoadmap(): Promise<HealthCheck & { phases: number }> {
 export async function getHealthReport(): Promise<HealthReport> {
   const databaseUrl = process.env.DATABASE_URL ?? "";
   const hasDatabaseUrl = databaseUrl.length > 0;
-  const [database, roadmap] = await Promise.all([
+  const [database, roadmap, schema] = await Promise.all([
     checkDatabase(),
     checkRoadmap(),
+    checkSchema(),
   ]);
 
   const app = {
@@ -94,16 +159,10 @@ export async function getHealthReport(): Promise<HealthReport> {
     databaseHost: hasDatabaseUrl ? databaseHost(databaseUrl) : null,
   };
 
-  const schema = {
-    ok: true,
-    detail: "ainda não migrado — entra na fase 2",
-    state: "pending" as const,
-  };
-
   let status: CheckStatus = "ok";
   if (!database.ok) {
     status = "down";
-  } else if (!env.ok || !roadmap.ok) {
+  } else if (!env.ok || !roadmap.ok || !schema.ok) {
     status = "degraded";
   }
 

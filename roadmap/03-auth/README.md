@@ -4,7 +4,7 @@
 
 **Depende de:** [2. Schema](../02-schema/README.md).
 
-**Status:** pendente
+**Status:** pronto
 
 ## Implementar
 
@@ -20,15 +20,15 @@ Regras em [doc.md](../../doc.md).
 
 ## Testar
 
-- [ ] Login com credenciais certas entra no app
-- [ ] Senha errada ou usuário inexistente não entra (mensagem genérica, sem vazar se o user existe)
-- [ ] Senha no banco está hasheada
-- [ ] Cookie de sessão é httpOnly (DevTools: não acessível via `document.cookie`)
-- [ ] Sem sessão, home / membros / pagamento / sorteio / admin redirecionam para login
-- [ ] Não existe rota ou formulário de signup
-- [ ] Seed cria um Admin; dá para logar com ele
-- [ ] Logout encerra a sessão; refresh depois do logout volta ao login
-- [ ] Admin e Membro recebem papéis diferentes (checagem de role no server)
+- [x] Login com credenciais certas entra no app
+- [x] Senha errada ou usuário inexistente não entra (mensagem genérica, sem vazar se o user existe)
+- [x] Senha no banco está hasheada
+- [x] Cookie de sessão é httpOnly (DevTools: não acessível via `document.cookie`)
+- [x] Sem sessão, home / membros / pagamento / sorteio / admin redirecionam para login
+- [x] Não existe rota ou formulário de signup
+- [x] Seed cria um Admin; dá para logar com ele
+- [x] Logout encerra a sessão; refresh depois do logout volta ao login
+- [x] Admin e Membro recebem papéis diferentes (checagem de role no server)
 
 ## Pronto quando
 

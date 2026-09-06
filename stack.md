@@ -38,7 +38,10 @@ Segredos **não** entram neste arquivo nem no git.
 
 | Variável | Onde | Uso |
 | --- | --- | --- |
-| `DATABASE_URL` | `.env.local` (dev) e env da Vercel (prod) | Connection string do Neon |
+| `DATABASE_URL` | `.env` / `.env.local` (dev) e env da Vercel (prod) | Connection string do Neon |
+| `SESSION_SECRET` | `.env` / env da Vercel | Assinatura do cookie de sessão |
+| `ADMIN_USERNAME` | `.env` (dev) | Seed do primeiro Admin |
+| `ADMIN_PASSWORD` | `.env` (dev) | Senha do seed (nunca no git) |
 
 `.env.local` fica no `.gitignore`. Em produção, a mesma variável é configurada no projeto Vercel.
 

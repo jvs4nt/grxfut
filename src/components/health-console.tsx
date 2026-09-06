@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
+import { logoutAction } from "@/app/login/actions";
+import type { SessionUser } from "@/lib/auth";
 import type { CheckStatus, HealthReport } from "@/lib/health";
 import type { RequestLogEntry } from "@/lib/request-log";
 
@@ -75,7 +77,7 @@ function FlagCard({
   );
 }
 
-export function HealthConsole() {
+export function HealthConsole({ user }: { user: SessionUser | null }) {
   const [health, setHealth] = useState<HealthReport | null>(null);
   const [requests, setRequests] = useState<RequestLogEntry[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -135,12 +137,32 @@ export function HealthConsole() {
             produto entra depois; este console muda para /dev nessa hora.
           </p>
         </div>
-        <Link
-          href="/roadmap"
-          className="inline-flex w-fit items-center rounded-full bg-emerald-400 px-4 py-2 text-sm font-semibold text-zinc-950 transition hover:bg-emerald-300"
-        >
-          Roadmap
-        </Link>
+        <div className="flex flex-col items-start gap-3 sm:items-end">
+          {user ? (
+            <div className="flex flex-wrap items-center gap-3 text-sm">
+              <span className="text-zinc-300">
+                {user.username}
+                <span className="ml-2 rounded-full border border-zinc-700 px-2 py-0.5 text-xs uppercase tracking-wide text-zinc-400">
+                  {user.role}
+                </span>
+              </span>
+              <form action={logoutAction}>
+                <button
+                  type="submit"
+                  className="text-xs font-medium text-zinc-500 transition hover:text-zinc-200"
+                >
+                  Sair
+                </button>
+              </form>
+            </div>
+          ) : null}
+          <Link
+            href="/roadmap"
+            className="inline-flex w-fit items-center rounded-full bg-emerald-400 px-4 py-2 text-sm font-semibold text-zinc-950 transition hover:bg-emerald-300"
+          >
+            Roadmap
+          </Link>
+        </div>
       </header>
 
       <section className={`rounded-2xl border px-5 py-4 ${banner}`}>
@@ -195,8 +217,8 @@ export function HealthConsole() {
         />
         <FlagCard
           label="Schema"
-          tone="warn"
-          value="pending"
+          tone={health?.schema.ok ? "ok" : "warn"}
+          value={health?.schema.state ?? "pending"}
           detail={health?.schema.detail ?? "fase 2"}
         />
       </section>

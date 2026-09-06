@@ -35,8 +35,8 @@ flowchart LR
 | Fase | Feature | Depende de | Status |
 | --- | --- | --- | --- |
 | 1 | [Bootstrap](01-bootstrap/README.md) | — | pronto |
-| 2 | [Schema e migrations](02-schema/README.md) | 1 | pendente |
-| 3 | [Auth e papéis](03-auth/README.md) | 2 | pendente |
+| 2 | [Schema e migrations](02-schema/README.md) | 1 | pronto |
+| 3 | [Auth e papéis](03-auth/README.md) | 2 | pronto |
 | 4 | [Usuários e tiers](04-usuarios-e-tiers/README.md) | 3 | pendente |
 | 5 | [Jogos e home](05-jogos-e-home/README.md) | 4 | pendente |
 | 6 | [Presença e membros](06-presenca-e-membros/README.md) | 5 | pendente |

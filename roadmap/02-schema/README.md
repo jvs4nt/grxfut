@@ -4,7 +4,7 @@
 
 **Depende de:** [1. Bootstrap](../01-bootstrap/README.md).
 
-**Status:** pendente
+**Status:** pronto
 
 ## Implementar
 
@@ -21,14 +21,14 @@ Migration inicial via `drizzle-kit`. Schema no código alinhado ao que roda no N
 
 ## Testar
 
-- [ ] `drizzle-kit generate` / `migrate` cria as 6 tabelas no Neon
-- [ ] `username` duplicado é rejeitado
-- [ ] Duas presenças iguais `(match_id, user_id)` são rejeitadas
-- [ ] Dois pagamentos iguais `(match_id, user_id)` são rejeitados
-- [ ] Não dá para ter dois sorteios vigentes no mesmo jogo
-- [ ] `payments.status` default é `calote`
-- [ ] FKs: apagar/referenciar `match` e `user` de forma consistente (sem órfãos acidentais)
-- [ ] Schema no código bate com o banco (introspect ou migration reaplicada)
+- [x] `drizzle-kit generate` / `migrate` cria as 6 tabelas no Neon
+- [x] `username` duplicado é rejeitado
+- [x] Duas presenças iguais `(match_id, user_id)` são rejeitadas
+- [x] Dois pagamentos iguais `(match_id, user_id)` são rejeitados
+- [x] Não dá para ter dois sorteios vigentes no mesmo jogo
+- [x] `payments.status` default é `calote`
+- [x] FKs: apagar/referenciar `match` e `user` de forma consistente (sem órfãos acidentais)
+- [x] Schema no código bate com o banco (introspect ou migration reaplicada)
 
 ## Pronto quando
 

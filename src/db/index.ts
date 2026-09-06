@@ -1,5 +1,6 @@
 import { neon } from "@neondatabase/serverless";
 import { drizzle } from "drizzle-orm/neon-http";
+import * as schema from "./schema";
 
 function getDatabaseUrl() {
   const url = process.env.DATABASE_URL;
@@ -14,5 +15,5 @@ function getDatabaseUrl() {
 }
 
 export function getDb() {
-  return drizzle(neon(getDatabaseUrl()));
+  return drizzle(neon(getDatabaseUrl()), { schema });
 }
