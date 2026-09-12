@@ -126,15 +126,17 @@ export function HealthConsole({ user }: { user: SessionUser | null }) {
     <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-8 px-6 py-10">
       <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div className="flex flex-col gap-2">
-          <p className="text-sm font-medium tracking-wide text-emerald-400">
+          <Link
+            href="/"
+            className="text-sm font-medium tracking-wide text-emerald-400"
+          >
             GARUX
-          </p>
+          </Link>
           <h1 className="text-3xl font-semibold tracking-tight">
             Console de health
           </h1>
           <p className="max-w-xl text-sm leading-6 text-zinc-400">
-            Painel interno para a implementação. Atualiza a cada 5s. A home do
-            produto entra depois; este console muda para /dev nessa hora.
+            Painel interno. Atualiza a cada 5s. A home do produto está em /.
           </p>
         </div>
         <div className="flex flex-col items-start gap-3 sm:items-end">

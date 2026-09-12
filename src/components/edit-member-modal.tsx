@@ -1,0 +1,146 @@
+"use client";
+
+import { useActionState, useCallback, useEffect, useId, useState } from "react";
+import {
+  updateMemberAction,
+  type FormState,
+} from "@/app/(app)/membros/actions";
+import { PencilIcon } from "@/components/icons";
+import { PasswordInput } from "@/components/password-input";
+import {
+  buttonClass,
+  iconButtonClass,
+  inputClass,
+  labelClass,
+  secondaryButtonClass,
+} from "@/lib/ui";
+
+const initial: FormState = { error: null };
+
+export function EditMemberModal({
+  userId,
+  username,
+}: {
+  userId: string;
+  username: string;
+}) {
+  const [open, setOpen] = useState(false);
+  const titleId = useId();
+  const close = useCallback(() => setOpen(false), []);
+
+  return (
+    <>
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        className={iconButtonClass}
+        aria-label={`Editar ${username}`}
+        title="Editar"
+      >
+        <PencilIcon />
+      </button>
+      {open ? (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby={titleId}
+          onClick={(event) => {
+            if (event.target === event.currentTarget) {
+              close();
+            }
+          }}
+          onKeyDown={(event) => {
+            if (event.key === "Escape") {
+              close();
+            }
+          }}
+        >
+          <div className="w-full max-w-md rounded-2xl border border-zinc-800 bg-zinc-950 p-6 shadow-2xl">
+            <div className="flex items-start justify-between gap-4">
+              <h2 id={titleId} className="text-lg font-semibold">
+                Editar usuário
+              </h2>
+              <button
+                type="button"
+                onClick={close}
+                className={secondaryButtonClass}
+              >
+                Fechar
+              </button>
+            </div>
+            <div className="mt-5">
+              <EditMemberForm
+                key={username}
+                userId={userId}
+                username={username}
+                onSuccess={close}
+              />
+            </div>
+          </div>
+        </div>
+      ) : null}
+    </>
+  );
+}
+
+function EditMemberForm({
+  userId,
+  username,
+  onSuccess,
+}: {
+  userId: string;
+  username: string;
+  onSuccess: () => void;
+}) {
+  const [state, action, pending] = useActionState(updateMemberAction, initial);
+
+  useEffect(() => {
+    if (state.ok) {
+      onSuccess();
+    }
+  }, [state.ok, onSuccess]);
+
+  return (
+    <form action={action} className="flex flex-col gap-4">
+      <input type="hidden" name="userId" value={userId} />
+      <label className={labelClass}>
+        Usuário
+        <input
+          name="username"
+          type="text"
+          autoComplete="off"
+          required
+          defaultValue={username}
+          className={inputClass}
+        />
+      </label>
+      <label className={labelClass}>
+        Nova senha
+        <PasswordInput
+          name="password"
+          autoComplete="new-password"
+          minLength={4}
+          className={inputClass}
+        />
+      </label>
+      <label className={labelClass}>
+        Confirmar senha
+        <PasswordInput
+          name="confirmPassword"
+          autoComplete="new-password"
+          minLength={4}
+          className={inputClass}
+        />
+      </label>
+      {state.error ? (
+        <p className="text-sm text-red-300" role="alert">
+          {state.error}
+        </p>
+      ) : null}
+      <button type="submit" disabled={pending} className={buttonClass}>
+        {pending ? "Salvando…" : "Salvar"}
+      </button>
+    </form>
+  );
+}

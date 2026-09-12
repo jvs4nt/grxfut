@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
+import { PasswordInput } from "@/components/password-input";
 import { loginAction, type LoginState } from "./actions";
 
 const initialState: LoginState = { error: null };
@@ -22,12 +23,11 @@ export function LoginForm() {
       </label>
       <label className="flex flex-col gap-1.5 text-sm">
         <span className="text-zinc-300">Senha</span>
-        <input
+        <PasswordInput
           name="password"
-          type="password"
           autoComplete="current-password"
           required
-          className="rounded-xl border border-zinc-800 bg-zinc-900 px-3 py-2.5 text-zinc-100 outline-none ring-emerald-400/40 focus:ring-2"
+          className="w-full rounded-xl border border-zinc-800 bg-zinc-900 px-3 py-2.5 text-zinc-100 outline-none ring-emerald-400/40 focus:ring-2"
         />
       </label>
       {state.error ? (

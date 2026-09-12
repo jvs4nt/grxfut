@@ -79,7 +79,7 @@ Regras:
 - O resultado é **aleatório** e **balanceado por tier**: os tiers são distribuídos entre os times.
 - **Não pode haver mais de um Capitão por time**.
 - O resultado fica **salvo no app** e permanece visível depois do sorteio.
-- Formam-se **dois times**. Se a quantidade de confirmados for ímpar, o jogador restante entra como reserva do sorteio (não forma um terceiro time).
+- Formam-se **dois times de até 6**. O que passar de 12 confirmados (e Capitães extras) entra como **Próximo**, sem terceiro time.
 
 Um novo sorteio, feito pelo Admin, substitui o resultado salvo anterior.
 
@@ -136,6 +136,6 @@ GARUX/
 - Membro confirma presença, visualiza informações e recebe o modal de cobrança.
 - Tiers válidos: Capitão, Tenente, Soldado.
 - Cancelar a semana marca descanso e aponta o próximo fut (`dd/mm`); o calendário permanece.
-- Sorteio: confirmados, dois times, distribuição equilibrada de tiers, no máximo um Capitão por time, resultado persistido no app.
+- Sorteio: confirmados, dois times de até 6, distribuição equilibrada de tiers, no máximo um Capitão por time; excedente em Próximo; resultado persistido no app.
 - Pagamento do próximo fut: PAGO (verde), AGENDADO com data (amarelo) ou CALOTE (vermelho, padrão).
 - Modal do membro: vermelho se CALOTE, amarelo se AGENDADO, ausente se PAGO.

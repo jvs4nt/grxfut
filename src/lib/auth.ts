@@ -1,6 +1,8 @@
 import { compare, hash } from "bcryptjs";
 import { eq } from "drizzle-orm";
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+import { cache } from "react";
 import { getDb } from "@/db";
 import { users } from "@/db/schema";
 import {
@@ -43,7 +45,7 @@ export async function destroySession() {
   });
 }
 
-export async function getSession(): Promise<SessionUser | null> {
+export const getSession = cache(async (): Promise<SessionUser | null> => {
   const jar = await cookies();
   const token = jar.get(SESSION_COOKIE)?.value;
 
@@ -70,4 +72,18 @@ export async function getSession(): Promise<SessionUser | null> {
     .limit(1);
 
   return user ?? null;
+});
+
+export async function requireSession(): Promise<SessionUser> {
+  const user = await getSession();
+
+  if (!user) {
+    redirect("/login");
+  }
+
+  return user;
+}
+
+export function isAdmin(user: SessionUser) {
+  return user.role === "admin";
 }

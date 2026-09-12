@@ -51,6 +51,9 @@ export const attendances = pgTable(
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
     status: attendanceStatusEnum("status").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
   },
   (table) => [unique("attendances_match_user_unique").on(table.matchId, table.userId)],
 );

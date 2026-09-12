@@ -37,11 +37,11 @@ flowchart LR
 | 1 | [Bootstrap](01-bootstrap/README.md) | — | pronto |
 | 2 | [Schema e migrations](02-schema/README.md) | 1 | pronto |
 | 3 | [Auth e papéis](03-auth/README.md) | 2 | pronto |
-| 4 | [Usuários e tiers](04-usuarios-e-tiers/README.md) | 3 | pendente |
-| 5 | [Jogos e home](05-jogos-e-home/README.md) | 4 | pendente |
-| 6 | [Presença e membros](06-presenca-e-membros/README.md) | 5 | pendente |
-| 7 | [Pagamento e modal](07-pagamento-e-modal/README.md) | 6 | pendente |
-| 8 | [Sorteio](08-sorteio/README.md) | 6 e 7 | pendente |
+| 4 | [Usuários e tiers](04-usuarios-e-tiers/README.md) | 3 | pronto |
+| 5 | [Jogos e home](05-jogos-e-home/README.md) | 4 | pronto |
+| 6 | [Presença e membros](06-presenca-e-membros/README.md) | 5 | pronto |
+| 7 | [Pagamento e modal](07-pagamento-e-modal/README.md) | 6 | pronto |
+| 8 | [Sorteio](08-sorteio/README.md) | 6 e 7 | pronto |
 | 9 | [Deploy](09-deploy/README.md) | 8 | pendente |
 
 Fase 8 depende de presença (quem entra no sorteio) e de tiers (balanceamento). Pagamento pode estar pronto em paralelo depois da 6, mas o modal usa o mesmo “próximo fut”.
