@@ -8,7 +8,7 @@ Admin cria, edita (usuário/senha) e exclui membros em `/membros` (só role memb
 Status da fase: `**Status:** pronto|pendente` no README da pasta em roadmap/.
 
 ## Último
-Admin troca jogadores entre Time A, Time B e Próximo.
+Admin edita a própria conta (usuário/senha) em /membros. Excluir continua só em role member.
 
 ## Pendente
-9 deploy Vercel (login da conta Vercel; env de prod: DATABASE_URL + SESSION_SECRET)
+Conectar GitHub no serviço Railway para deploys automáticos; 9 deploy Vercel ainda no roadmap.

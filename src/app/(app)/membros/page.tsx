@@ -98,17 +98,18 @@ export default async function MembersPage() {
                   tier={member.tier}
                   canEdit={admin}
                 />
+                {admin &&
+                (member.role === "member" || member.id === user.id) ? (
+                  <EditMemberModal
+                    userId={member.id}
+                    username={member.username}
+                  />
+                ) : null}
                 {admin && member.role === "member" ? (
-                  <>
-                    <EditMemberModal
-                      userId={member.id}
-                      username={member.username}
-                    />
-                    <DeleteMemberButton
-                      userId={member.id}
-                      username={member.username}
-                    />
-                  </>
+                  <DeleteMemberButton
+                    userId={member.id}
+                    username={member.username}
+                  />
                 ) : null}
               </div>
             </li>

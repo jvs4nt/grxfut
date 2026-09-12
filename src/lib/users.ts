@@ -79,6 +79,7 @@ export async function updateMemberUser(input: {
   userId: string;
   username: string;
   password?: string;
+  actorId: string;
 }) {
   const db = getDb();
   const [existing] = await db
@@ -87,7 +88,9 @@ export async function updateMemberUser(input: {
     .where(eq(users.id, input.userId))
     .limit(1);
 
-  if (!existing || existing.role !== "member") {
+  const isSelf = existing?.id === input.actorId;
+
+  if (!existing || (existing.role !== "member" && !isSelf)) {
     return { ok: false as const, error: "not_allowed" as const };
   }
 

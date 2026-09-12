@@ -114,6 +114,7 @@ export async function updateMemberAction(
     userId,
     username,
     password: password || undefined,
+    actorId: admin.user.id,
   });
 
   if (!result.ok) {
