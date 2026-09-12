@@ -1,10 +1,11 @@
 "use client";
 
-import { useActionState, useCallback, useEffect, useId, useState } from "react";
+import { useCallback, useEffect, useId, useState } from "react";
 import {
   updateMemberAction,
   type FormState,
 } from "@/app/(app)/membros/actions";
+import { ActionForm, useBusyAction } from "@/components/busy-overlay";
 import { PencilIcon } from "@/components/icons";
 import { PasswordInput } from "@/components/password-input";
 import {
@@ -98,7 +99,7 @@ function EditMemberForm({
   name: string;
   onSuccess: () => void;
 }) {
-  const [state, action, pending] = useActionState(updateMemberAction, initial);
+  const [state, action, pending] = useBusyAction(updateMemberAction, initial);
 
   useEffect(() => {
     if (state.ok) {
@@ -107,7 +108,7 @@ function EditMemberForm({
   }, [state.ok, onSuccess]);
 
   return (
-    <form action={action} className="flex flex-col gap-4">
+    <ActionForm action={action} className="flex flex-col gap-4">
       <input type="hidden" name="userId" value={userId} />
       <label className={labelClass}>
         Nome
@@ -157,6 +158,6 @@ function EditMemberForm({
       <button type="submit" disabled={pending} className={buttonClass}>
         {pending ? "Salvando…" : "Salvar"}
       </button>
-    </form>
+    </ActionForm>
   );
 }

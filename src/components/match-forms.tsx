@@ -1,12 +1,13 @@
 "use client";
 
-import { useActionState, useEffect } from "react";
+import { useEffect } from "react";
 import {
   cancelWeekAction,
   createMatchAction,
   updateMatchAction,
   type FormState,
 } from "@/app/(app)/actions";
+import { ActionForm, useBusyAction } from "@/components/busy-overlay";
 import {
   buttonClass,
   dangerButtonClass,
@@ -68,11 +69,11 @@ function MatchFields({
 }
 
 export function CreateMatchForm({ onSuccess }: { onSuccess?: () => void }) {
-  const [state, action, pending] = useActionState(createMatchAction, initial);
+  const [state, action, pending] = useBusyAction(createMatchAction, initial);
   useCloseOnSuccess(state.ok, onSuccess);
 
   return (
-    <form action={action} className="grid gap-4 sm:grid-cols-2">
+    <ActionForm action={action} className="grid gap-4 sm:grid-cols-2">
       <MatchFields />
       {state.error ? (
         <p className="sm:col-span-2 text-sm text-red-300" role="alert">
@@ -84,7 +85,7 @@ export function CreateMatchForm({ onSuccess }: { onSuccess?: () => void }) {
           {pending ? "Salvando…" : "Criar jogo"}
         </button>
       </div>
-    </form>
+    </ActionForm>
   );
 }
 
@@ -101,11 +102,11 @@ export function EditMatchForm({
   location: string | null;
   onSuccess?: () => void;
 }) {
-  const [state, action, pending] = useActionState(updateMatchAction, initial);
+  const [state, action, pending] = useBusyAction(updateMatchAction, initial);
   useCloseOnSuccess(state.ok, onSuccess);
 
   return (
-    <form action={action} className="grid gap-4 sm:grid-cols-2">
+    <ActionForm action={action} className="grid gap-4 sm:grid-cols-2">
       <input type="hidden" name="matchId" value={matchId} />
       <MatchFields date={date} time={time} location={location} />
       {state.error ? (
@@ -118,7 +119,7 @@ export function EditMatchForm({
           {pending ? "Salvando…" : "Salvar horário e local"}
         </button>
       </div>
-    </form>
+    </ActionForm>
   );
 }
 
@@ -129,11 +130,11 @@ export function CancelWeekForm({
   matchId: string;
   onSuccess?: () => void;
 }) {
-  const [state, action, pending] = useActionState(cancelWeekAction, initial);
+  const [state, action, pending] = useBusyAction(cancelWeekAction, initial);
   useCloseOnSuccess(state.ok, onSuccess);
 
   return (
-    <form action={action} className="flex flex-col gap-3">
+    <ActionForm action={action} className="flex flex-col gap-3">
       <input type="hidden" name="matchId" value={matchId} />
       {state.error ? (
         <p className="text-sm text-red-300" role="alert">
@@ -143,6 +144,6 @@ export function CancelWeekForm({
       <button type="submit" disabled={pending} className={dangerButtonClass}>
         {pending ? "Cancelando…" : "Cancelar a semana"}
       </button>
-    </form>
+    </ActionForm>
   );
 }

@@ -2,6 +2,7 @@
 
 import { useCallback, useId, useState } from "react";
 import { deleteMemberAction } from "@/app/(app)/membros/actions";
+import { PendingForm } from "@/components/busy-overlay";
 import { TrashIcon } from "@/components/icons";
 import {
   dangerButtonClass,
@@ -58,12 +59,12 @@ export function DeleteMemberButton({
               </p>
             </div>
             <div className="flex flex-wrap gap-2">
-              <form action={deleteMemberAction}>
+              <PendingForm action={deleteMemberAction}>
                 <input type="hidden" name="userId" value={userId} />
                 <button type="submit" className={dangerButtonClass}>
                   Excluir
                 </button>
-              </form>
+              </PendingForm>
               <button
                 type="button"
                 onClick={close}

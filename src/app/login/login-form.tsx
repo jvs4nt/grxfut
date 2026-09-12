@@ -1,16 +1,16 @@
 "use client";
 
-import { useActionState } from "react";
+import { ActionForm, useBusyAction } from "@/components/busy-overlay";
 import { PasswordInput } from "@/components/password-input";
 import { loginAction, type LoginState } from "./actions";
 
 const initialState: LoginState = { error: null };
 
 export function LoginForm() {
-  const [state, action, pending] = useActionState(loginAction, initialState);
+  const [state, action, pending] = useBusyAction(loginAction, initialState);
 
   return (
-    <form action={action} className="flex flex-col gap-4">
+    <ActionForm action={action} className="flex flex-col gap-4">
       <label className="flex flex-col gap-1.5 text-sm">
         <span className="text-zinc-300">Usuário</span>
         <input
@@ -42,6 +42,6 @@ export function LoginForm() {
       >
         {pending ? "Entrando…" : "Entrar"}
       </button>
-    </form>
+    </ActionForm>
   );
 }

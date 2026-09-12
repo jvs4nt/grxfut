@@ -1,11 +1,12 @@
 "use client";
 
-import { useActionState, useCallback, useEffect, useId, useState } from "react";
+import { useCallback, useEffect, useId, useState } from "react";
 import {
   deleteDrawAction,
   runDrawAction,
   type FormState,
 } from "@/app/(app)/sorteio/actions";
+import { ActionForm, PendingForm, useBusyAction } from "@/components/busy-overlay";
 import { PitchBoard, type PitchPlayer } from "@/components/pitch-board";
 import {
   buttonClass,
@@ -39,7 +40,7 @@ export function HomeTeamsControls({
   if (!draw) {
     if (admin) {
       return (
-        <form action={runDrawAction}>
+        <PendingForm action={runDrawAction}>
           <button
             type="submit"
             disabled={!canDraw}
@@ -47,7 +48,7 @@ export function HomeTeamsControls({
           >
             SORTEAR TIMES
           </button>
-        </form>
+        </PendingForm>
       );
     }
 
@@ -114,11 +115,11 @@ function TeamsDialog({
 
         {admin ? (
           <div className="mt-5 flex flex-wrap gap-3">
-            <form action={runDrawAction}>
+            <PendingForm action={runDrawAction}>
               <button type="submit" className={buttonClass}>
                 Sortear de novo
               </button>
-            </form>
+            </PendingForm>
             <DeleteDrawForm onSuccess={onClose} />
           </div>
         ) : null}
@@ -138,7 +139,7 @@ function TeamsDialog({
 }
 
 function DeleteDrawForm({ onSuccess }: { onSuccess: () => void }) {
-  const [state, action, pending] = useActionState(deleteDrawAction, initial);
+  const [state, action, pending] = useBusyAction(deleteDrawAction, initial);
 
   useEffect(() => {
     if (state.ok) {
@@ -147,7 +148,7 @@ function DeleteDrawForm({ onSuccess }: { onSuccess: () => void }) {
   }, [state.ok, onSuccess]);
 
   return (
-    <form action={action}>
+    <ActionForm action={action}>
       <button type="submit" disabled={pending} className={dangerButtonClass}>
         {pending ? "Excluindo…" : "Excluir sorteio"}
       </button>
@@ -156,6 +157,6 @@ function DeleteDrawForm({ onSuccess }: { onSuccess: () => void }) {
           {state.error}
         </p>
       ) : null}
-    </form>
+    </ActionForm>
   );
 }

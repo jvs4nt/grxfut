@@ -1,17 +1,18 @@
 "use client";
 
-import { useActionState, useEffect } from "react";
+import { useEffect } from "react";
 import {
   createUserAction,
   type FormState,
 } from "@/app/(app)/membros/actions";
+import { ActionForm, useBusyAction } from "@/components/busy-overlay";
 import { PasswordInput } from "@/components/password-input";
 import { buttonClass, inputClass, labelClass } from "@/lib/ui";
 
 const initial: FormState = { error: null };
 
 export function CreateUserForm({ onSuccess }: { onSuccess?: () => void }) {
-  const [state, action, pending] = useActionState(createUserAction, initial);
+  const [state, action, pending] = useBusyAction(createUserAction, initial);
 
   useEffect(() => {
     if (state.ok) {
@@ -20,7 +21,7 @@ export function CreateUserForm({ onSuccess }: { onSuccess?: () => void }) {
   }, [state.ok, onSuccess]);
 
   return (
-    <form action={action} className="grid gap-4 sm:grid-cols-2">
+    <ActionForm action={action} className="grid gap-4 sm:grid-cols-2">
       <label className={labelClass}>
         Nome
         <input
@@ -76,6 +77,6 @@ export function CreateUserForm({ onSuccess }: { onSuccess?: () => void }) {
           {pending ? "Criando…" : "Criar usuário"}
         </button>
       </div>
-    </form>
+    </ActionForm>
   );
 }

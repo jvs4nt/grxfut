@@ -1,4 +1,5 @@
 import { setPaymentAction } from "@/app/(app)/pagamento/actions";
+import { PendingForm } from "@/components/busy-overlay";
 import { inputClass, secondaryButtonClass } from "@/lib/ui";
 
 export function PaymentAdminControls({
@@ -13,7 +14,7 @@ export function PaymentAdminControls({
   return (
     <div className="flex flex-col gap-2 sm:items-end">
       <div className="flex flex-wrap gap-2">
-        <form action={setPaymentAction}>
+        <PendingForm action={setPaymentAction}>
           <input type="hidden" name="userId" value={userId} />
           <input type="hidden" name="status" value="pago" />
           <button
@@ -22,8 +23,8 @@ export function PaymentAdminControls({
           >
             PAGO
           </button>
-        </form>
-        <form action={setPaymentAction}>
+        </PendingForm>
+        <PendingForm action={setPaymentAction}>
           <input type="hidden" name="userId" value={userId} />
           <input type="hidden" name="status" value="calote" />
           <button
@@ -32,9 +33,9 @@ export function PaymentAdminControls({
           >
             CALOTE
           </button>
-        </form>
+        </PendingForm>
       </div>
-      <form action={setPaymentAction} className="flex flex-wrap items-center gap-2">
+      <PendingForm action={setPaymentAction} className="flex flex-wrap items-center gap-2">
         <input type="hidden" name="userId" value={userId} />
         <input type="hidden" name="status" value="agendado" />
         <input
@@ -50,7 +51,7 @@ export function PaymentAdminControls({
         >
           AGENDADO
         </button>
-      </form>
+      </PendingForm>
     </div>
   );
 }

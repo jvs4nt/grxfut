@@ -1,6 +1,7 @@
 "use client";
 
 import { updateTierAction } from "@/app/(app)/membros/actions";
+import { PendingForm } from "@/components/busy-overlay";
 import { TIER_LABELS, type UserTier } from "@/lib/labels";
 import { inputClass } from "@/lib/ui";
 
@@ -18,7 +19,7 @@ export function TierSelect({
   }
 
   return (
-    <form action={updateTierAction}>
+    <PendingForm action={updateTierAction}>
       <input type="hidden" name="userId" value={userId} />
       <select
         name="tier"
@@ -31,6 +32,6 @@ export function TierSelect({
         <option value="tenente">Tenente</option>
         <option value="soldado">Soldado</option>
       </select>
-    </form>
+    </PendingForm>
   );
 }

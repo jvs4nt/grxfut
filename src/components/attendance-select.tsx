@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { adminSetAttendanceAction } from "@/app/(app)/membros/actions";
+import { PendingForm, useBusy } from "@/components/busy-overlay";
 import type { AttendanceStatus } from "@/lib/attendance";
 import { buttonClass, inputClass, secondaryButtonClass } from "@/lib/ui";
 
@@ -17,18 +18,20 @@ export function AttendanceSelect({
   status: AttendanceStatus | null;
 }) {
   const current: Value = status ?? "out";
+  const { busy, run } = useBusy();
 
   return (
     <select
       aria-label={`Presença de ${name}`}
       value={current}
+      disabled={busy}
       onChange={(event) => {
         const next = event.target.value as Value;
         if (next === current) {
           return;
         }
 
-        void submitAttendance(userId, next);
+        void run(() => submitAttendance(userId, next));
       }}
       className={`${inputClass} min-w-36 py-1.5 text-sm`}
     >
@@ -47,7 +50,7 @@ export function AttendanceRemoveButton({
   name: string;
 }) {
   return (
-    <form action={adminSetAttendanceAction}>
+    <PendingForm action={adminSetAttendanceAction}>
       <input type="hidden" name="userId" value={userId} />
       <input type="hidden" name="status" value="out" />
       <button
@@ -57,7 +60,7 @@ export function AttendanceRemoveButton({
       >
         ×
       </button>
-    </form>
+    </PendingForm>
   );
 }
 
@@ -69,6 +72,7 @@ export function AttendanceMoveButton({
   name: string;
 }) {
   const [open, setOpen] = useState(false);
+  const { run } = useBusy();
 
   return (
     <>
@@ -111,7 +115,7 @@ export function AttendanceMoveButton({
                 className={buttonClass}
                 onClick={() => {
                   setOpen(false);
-                  void submitAttendance(userId, "confirmed");
+                  void run(() => submitAttendance(userId, "confirmed"));
                 }}
               >
                 Confirmados
@@ -121,7 +125,7 @@ export function AttendanceMoveButton({
                 className={secondaryButtonClass}
                 onClick={() => {
                   setOpen(false);
-                  void submitAttendance(userId, "reserve");
+                  void run(() => submitAttendance(userId, "reserve"));
                 }}
               >
                 Reservas
@@ -131,7 +135,7 @@ export function AttendanceMoveButton({
                 className={secondaryButtonClass}
                 onClick={() => {
                   setOpen(false);
-                  void submitAttendance(userId, "out");
+                  void run(() => submitAttendance(userId, "out"));
                 }}
               >
                 Tirar

@@ -1,7 +1,8 @@
 "use client";
 
-import { useActionState, useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { swapDrawPlayersAction, type FormState } from "@/app/(app)/sorteio/actions";
+import { ActionForm, useBusyAction } from "@/components/busy-overlay";
 import { JerseyIcon, SwapIcon } from "@/components/icons";
 import { TEAM_SIZE } from "@/lib/draw";
 import { USER_TIERS, type UserTier } from "@/lib/labels";
@@ -247,7 +248,7 @@ function SwapControl({
   onToggle: () => void;
   onClose: () => void;
 }) {
-  const [state, action, pending] = useActionState(swapDrawPlayersAction, initial);
+  const [state, action, pending] = useBusyAction(swapDrawPlayersAction, initial);
 
   useEffect(() => {
     if (state.ok) {
@@ -259,7 +260,7 @@ function SwapControl({
     <div className="flex flex-col items-center gap-1">
       <div className="flex items-center gap-1">
         {open ? (
-          <form action={action}>
+          <ActionForm action={action}>
             <input type="hidden" name="drawId" value={drawId} />
             <input type="hidden" name="userId" value={userId} />
             <select
@@ -290,7 +291,7 @@ function SwapControl({
                   </optgroup>
                 ))}
             </select>
-          </form>
+          </ActionForm>
         ) : null}
         <button
           type="button"
