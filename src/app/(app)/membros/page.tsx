@@ -80,16 +80,16 @@ export default async function MembersPage() {
               className="flex flex-col gap-3 rounded-2xl border border-zinc-800 px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
             >
               <div>
-                <p className="font-medium">{member.username}</p>
+                <p className="font-medium">{member.name}</p>
                 <p className="text-xs uppercase tracking-wide text-zinc-500">
-                  {member.role}
+                  {member.username} · {member.role}
                 </p>
               </div>
               <div className="flex flex-wrap items-center gap-2">
                 {admin && match ? (
                   <AttendanceSelect
                     userId={member.id}
-                    username={member.username}
+                    name={member.name}
                     status={attendanceByUser.get(member.id) ?? null}
                   />
                 ) : null}
@@ -103,12 +103,13 @@ export default async function MembersPage() {
                   <EditMemberModal
                     userId={member.id}
                     username={member.username}
+                    name={member.name}
                   />
                 ) : null}
                 {admin && member.role === "member" ? (
                   <DeleteMemberButton
                     userId={member.id}
-                    username={member.username}
+                    name={member.name}
                   />
                 ) : null}
               </div>
@@ -148,7 +149,7 @@ function PlayerList({
               key={row.id}
               className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-zinc-800/80 px-3 py-2"
             >
-              <span className="font-medium">{row.username}</span>
+              <span className="font-medium">{row.name}</span>
               <div className="flex flex-wrap items-center gap-2">
                 {canEditTier ? (
                   <TierSelect userId={row.userId} tier={row.tier} canEdit />
@@ -161,11 +162,11 @@ function PlayerList({
                   <>
                     <AttendanceMoveButton
                       userId={row.userId}
-                      username={row.username}
+                      name={row.name}
                     />
                     <AttendanceRemoveButton
                       userId={row.userId}
-                      username={row.username}
+                      name={row.name}
                     />
                   </>
                 ) : null}

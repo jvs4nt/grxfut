@@ -21,6 +21,7 @@ export const drawTeamEnum = pgEnum("draw_team", [
 export const users = pgTable("users", {
   id: uuid("id").defaultRandom().primaryKey(),
   username: text("username").notNull().unique(),
+  name: text("name").notNull(),
   passwordHash: text("password_hash").notNull(),
   role: userRoleEnum("role").notNull(),
   tier: userTierEnum("tier").notNull(),

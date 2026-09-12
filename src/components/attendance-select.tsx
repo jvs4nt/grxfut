@@ -9,18 +9,18 @@ type Value = AttendanceStatus | "out";
 
 export function AttendanceSelect({
   userId,
-  username,
+  name,
   status,
 }: {
   userId: string;
-  username: string;
+  name: string;
   status: AttendanceStatus | null;
 }) {
   const current: Value = status ?? "out";
 
   return (
     <select
-      aria-label={`Presença de ${username}`}
+      aria-label={`Presença de ${name}`}
       value={current}
       onChange={(event) => {
         const next = event.target.value as Value;
@@ -41,10 +41,10 @@ export function AttendanceSelect({
 
 export function AttendanceRemoveButton({
   userId,
-  username,
+  name,
 }: {
   userId: string;
-  username: string;
+  name: string;
 }) {
   return (
     <form action={adminSetAttendanceAction}>
@@ -53,7 +53,7 @@ export function AttendanceRemoveButton({
       <button
         type="submit"
         className="rounded-full border border-zinc-700 px-2 py-0.5 text-sm font-semibold text-zinc-400 transition hover:border-red-500/50 hover:text-red-200"
-        aria-label={`Tirar ${username} da lista`}
+        aria-label={`Tirar ${name} da lista`}
       >
         ×
       </button>
@@ -63,10 +63,10 @@ export function AttendanceRemoveButton({
 
 export function AttendanceMoveButton({
   userId,
-  username,
+  name,
 }: {
   userId: string;
-  username: string;
+  name: string;
 }) {
   const [open, setOpen] = useState(false);
 
@@ -99,7 +99,7 @@ export function AttendanceMoveButton({
           <div className="flex w-full max-w-md flex-col gap-4 rounded-2xl border border-zinc-800 bg-zinc-950 p-6 shadow-2xl">
             <div>
               <h2 id={`move-${userId}`} className="text-lg font-semibold">
-                Mover {username}
+                Mover {name}
               </h2>
               <p className="mt-1 text-sm text-zinc-400">
                 Escolha Confirmados, Reservas ou tire da lista.

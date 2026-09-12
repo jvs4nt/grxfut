@@ -10,6 +10,7 @@ export type DrawTeam = "team_a" | "team_b" | "draw_reserve";
 export type DrawPlayer = {
   userId: string;
   username: string;
+  name: string;
   tier: UserTier;
   team: DrawTeam;
 };
@@ -24,6 +25,7 @@ export type DrawResult = {
 type PoolPlayer = {
   userId: string;
   username: string;
+  name: string;
   tier: UserTier;
 };
 
@@ -43,13 +45,14 @@ export async function getDrawForMatch(matchId: string): Promise<DrawResult | nul
     .select({
       userId: drawPlayers.userId,
       username: users.username,
+      name: users.name,
       tier: users.tier,
       team: drawPlayers.team,
     })
     .from(drawPlayers)
     .innerJoin(users, eq(users.id, drawPlayers.userId))
     .where(eq(drawPlayers.drawId, draw.id))
-    .orderBy(asc(users.username));
+    .orderBy(asc(users.name));
 
   return {
     id: draw.id,
@@ -65,6 +68,7 @@ export async function runDraw(matchId: string) {
     .select({
       userId: users.id,
       username: users.username,
+      name: users.name,
       tier: users.tier,
     })
     .from(attendances)

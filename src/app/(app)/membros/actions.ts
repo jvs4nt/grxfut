@@ -39,15 +39,16 @@ export async function createUserAction(
   }
 
   const username = String(formData.get("username") ?? "").trim();
+  const name = String(formData.get("name") ?? "").trim() || username;
   const password = String(formData.get("password") ?? "");
   const role = parseRole(String(formData.get("role") ?? ""));
   const tier = parseTier(String(formData.get("tier") ?? ""));
 
   if (!username || !password || !role || !tier) {
-    return { error: "Preencha usuário, senha, papel e tier." };
+    return { error: "Preencha nome, usuário, senha, papel e tier." };
   }
 
-  const result = await createUser({ username, password, role, tier });
+  const result = await createUser({ username, name, password, role, tier });
 
   if (!result.ok) {
     return { error: "Esse usuário já existe." };
@@ -93,11 +94,12 @@ export async function updateMemberAction(
 
   const userId = String(formData.get("userId") ?? "");
   const username = String(formData.get("username") ?? "").trim();
+  const name = String(formData.get("name") ?? "").trim() || username;
   const password = String(formData.get("password") ?? "");
   const confirmPassword = String(formData.get("confirmPassword") ?? "");
 
   if (!userId || !username) {
-    return { error: "Informe o usuário." };
+    return { error: "Informe nome e usuário." };
   }
 
   if (password || confirmPassword) {
@@ -113,6 +115,7 @@ export async function updateMemberAction(
   const result = await updateMemberUser({
     userId,
     username,
+    name,
     password: password || undefined,
     actorId: admin.user.id,
   });

@@ -9,7 +9,7 @@ import { iconButtonClass, inputClass } from "@/lib/ui";
 
 export type PitchPlayer = {
   userId: string;
-  username: string;
+  name: string;
   tier: UserTier;
 };
 
@@ -208,14 +208,14 @@ function JerseySlot({
       />
       {player ? (
         <>
-          <p className="max-w-20 truncate text-xs font-medium text-zinc-100" title={player.username}>
-            {player.username}
+          <p className="max-w-20 truncate text-xs font-medium text-zinc-100" title={player.name}>
+            {player.name}
           </p>
           {swap ? (
             <SwapControl
               drawId={swap.drawId}
               userId={player.userId}
-              username={player.username}
+              name={player.name}
               targets={swap.targets}
               open={swap.open}
               onToggle={swap.onToggle}
@@ -233,7 +233,7 @@ function JerseySlot({
 function SwapControl({
   drawId,
   userId,
-  username,
+  name,
   targets,
   open,
   onToggle,
@@ -241,7 +241,7 @@ function SwapControl({
 }: {
   drawId: string;
   userId: string;
-  username: string;
+  name: string;
   targets: SwapGroup[];
   open: boolean;
   onToggle: () => void;
@@ -284,7 +284,7 @@ function SwapControl({
                   <optgroup key={group.label} label={group.label}>
                     {group.players.map((player) => (
                       <option key={player.userId} value={player.userId}>
-                        {player.username}
+                        {player.name}
                       </option>
                     ))}
                   </optgroup>
@@ -297,7 +297,7 @@ function SwapControl({
           onClick={onToggle}
           disabled={pending}
           className={`${iconButtonClass} p-1`}
-          aria-label={`Trocar ${username}`}
+          aria-label={`Trocar ${name}`}
           title="Trocar"
         >
           <SwapIcon className="h-3.5 w-3.5" />
@@ -319,7 +319,7 @@ function sortPlayers(players: PitchPlayer[]) {
       return byTier;
     }
 
-    return a.username.localeCompare(b.username);
+    return a.name.localeCompare(b.name);
   });
 }
 

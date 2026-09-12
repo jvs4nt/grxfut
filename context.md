@@ -8,7 +8,7 @@ Admin cria, edita (usuário/senha) e exclui membros em `/membros` (só role memb
 Status da fase: `**Status:** pronto|pendente` no README da pasta em roadmap/.
 
 ## Último
-Admin edita a própria conta (usuário/senha) em /membros. Excluir continua só em role member.
+Usuário tem nome de exibição (cadastro/edição). Listas e campo mostram o nome; Elenco mostra nome + usuário. Login e nav seguem no usuário. Registros antigos copiaram o username.
 
 ## Pendente
 Conectar GitHub no serviço Railway para deploys automáticos; 9 deploy Vercel ainda no roadmap.

@@ -7,6 +7,7 @@ export type PaymentRow = {
   id: string | null;
   userId: string;
   username: string;
+  name: string;
   role: "admin" | "member";
   tier: UserTier;
   status: PaymentStatus;
@@ -45,6 +46,7 @@ export async function listPayments(matchId: string): Promise<PaymentRow[]> {
       id: payments.id,
       userId: users.id,
       username: users.username,
+      name: users.name,
       role: users.role,
       tier: users.tier,
       status: payments.status,
@@ -55,12 +57,13 @@ export async function listPayments(matchId: string): Promise<PaymentRow[]> {
       payments,
       and(eq(payments.userId, users.id), eq(payments.matchId, matchId)),
     )
-    .orderBy(asc(users.username));
+    .orderBy(asc(users.tier), asc(users.name));
 
   return rows.map((row) => ({
     id: row.id,
     userId: row.userId,
     username: row.username,
+    name: row.name,
     role: row.role,
     tier: row.tier,
     status: row.status ?? "calote",

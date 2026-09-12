@@ -9,6 +9,7 @@ export type AttendanceRow = {
   id: string;
   userId: string;
   username: string;
+  name: string;
   role: "admin" | "member";
   tier: UserTier;
   status: AttendanceStatus;
@@ -22,6 +23,7 @@ export async function listAttendances(matchId: string): Promise<AttendanceRow[]>
       id: attendances.id,
       userId: attendances.userId,
       username: users.username,
+      name: users.name,
       role: users.role,
       tier: users.tier,
       status: attendances.status,
@@ -30,7 +32,7 @@ export async function listAttendances(matchId: string): Promise<AttendanceRow[]>
     .from(attendances)
     .innerJoin(users, eq(users.id, attendances.userId))
     .where(eq(attendances.matchId, matchId))
-    .orderBy(asc(attendances.createdAt), asc(users.username));
+    .orderBy(asc(attendances.createdAt), asc(users.name));
 }
 
 export async function getAttendanceForUser(matchId: string, userId: string) {
@@ -77,6 +79,7 @@ export async function cancelAttendance(matchId: string, userId: string) {
 export type AttendancePick = {
   userId: string;
   username: string;
+  name: string;
 };
 
 export async function setAttendanceStatus(
@@ -123,7 +126,7 @@ function compareByTier(a: AttendanceRow, b: AttendanceRow) {
     return byTier;
   }
 
-  return a.username.localeCompare(b.username);
+  return a.name.localeCompare(b.name);
 }
 
 export function splitAttendances(rows: AttendanceRow[]) {

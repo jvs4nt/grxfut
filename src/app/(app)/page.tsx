@@ -38,13 +38,13 @@ export default async function HomePage() {
         id: draw.id,
         teamA: draw.players
           .filter((player) => player.team === "team_a")
-          .map(({ userId, username, tier }) => ({ userId, username, tier })),
+          .map(({ userId, name, tier }) => ({ userId, name, tier })),
         teamB: draw.players
           .filter((player) => player.team === "team_b")
-          .map(({ userId, username, tier }) => ({ userId, username, tier })),
+          .map(({ userId, name, tier }) => ({ userId, name, tier })),
         reserve: draw.players
           .filter((player) => player.team === "draw_reserve")
-          .map(({ userId, username, tier }) => ({ userId, username, tier })),
+          .map(({ userId, name, tier }) => ({ userId, name, tier })),
       }
     : null;
 
@@ -179,7 +179,7 @@ function AttendanceList({
               key={row.id}
               className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-zinc-800/80 px-3 py-2"
             >
-              <span className="font-medium">{row.username}</span>
+              <span className="font-medium">{row.name}</span>
               <span className="text-sm text-zinc-400">{TIER_LABELS[row.tier]}</span>
             </li>
           ))}

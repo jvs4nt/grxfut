@@ -11,10 +11,10 @@ import {
 
 export function DeleteMemberButton({
   userId,
-  username,
+  name,
 }: {
   userId: string;
-  username: string;
+  name: string;
 }) {
   const [open, setOpen] = useState(false);
   const titleId = useId();
@@ -26,7 +26,7 @@ export function DeleteMemberButton({
         type="button"
         onClick={() => setOpen(true)}
         className={iconDangerButtonClass}
-        aria-label={`Excluir ${username}`}
+        aria-label={`Excluir ${name}`}
         title="Excluir"
       >
         <TrashIcon />
@@ -51,7 +51,7 @@ export function DeleteMemberButton({
           <div className="flex w-full max-w-md flex-col gap-4 rounded-2xl border border-zinc-800 bg-zinc-950 p-6 shadow-2xl">
             <div>
               <h2 id={titleId} className="text-lg font-semibold">
-                Excluir {username}?
+                Excluir {name}?
               </h2>
               <p className="mt-1 text-sm text-zinc-400">
                 Isso remove a conta e presença, pagamento e sorteio ligados.

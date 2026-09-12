@@ -22,6 +22,16 @@ export function CreateUserForm({ onSuccess }: { onSuccess?: () => void }) {
   return (
     <form action={action} className="grid gap-4 sm:grid-cols-2">
       <label className={labelClass}>
+        Nome
+        <input
+          name="name"
+          type="text"
+          autoComplete="name"
+          required
+          className={inputClass}
+        />
+      </label>
+      <label className={labelClass}>
         Usuário
         <input
           name="username"

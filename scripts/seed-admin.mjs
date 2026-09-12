@@ -26,8 +26,8 @@ if (existing.length > 0) {
 
 const passwordHash = await hash(password, 12);
 await sql`
-  insert into users (username, password_hash, role, tier)
-  values (${username}, ${passwordHash}, 'admin', 'capitao')
+  insert into users (username, name, password_hash, role, tier)
+    values (${username}, ${username}, ${passwordHash}, 'admin', 'capitao')
 `;
 
 console.log("Admin created.");

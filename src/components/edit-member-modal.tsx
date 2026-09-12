@@ -20,9 +20,11 @@ const initial: FormState = { error: null };
 export function EditMemberModal({
   userId,
   username,
+  name,
 }: {
   userId: string;
   username: string;
+  name: string;
 }) {
   const [open, setOpen] = useState(false);
   const titleId = useId();
@@ -34,7 +36,7 @@ export function EditMemberModal({
         type="button"
         onClick={() => setOpen(true)}
         className={iconButtonClass}
-        aria-label={`Editar ${username}`}
+        aria-label={`Editar ${name}`}
         title="Editar"
       >
         <PencilIcon />
@@ -71,9 +73,10 @@ export function EditMemberModal({
             </div>
             <div className="mt-5">
               <EditMemberForm
-                key={username}
+                key={`${username}-${name}`}
                 userId={userId}
                 username={username}
+                name={name}
                 onSuccess={close}
               />
             </div>
@@ -87,10 +90,12 @@ export function EditMemberModal({
 function EditMemberForm({
   userId,
   username,
+  name,
   onSuccess,
 }: {
   userId: string;
   username: string;
+  name: string;
   onSuccess: () => void;
 }) {
   const [state, action, pending] = useActionState(updateMemberAction, initial);
@@ -104,6 +109,17 @@ function EditMemberForm({
   return (
     <form action={action} className="flex flex-col gap-4">
       <input type="hidden" name="userId" value={userId} />
+      <label className={labelClass}>
+        Nome
+        <input
+          name="name"
+          type="text"
+          autoComplete="name"
+          required
+          defaultValue={name}
+          className={inputClass}
+        />
+      </label>
       <label className={labelClass}>
         Usuário
         <input
