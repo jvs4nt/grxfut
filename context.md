@@ -8,7 +8,7 @@ Admin cria, edita (usuário/senha) e exclui membros em `/membros` (só role memb
 Status da fase: `**Status:** pronto|pendente` no README da pasta em roadmap/.
 
 ## Último
-Modal de carregamento (mín. 2s) em botões/selects com delay: pagamento, presença, tier, RSVP, sorteio, membros.
+Lista de pagamento só com jogadores confirmados. Progresso % sobre esse grupo.
 
 ## Pendente
 Conectar GitHub no serviço Railway para deploys automáticos; 9 deploy Vercel ainda no roadmap.

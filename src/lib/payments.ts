@@ -1,6 +1,6 @@
 import { and, asc, eq } from "drizzle-orm";
 import { getDb } from "@/db";
-import { payments, users } from "@/db/schema";
+import { attendances, payments, users } from "@/db/schema";
 import type { PaymentStatus, UserTier } from "@/lib/labels";
 
 export type PaymentRow = {
@@ -52,10 +52,17 @@ export async function listPayments(matchId: string): Promise<PaymentRow[]> {
       status: payments.status,
       scheduledOn: payments.scheduledOn,
     })
-    .from(users)
+    .from(attendances)
+    .innerJoin(users, eq(users.id, attendances.userId))
     .leftJoin(
       payments,
       and(eq(payments.userId, users.id), eq(payments.matchId, matchId)),
+    )
+    .where(
+      and(
+        eq(attendances.matchId, matchId),
+        eq(attendances.status, "confirmed"),
+      ),
     )
     .orderBy(asc(users.tier), asc(users.name));
 

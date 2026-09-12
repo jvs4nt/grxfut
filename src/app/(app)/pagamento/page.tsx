@@ -40,7 +40,7 @@ export default async function PaymentPage() {
           </p>
           <p className="mt-2 text-4xl font-semibold tracking-tight">{progress}%</p>
           <p className="mt-1 text-sm text-zinc-400">
-            Percentual de jogadores com flag PAGO.
+            Percentual dos confirmados com flag PAGO.
           </p>
           <div className="mt-4 h-2 overflow-hidden rounded-full bg-zinc-800">
             <div
@@ -56,7 +56,13 @@ export default async function PaymentPage() {
         </p>
       )}
 
-      {match ? (
+      {match && rows.length === 0 ? (
+        <p className="text-sm text-zinc-500">
+          A lista só mostra quem confirmou presença.
+        </p>
+      ) : null}
+
+      {match && rows.length > 0 ? (
         <ul className="flex flex-col gap-2">
           {rows.map((row) => (
             <li
