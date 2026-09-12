@@ -8,7 +8,7 @@ Admin cria, edita (usuário/senha) e exclui membros em `/membros` (só role memb
 Status da fase: `**Status:** pronto|pendente` no README da pasta em roadmap/.
 
 ## Último
-Usuário tem nome de exibição (cadastro/edição). Listas e campo mostram o nome; Elenco mostra nome + usuário. Login e nav seguem no usuário. Registros antigos copiaram o username.
+Modal de pagar o horário aparece em todo login (sessionId no JWT). Fecha só naquela sessão.
 
 ## Pendente
 Conectar GitHub no serviço Railway para deploys automáticos; 9 deploy Vercel ainda no roadmap.

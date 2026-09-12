@@ -4,16 +4,18 @@ import { useEffect, useState } from "react";
 import { formatDayMonth } from "@/lib/dates";
 import type { PaymentStatus } from "@/lib/labels";
 
-function storageKey(matchId: string) {
-  return `garux_pay_modal_${matchId}`;
+function storageKey(matchId: string, sessionId: string) {
+  return `garux_pay_modal_${matchId}_${sessionId}`;
 }
 
 export function PaymentModal({
   matchId,
+  sessionId,
   status,
   scheduledOn,
 }: {
   matchId: string;
+  sessionId: string;
   status: PaymentStatus;
   scheduledOn: string | null;
 }) {
@@ -26,11 +28,11 @@ export function PaymentModal({
     }
 
     try {
-      setOpen(sessionStorage.getItem(storageKey(matchId)) !== "1");
+      setOpen(sessionStorage.getItem(storageKey(matchId, sessionId)) !== "1");
     } catch {
       setOpen(true);
     }
-  }, [matchId, status]);
+  }, [matchId, sessionId, status]);
 
   if (!open || status === "pago") {
     return null;
@@ -46,7 +48,7 @@ export function PaymentModal({
 
   function dismiss() {
     try {
-      sessionStorage.setItem(storageKey(matchId), "1");
+      sessionStorage.setItem(storageKey(matchId, sessionId), "1");
     } catch {
       // ignore
     }

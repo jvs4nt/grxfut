@@ -8,7 +8,7 @@ import { users } from "@/db/schema";
 import {
   SESSION_COOKIE,
   createSessionToken,
-  readSessionUserId,
+  readSessionClaims,
   sessionCookieOptions,
 } from "@/lib/session-token";
 
@@ -45,7 +45,7 @@ export async function destroySession() {
   });
 }
 
-export const getSession = cache(async (): Promise<SessionUser | null> => {
+export const getSessionClaims = cache(async () => {
   const jar = await cookies();
   const token = jar.get(SESSION_COOKIE)?.value;
 
@@ -53,9 +53,13 @@ export const getSession = cache(async (): Promise<SessionUser | null> => {
     return null;
   }
 
-  const userId = await readSessionUserId(token);
+  return readSessionClaims(token);
+});
 
-  if (!userId) {
+export const getSession = cache(async (): Promise<SessionUser | null> => {
+  const claims = await getSessionClaims();
+
+  if (!claims) {
     return null;
   }
 
@@ -68,7 +72,7 @@ export const getSession = cache(async (): Promise<SessionUser | null> => {
       tier: users.tier,
     })
     .from(users)
-    .where(eq(users.id, userId))
+    .where(eq(users.id, claims.userId))
     .limit(1);
 
   return user ?? null;

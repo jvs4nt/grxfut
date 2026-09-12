@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { AppShell } from "@/components/app-shell";
-import { requireSession } from "@/lib/auth";
+import { getSessionClaims, requireSession } from "@/lib/auth";
 import { getNextScheduledMatch } from "@/lib/matches";
 import { getPaymentForUser } from "@/lib/payments";
 
@@ -9,9 +9,10 @@ export default async function AppLayout({
 }: {
   children: ReactNode;
 }) {
-  const [user, nextMatch] = await Promise.all([
+  const [user, nextMatch, claims] = await Promise.all([
     requireSession(),
     getNextScheduledMatch(),
+    getSessionClaims(),
   ]);
   const payment =
     nextMatch && user.role === "member"
@@ -22,9 +23,10 @@ export default async function AppLayout({
     <AppShell
       user={user}
       paymentModal={
-        payment && payment.status !== "pago" && nextMatch
+        payment && payment.status !== "pago" && nextMatch && claims
           ? {
               matchId: nextMatch.id,
+              sessionId: claims.sessionId,
               status: payment.status,
               scheduledOn: payment.scheduledOn,
             }

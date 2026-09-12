@@ -18,6 +18,7 @@ const NAV = [
 
 export type PaymentModalState = {
   matchId: string;
+  sessionId: string;
   status: PaymentStatus;
   scheduledOn: string | null;
 } | null;
@@ -38,6 +39,7 @@ export function AppShell({
       {user.role === "member" && paymentModal ? (
         <PaymentModal
           matchId={paymentModal.matchId}
+          sessionId={paymentModal.sessionId}
           status={paymentModal.status}
           scheduledOn={paymentModal.scheduledOn}
         />
