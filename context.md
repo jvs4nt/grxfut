@@ -2,13 +2,13 @@
 
 ## Resumo
 Webapp do fut: Next.js App Router, Drizzle, Neon, Tailwind. Spec em doc.md, stack em stack.md, fases em roadmap/.
-Login só usuário/senha (bcrypt + cookie httpOnly `garux_session`). Role/tier vêm do banco via getSession(). Sem signup, OAuth ou recovery.
-Home `/` = console de health (provisório). `/login` e `/api/health` públicos; o resto exige sessão.
-Admin se cria com `npm run db:seed-admin` (creds no .env, nunca neste arquivo).
+Login só usuário/senha (bcrypt + cookie httpOnly `garux_session`, `secure` em produção). Role/tier vêm do banco via getSession(). Sem signup, OAuth ou recovery.
+Rotas: `/` home do fut, `/membros`, `/pagamento`, `/sorteio`. `/login` e `/api/health` públicos; o resto exige sessão. `/dev` e `/roadmap` são internos.
+Admin cria, edita (usuário/senha) e exclui membros em `/membros` (só role member). Seed inicial: `npm run db:seed-admin` (creds no .env).
 Status da fase: `**Status:** pronto|pendente` no README da pasta em roadmap/.
 
 ## Último
-Fase 3: /login, JWT no cookie, seed Admin, proxy redireciona visitante.
+AttendanceRow e PaymentRow usam UserRole (inclui guest). `npm run build` passa.
 
 ## Pendente
-4 usuários/tiers → 5 jogos/home → 6 presença → 7 pagamento → 8 sorteio → 9 deploy
+Conectar GitHub no serviço Railway para deploys automáticos; 9 deploy Vercel ainda no roadmap.

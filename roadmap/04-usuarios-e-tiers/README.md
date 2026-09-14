@@ -4,7 +4,7 @@
 
 **Depende de:** [3. Auth](../03-auth/README.md).
 
-**Status:** pendente
+**Status:** pronto
 
 ## Implementar
 
@@ -16,14 +16,14 @@
 
 ## Testar
 
-- [ ] Admin logado cria um Membro e consegue logar com essa conta
-- [ ] Username duplicado é recusado
-- [ ] Admin muda o tier de um jogador; a mudança aparece para Admin e Membro
-- [ ] Tiers aceitos só: Capitão, Tenente, Soldado
-- [ ] Membro autenticado não vê (ou não consegue usar) o formulário de criar usuário
-- [ ] POST/API de criar usuário ou alterar tier com sessão de Membro retorna 403
-- [ ] Lista de membros mostra o tier de cada um
-- [ ] Senha do novo usuário é hasheada (igual à auth)
+- [x] Admin logado cria um Membro e consegue logar com essa conta
+- [x] Username duplicado é recusado
+- [x] Admin muda o tier de um jogador; a mudança aparece para Admin e Membro
+- [x] Tiers aceitos só: Capitão, Tenente, Soldado
+- [x] Membro autenticado não vê (ou não consegue usar) o formulário de criar usuário
+- [x] POST/API de criar usuário ou alterar tier com sessão de Membro retorna 403
+- [x] Lista de membros mostra o tier de cada um
+- [x] Senha do novo usuário é hasheada (igual à auth)
 
 ## Pronto quando
 

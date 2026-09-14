@@ -1,12 +1,14 @@
 import { compare, hash } from "bcryptjs";
 import { eq } from "drizzle-orm";
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+import { cache } from "react";
 import { getDb } from "@/db";
 import { users } from "@/db/schema";
 import {
   SESSION_COOKIE,
   createSessionToken,
-  readSessionUserId,
+  readSessionClaims,
   sessionCookieOptions,
 } from "@/lib/session-token";
 
@@ -17,8 +19,9 @@ const BCRYPT_ROUNDS = 12;
 export type SessionUser = {
   id: string;
   username: string;
-  role: "admin" | "member";
+  role: "admin" | "member" | "guest";
   tier: "capitao" | "tenente" | "soldado";
+  active: boolean;
 };
 
 export function hashPassword(password: string) {
@@ -43,7 +46,7 @@ export async function destroySession() {
   });
 }
 
-export async function getSession(): Promise<SessionUser | null> {
+export const getSessionClaims = cache(async () => {
   const jar = await cookies();
   const token = jar.get(SESSION_COOKIE)?.value;
 
@@ -51,9 +54,13 @@ export async function getSession(): Promise<SessionUser | null> {
     return null;
   }
 
-  const userId = await readSessionUserId(token);
+  return readSessionClaims(token);
+});
 
-  if (!userId) {
+export const getSession = cache(async (): Promise<SessionUser | null> => {
+  const claims = await getSessionClaims();
+
+  if (!claims) {
     return null;
   }
 
@@ -64,10 +71,25 @@ export async function getSession(): Promise<SessionUser | null> {
       username: users.username,
       role: users.role,
       tier: users.tier,
+      active: users.active,
     })
     .from(users)
-    .where(eq(users.id, userId))
+    .where(eq(users.id, claims.userId))
     .limit(1);
 
   return user ?? null;
+});
+
+export async function requireSession(): Promise<SessionUser> {
+  const user = await getSession();
+
+  if (!user) {
+    redirect("/login");
+  }
+
+  return user;
+}
+
+export function isAdmin(user: SessionUser) {
+  return user.role === "admin";
 }

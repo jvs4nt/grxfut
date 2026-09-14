@@ -17,26 +17,48 @@ function sessionSecret() {
   return new TextEncoder().encode(process.env.SESSION_SECRET);
 }
 
+export type SessionClaims = {
+  userId: string;
+  sessionId: string;
+};
+
 export async function createSessionToken(userId: string) {
   return new SignJWT()
     .setProtectedHeader({ alg: "HS256" })
     .setSubject(userId)
+    .setJti(crypto.randomUUID())
     .setIssuedAt()
     .setExpirationTime(`${SESSION_DAYS}d`)
     .sign(sessionSecret());
 }
 
-export async function readSessionUserId(token: string) {
+export async function readSessionClaims(token: string): Promise<SessionClaims | null> {
   if (!hasSessionSecret()) {
     return null;
   }
 
   try {
     const { payload } = await jwtVerify(token, sessionSecret());
-    return typeof payload.sub === "string" ? payload.sub : null;
+    if (typeof payload.sub !== "string") {
+      return null;
+    }
+
+    const sessionId =
+      typeof payload.jti === "string" && payload.jti.length > 0
+        ? payload.jti
+        : typeof payload.iat === "number"
+          ? String(payload.iat)
+          : payload.sub;
+
+    return { userId: payload.sub, sessionId };
   } catch {
     return null;
   }
+}
+
+export async function readSessionUserId(token: string) {
+  const claims = await readSessionClaims(token);
+  return claims?.userId ?? null;
 }
 
 export function sessionCookieOptions() {

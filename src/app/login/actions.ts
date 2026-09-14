@@ -36,6 +36,10 @@ export async function loginAction(
     return { error: "Usuário ou senha inválidos." };
   }
 
+  if (!user.active) {
+    return { error: "Conta inativa." };
+  }
+
   await createSession(user.id);
   redirect("/");
 }
