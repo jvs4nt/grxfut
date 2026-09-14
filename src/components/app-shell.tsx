@@ -47,8 +47,8 @@ export function AppShell({
       <header className="border-b border-zinc-800">
         <div className="mx-auto flex w-full max-w-5xl flex-col gap-4 px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center justify-between gap-4">
-            <Link href="/" className="text-sm font-medium tracking-wide text-emerald-400">
-              GARUX
+            <Link href="/" className="flex items-center gap-2">
+              <img src="/logo.png" alt="GARUX" className="h-26 w-auto" />
             </Link>
             <form action={logoutAction} className="sm:hidden">
               <button
@@ -70,11 +70,10 @@ export function AppShell({
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`rounded-full px-3 py-1.5 text-sm transition ${
-                    active
-                      ? "bg-zinc-100 text-zinc-950"
-                      : "text-zinc-400 hover:bg-zinc-900 hover:text-zinc-100"
-                  }`}
+                  className={`rounded-full px-3 py-1.5 text-sm transition ${active
+                    ? "bg-zinc-100 text-zinc-950"
+                    : "text-zinc-400 hover:bg-zinc-900 hover:text-zinc-100"
+                    }`}
                 >
                   {item.label}
                 </Link>
