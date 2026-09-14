@@ -60,7 +60,9 @@ export function AppShell({
             </form>
           </div>
           <nav className="flex flex-wrap gap-1">
-            {NAV.map((item) => {
+            {NAV.filter((item) =>
+              user.role !== "guest" || (item.href !== "/membros" && item.href !== "/sorteio")
+            ).map((item) => {
               const active =
                 item.href === "/"
                   ? pathname === "/"

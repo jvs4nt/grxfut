@@ -1,6 +1,6 @@
-import { date, pgEnum, pgTable, text, time, timestamp, unique, uuid } from "drizzle-orm/pg-core";
+import { boolean, date, pgEnum, pgTable, text, time, timestamp, unique, uuid } from "drizzle-orm/pg-core";
 
-export const userRoleEnum = pgEnum("user_role", ["admin", "member"]);
+export const userRoleEnum = pgEnum("user_role", ["admin", "member", "guest"]);
 export const userTierEnum = pgEnum("user_tier", ["capitao", "tenente", "soldado"]);
 export const matchStatusEnum = pgEnum("match_status", ["scheduled", "rest"]);
 export const attendanceStatusEnum = pgEnum("attendance_status", [
@@ -25,6 +25,7 @@ export const users = pgTable("users", {
   passwordHash: text("password_hash").notNull(),
   role: userRoleEnum("role").notNull(),
   tier: userTierEnum("tier").notNull(),
+  active: boolean("active").default(true).notNull(),
   createdAt: timestamp("created_at", { withTimezone: true })
     .defaultNow()
     .notNull(),

@@ -19,8 +19,9 @@ const BCRYPT_ROUNDS = 12;
 export type SessionUser = {
   id: string;
   username: string;
-  role: "admin" | "member";
+  role: "admin" | "member" | "guest";
   tier: "capitao" | "tenente" | "soldado";
+  active: boolean;
 };
 
 export function hashPassword(password: string) {
@@ -70,6 +71,7 @@ export const getSession = cache(async (): Promise<SessionUser | null> => {
       username: users.username,
       role: users.role,
       tier: users.tier,
+      active: users.active,
     })
     .from(users)
     .where(eq(users.id, claims.userId))

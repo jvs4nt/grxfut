@@ -10,6 +10,7 @@ export type PublicUser = {
   name: string;
   role: UserRole;
   tier: UserTier;
+  active: boolean;
 };
 
 const publicUserColumns = {
@@ -18,6 +19,7 @@ const publicUserColumns = {
   name: users.name,
   role: users.role,
   tier: users.tier,
+  active: users.active,
 };
 
 export async function listUsers(): Promise<PublicUser[]> {
@@ -58,6 +60,57 @@ export async function createUser(input: {
 
     throw error;
   }
+}
+
+export async function createGuestUser(input: {
+  name: string;
+  tier: UserTier;
+}) {
+  const db = getDb();
+  
+  // Clean name: lowercase, no accents, no spaces
+  const cleanName = input.name
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]/g, "");
+    
+  const randomNumbers = Math.floor(1000 + Math.random() * 9000);
+  const username = `@${cleanName}${randomNumbers}`;
+  const password = String(Math.floor(10000000 + Math.random() * 90000000));
+  const passwordHash = await hashPassword(password);
+
+  try {
+    const [user] = await db
+      .insert(users)
+      .values({
+        username,
+        name: input.name,
+        passwordHash,
+        role: "guest",
+        tier: input.tier,
+        active: true,
+      })
+      .returning(publicUserColumns);
+
+    return { ok: true as const, user, credentials: { username, password } };
+  } catch (error) {
+    if (isUniqueViolation(error)) {
+      return { ok: false as const, error: "duplicate" };
+    }
+    throw error;
+  }
+}
+
+export async function toggleUserActive(userId: string, active: boolean) {
+  const db = getDb();
+  const [user] = await db
+    .update(users)
+    .set({ active })
+    .where(eq(users.id, userId))
+    .returning(publicUserColumns);
+
+  return user ?? null;
 }
 
 export async function updateUserTier(userId: string, tier: UserTier) {

@@ -1,6 +1,7 @@
 import { PitchBoard } from "@/components/pitch-board";
 import { RunDrawForm } from "@/components/run-draw-form";
 import { listAttendances, splitAttendances } from "@/lib/attendance";
+import { redirect } from "next/navigation";
 import { requireSession, isAdmin } from "@/lib/auth";
 import { formatDayMonthYear } from "@/lib/dates";
 import { getDrawForMatch } from "@/lib/draw";
@@ -11,6 +12,7 @@ export const dynamic = "force-dynamic";
 
 export default async function DrawPage() {
   const user = await requireSession();
+  if (user.role === "guest") redirect("/");
   const admin = isAdmin(user);
   const match = await getNextScheduledMatch();
   const attendances = match ? await listAttendances(match.id) : [];

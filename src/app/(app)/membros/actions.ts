@@ -13,8 +13,10 @@ import { parseRole, parseTier } from "@/lib/labels";
 import { getNextScheduledMatch } from "@/lib/matches";
 import { ensurePaymentsForMatch } from "@/lib/payments";
 import {
+  createGuestUser,
   createUser,
   deleteMemberUser,
+  toggleUserActive,
   updateMemberUser,
   updateUserTier,
 } from "@/lib/users";
@@ -217,5 +219,40 @@ export async function deleteMemberAction(formData: FormData) {
     return;
   }
 
+  refreshApp();
+}
+
+export async function createGuestAction(
+  formData: FormData,
+) {
+  const admin = await getAdminSession();
+  if (!admin.ok) return { error: admin.error };
+
+  const name = String(formData.get("name") ?? "").trim();
+  const tier = parseTier(String(formData.get("tier") ?? ""));
+
+  if (!name || !tier) {
+    return { error: "Preencha nome e tier." };
+  }
+
+  const result = await createGuestUser({ name, tier });
+  if (!result.ok) {
+    return { error: "Erro ao criar usuário." };
+  }
+  
+  refreshApp();
+  return { ok: true, credentials: result.credentials };
+}
+
+export async function toggleUserActiveAction(formData: FormData) {
+  const admin = await getAdminSession();
+  if (!admin.ok) return;
+
+  const userId = String(formData.get("userId") ?? "");
+  const active = formData.get("active") === "true";
+
+  if (!userId) return;
+
+  await toggleUserActive(userId, active);
   refreshApp();
 }

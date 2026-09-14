@@ -4,9 +4,11 @@ import {
   AttendanceSelect,
 } from "@/components/attendance-select";
 import { CreateUserModal } from "@/components/create-user-modal";
+import { CreateGuestModal } from "@/components/create-guest-modal";
 import { DeleteMemberButton } from "@/components/delete-member-button";
 import { EditMemberModal } from "@/components/edit-member-modal";
 import { TierSelect } from "@/components/tier-select";
+import { ToggleActiveButton } from "@/components/toggle-active-button";
 import {
   listAttendances,
   splitAttendances,
@@ -19,10 +21,13 @@ import { getNextScheduledMatch } from "@/lib/matches";
 import { listUsers } from "@/lib/users";
 import { cardClass } from "@/lib/ui";
 
+import { redirect } from "next/navigation";
+
 export const dynamic = "force-dynamic";
 
 export default async function MembersPage() {
   const user = await requireSession();
+  if (user.role === "guest") redirect("/");
   const admin = isAdmin(user);
   const [match, roster] = await Promise.all([
     getNextScheduledMatch(),
@@ -48,7 +53,12 @@ export default async function MembersPage() {
               : "Sem próximo jogo scheduled — as listas de presença ficam vazias."}
           </p>
         </div>
-        {admin ? <CreateUserModal /> : null}
+        {admin ? (
+          <div className="flex gap-2">
+            <CreateGuestModal />
+            <CreateUserModal />
+          </div>
+        ) : null}
       </header>
 
       <section className="grid gap-6 lg:grid-cols-2">
@@ -80,7 +90,14 @@ export default async function MembersPage() {
               className="flex flex-col gap-3 rounded-2xl border border-zinc-800 px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
             >
               <div>
-                <p className="font-medium">{member.name}</p>
+                <p className="font-medium">
+                  {member.name}{" "}
+                  {!member.active && (
+                    <span className="ml-1 rounded-sm bg-red-500/20 px-1 py-0.5 text-[10px] uppercase text-red-400">
+                      Inativo
+                    </span>
+                  )}
+                </p>
                 <p className="text-xs uppercase tracking-wide text-zinc-500">
                   {member.username} · {member.role}
                 </p>
@@ -111,6 +128,9 @@ export default async function MembersPage() {
                     userId={member.id}
                     name={member.name}
                   />
+                ) : null}
+                {admin && member.id !== user.id ? (
+                  <ToggleActiveButton userId={member.id} active={member.active} />
                 ) : null}
               </div>
             </li>

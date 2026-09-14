@@ -9,6 +9,7 @@ export const TIER_LABELS = {
 export const ROLE_LABELS = {
   admin: "Admin",
   member: "Membro",
+  guest: "Convidado",
 } as const;
 
 export const PAYMENT_LABELS = {
@@ -21,7 +22,7 @@ export type UserRole = SessionUser["role"];
 export type UserTier = SessionUser["tier"];
 export type PaymentStatus = keyof typeof PAYMENT_LABELS;
 
-export const USER_ROLES = ["admin", "member"] as const;
+export const USER_ROLES = ["admin", "member", "guest"] as const;
 export const USER_TIERS = ["capitao", "tenente", "soldado"] as const;
 export const PAYMENT_STATUSES = ["calote", "agendado", "pago"] as const;
 
