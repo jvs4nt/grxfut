@@ -1,7 +1,7 @@
 import { and, asc, eq } from "drizzle-orm";
 import { getDb } from "@/db";
 import { attendances, users } from "@/db/schema";
-import { USER_TIERS, type UserTier } from "@/lib/labels";
+import { USER_TIERS, type UserRole, type UserTier } from "@/lib/labels";
 
 export type AttendanceStatus = "confirmed" | "reserve";
 
@@ -10,7 +10,7 @@ export type AttendanceRow = {
   userId: string;
   username: string;
   name: string;
-  role: "admin" | "member";
+  role: UserRole;
   tier: UserTier;
   status: AttendanceStatus;
   createdAt: Date;

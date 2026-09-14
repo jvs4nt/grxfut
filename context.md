@@ -8,7 +8,7 @@ Admin cria, edita (usuário/senha) e exclui membros em `/membros` (só role memb
 Status da fase: `**Status:** pronto|pendente` no README da pasta em roadmap/.
 
 ## Último
-Lista de pagamento só com jogadores confirmados. Progresso % sobre esse grupo.
+AttendanceRow e PaymentRow usam UserRole (inclui guest). `npm run build` passa.
 
 ## Pendente
 Conectar GitHub no serviço Railway para deploys automáticos; 9 deploy Vercel ainda no roadmap.

@@ -1,14 +1,14 @@
 import { and, asc, eq } from "drizzle-orm";
 import { getDb } from "@/db";
 import { attendances, payments, users } from "@/db/schema";
-import type { PaymentStatus, UserTier } from "@/lib/labels";
+import type { PaymentStatus, UserRole, UserTier } from "@/lib/labels";
 
 export type PaymentRow = {
   id: string | null;
   userId: string;
   username: string;
   name: string;
-  role: "admin" | "member";
+  role: UserRole;
   tier: UserTier;
   status: PaymentStatus;
   scheduledOn: string | null;
