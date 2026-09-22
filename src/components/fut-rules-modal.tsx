@@ -64,7 +64,7 @@ export function FutRulesModal() {
             }
           }}
         >
-          <div className="w-full max-w-md rounded-2xl border border-zinc-800 bg-zinc-950 p-6 shadow-2xl">
+          <div className="w-full max-w-md rounded-2xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950 p-6 shadow-2xl">
             <div className="flex items-start justify-between gap-4">
               <div className="flex items-start gap-3">
                 <WhistleIcon className="mt-0.5 h-6 w-6 shrink-0 text-emerald-400" />
@@ -80,7 +80,7 @@ export function FutRulesModal() {
                 Fechar
               </button>
             </div>
-            <ul className="mt-5 flex flex-col gap-3 text-xs font-semibold uppercase leading-5 tracking-wide text-zinc-300">
+            <ul className="mt-5 flex flex-col gap-3 text-xs font-semibold uppercase leading-5 tracking-wide text-zinc-700 dark:text-zinc-300">
               {RULES.map((rule) => (
                 <li key={rule}>{rule}</li>
               ))}

@@ -56,7 +56,7 @@ export function AttendanceRemoveButton({
       <input type="hidden" name="status" value="out" />
       <button
         type="submit"
-        className="rounded-full border border-zinc-700 px-2 py-0.5 text-sm font-semibold text-zinc-400 transition hover:border-red-500/50 hover:text-red-200"
+        className="rounded-full border border-zinc-300 px-2 dark:border-zinc-700 py-0.5 text-sm font-semibold text-zinc-600 dark:text-zinc-400 transition hover:border-red-500/50 hover:text-red-200"
         aria-label={`Tirar ${name} da lista`}
       >
         ×
@@ -101,12 +101,12 @@ export function AttendanceMoveButton({
             }
           }}
         >
-          <div className="flex w-full max-w-md flex-col gap-4 rounded-2xl border border-zinc-800 bg-zinc-950 p-6 shadow-2xl">
+          <div className="flex w-full max-w-md flex-col gap-4 rounded-2xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950 p-6 shadow-2xl">
             <div>
               <h2 id={`move-${userId}`} className="text-lg font-semibold">
                 Mover {name}
               </h2>
-              <p className="mt-1 text-sm text-zinc-400">
+              <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
                 Escolha Confirmados, Aguardando pagamento, Reservas ou tire da
                 lista.
               </p>
@@ -156,7 +156,7 @@ export function AttendanceMoveButton({
             <button
               type="button"
               onClick={() => setOpen(false)}
-              className="self-start text-sm text-zinc-500 hover:text-zinc-300"
+              className="self-start text-sm text-zinc-600 dark:text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300"
             >
               Cancelar
             </button>

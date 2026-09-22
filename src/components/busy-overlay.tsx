@@ -127,20 +127,20 @@ function BusyModal() {
       aria-labelledby="garux-busy-title"
       aria-busy="true"
     >
-      <div className="flex w-full max-w-xs flex-col items-center gap-5 rounded-3xl border border-emerald-400/20 bg-zinc-950 px-8 py-10 shadow-[0_0_80px_rgba(52,211,153,0.12)]">
+      <div className="flex w-full max-w-xs flex-col items-center gap-5 rounded-3xl border border-emerald-400/20 bg-white px-8 py-10 shadow-[0_0_80px_rgba(52,211,153,0.12)] dark:bg-zinc-950">
         <div className="relative h-16 w-16">
-          <span className="absolute inset-0 rounded-full border-2 border-zinc-800" />
+          <span className="absolute inset-0 rounded-full border-2 border-zinc-200 dark:border-zinc-800" />
           <span className="absolute inset-0 animate-spin rounded-full border-2 border-transparent border-t-emerald-400 border-r-emerald-300" />
           <span className="absolute inset-3 animate-pulse rounded-full bg-emerald-400/15" />
         </div>
         <div className="text-center">
           <p
             id="garux-busy-title"
-            className="text-lg font-semibold tracking-tight text-zinc-50"
+            className="text-lg font-semibold tracking-tight text-zinc-900 dark:text-zinc-50"
           >
             Salvando
           </p>
-          <p className="mt-1 text-sm text-zinc-400">Só um instante…</p>
+          <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">Só um instante…</p>
         </div>
       </div>
     </div>

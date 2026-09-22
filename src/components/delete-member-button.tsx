@@ -49,12 +49,12 @@ export function DeleteMemberButton({
             }
           }}
         >
-          <div className="flex w-full max-w-md flex-col gap-4 rounded-2xl border border-zinc-800 bg-zinc-950 p-6 shadow-2xl">
+          <div className="flex w-full max-w-md flex-col gap-4 rounded-2xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950 p-6 shadow-2xl">
             <div>
               <h2 id={titleId} className="text-lg font-semibold">
                 Excluir {name}?
               </h2>
-              <p className="mt-1 text-sm text-zinc-400">
+              <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
                 Isso remove a conta e presença, pagamento e sorteio ligados.
               </p>
             </div>

@@ -48,7 +48,7 @@ export default async function MembersPage() {
             Membros
           </p>
           <h1 className="text-3xl font-semibold tracking-tight">Quem vai</h1>
-          <p className="text-sm text-zinc-400">
+          <p className="text-sm text-zinc-600 dark:text-zinc-400">
             {match
               ? `Presença do próximo fut em ${formatDayMonthYear(match.date)}.`
               : "Sem próximo jogo marcado — as listas de presença ficam vazias."}
@@ -94,7 +94,7 @@ export default async function MembersPage() {
       </section>
 
       <section className="flex flex-col gap-3">
-        <h2 className="text-sm font-semibold uppercase tracking-wider text-zinc-500">
+        <h2 className="text-sm font-semibold uppercase tracking-wider text-zinc-600 dark:text-zinc-500">
           Elenco{" "}
           <span className="font-normal">({roster.length})</span>
         </h2>
@@ -102,7 +102,7 @@ export default async function MembersPage() {
           {roster.map((member) => (
             <li
               key={member.id}
-              className="flex flex-col gap-3 rounded-2xl border border-zinc-800 px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
+              className="flex flex-col gap-3 rounded-2xl border border-zinc-200 px-4 dark:border-zinc-800 py-3 sm:flex-row sm:items-center sm:justify-between"
             >
               <div>
                 <p className="font-medium">
@@ -113,7 +113,7 @@ export default async function MembersPage() {
                     </span>
                   )}
                 </p>
-                <p className="text-xs uppercase tracking-wide text-zinc-500">
+                <p className="text-xs uppercase tracking-wide text-zinc-600 dark:text-zinc-500">
                   {member.username} · {member.role}
                 </p>
               </div>
@@ -179,23 +179,23 @@ function PlayerList({
     >
       <h2 className="text-lg font-semibold">
         {title}{" "}
-        <span className="text-sm font-normal text-zinc-500">({rows.length})</span>
+        <span className="text-sm font-normal text-zinc-600 dark:text-zinc-500">({rows.length})</span>
       </h2>
       {rows.length === 0 ? (
-        <p className="mt-3 text-sm text-zinc-500">{empty}</p>
+        <p className="mt-3 text-sm text-zinc-600 dark:text-zinc-500">{empty}</p>
       ) : (
         <ul className="mt-4 flex flex-col gap-2">
           {rows.map((row) => (
             <li
               key={row.id}
-              className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-zinc-800/80 px-3 py-2"
+              className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-zinc-200 dark:border-zinc-800/80 px-3 py-2"
             >
               <span className="font-medium">{row.name}</span>
               <div className="flex flex-wrap items-center gap-2">
                 {canEditTier ? (
                   <TierSelect userId={row.userId} tier={row.tier} canEdit />
                 ) : (
-                  <span className="text-sm text-zinc-400">
+                  <span className="text-sm text-zinc-600 dark:text-zinc-400">
                     {TIER_LABELS[row.tier]}
                   </span>
                 )}

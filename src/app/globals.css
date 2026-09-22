@@ -1,8 +1,27 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
+  --background: #fafafa;
+  --foreground: #18181b;
+  --markdown-body: #52525b;
+  --markdown-heading: #18181b;
+  --markdown-code-bg: #f4f4f5;
+  --markdown-code-border: #e4e4e7;
+  --markdown-table-border: #e4e4e7;
+  --markdown-table-head-bg: #f4f4f5;
+}
+
+.dark {
   --background: #09090b;
   --foreground: #f4f4f5;
+  --markdown-body: #d4d4d8;
+  --markdown-heading: #fafafa;
+  --markdown-code-bg: #18181b;
+  --markdown-code-border: #27272a;
+  --markdown-table-border: #27272a;
+  --markdown-table-head-bg: #18181b;
 }
 
 @theme inline {
@@ -23,32 +42,33 @@ body {
   flex-direction: column;
   gap: 0.9rem;
   line-height: 1.65;
-  color: #d4d4d8;
+  color: var(--markdown-body);
 }
 
 .markdown h1 {
-  color: #fafafa;
+  color: var(--markdown-heading);
   font-size: 1.75rem;
   font-weight: 650;
   letter-spacing: -0.03em;
 }
 
 .markdown h2 {
-  color: #f4f4f5;
+  color: var(--markdown-heading);
   font-size: 1.15rem;
   font-weight: 600;
   margin-top: 1.25rem;
 }
 
 .markdown h3 {
-  color: #e4e4e7;
+  color: var(--markdown-heading);
   font-size: 1rem;
   font-weight: 600;
+  opacity: 0.9;
 }
 
 .markdown p,
 .markdown li {
-  color: #d4d4d8;
+  color: var(--markdown-body);
 }
 
 .markdown ul,
@@ -74,16 +94,16 @@ body {
 .markdown code {
   font-family: var(--font-geist-mono), ui-monospace, monospace;
   font-size: 0.85em;
-  background: #18181b;
-  border: 1px solid #27272a;
+  background: var(--markdown-code-bg);
+  border: 1px solid var(--markdown-code-border);
   border-radius: 0.3rem;
   padding: 0.1rem 0.35rem;
 }
 
 .markdown pre {
   overflow-x: auto;
-  background: #18181b;
-  border: 1px solid #27272a;
+  background: var(--markdown-code-bg);
+  border: 1px solid var(--markdown-code-border);
   border-radius: 0.75rem;
   padding: 1rem;
 }
@@ -95,8 +115,12 @@ body {
 }
 
 .markdown a {
-  color: #34d399;
+  color: #059669;
   text-underline-offset: 3px;
+}
+
+.dark .markdown a {
+  color: #34d399;
 }
 
 .markdown a:hover {
@@ -111,16 +135,16 @@ body {
 
 .markdown th,
 .markdown td {
-  border: 1px solid #27272a;
+  border: 1px solid var(--markdown-table-border);
   padding: 0.5rem 0.7rem;
   text-align: left;
 }
 
 .markdown th {
-  background: #18181b;
-  color: #fafafa;
+  background: var(--markdown-table-head-bg);
+  color: var(--markdown-heading);
 }
 
 .markdown hr {
-  border-color: #27272a;
+  border-color: var(--markdown-table-border);
 }

@@ -59,7 +59,7 @@ export function EditMemberModal({
             }
           }}
         >
-          <div className="w-full max-w-md rounded-2xl border border-zinc-800 bg-zinc-950 p-6 shadow-2xl">
+          <div className="w-full max-w-md rounded-2xl border border-zinc-200 bg-white p-6 shadow-2xl dark:border-zinc-800 dark:bg-zinc-950">
             <div className="flex items-start justify-between gap-4">
               <h2 id={titleId} className="text-lg font-semibold">
                 Editar usuário

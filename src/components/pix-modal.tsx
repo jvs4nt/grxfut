@@ -87,13 +87,13 @@ export function PixModal({
         }
       }}
     >
-      <div className="my-auto w-full max-w-md rounded-2xl border border-zinc-800 bg-zinc-950 p-6 shadow-2xl">
+      <div className="my-auto w-full max-w-md rounded-2xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950 p-6 shadow-2xl">
         <div className="flex items-start justify-between gap-4">
           <div>
             <h2 id={titleId} className="text-lg font-semibold">
               Pague pra confirmar
             </h2>
-            <p className="mt-1 text-sm text-zinc-400">
+            <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
               Pague o PIX e confirme aqui embaixo pra entrar na lista.
             </p>
           </div>
@@ -110,8 +110,8 @@ export function PixModal({
           <p className="text-4xl font-semibold tracking-tight text-emerald-400">
             {pix.amountLabel}
           </p>
-          <p className="text-sm font-medium text-zinc-300">{pix.receiver}</p>
-          <p className="text-xs text-zinc-500">{pix.pixKey}</p>
+          <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300">{pix.receiver}</p>
+          <p className="text-xs text-zinc-600 dark:text-zinc-500">{pix.pixKey}</p>
         </div>
 
         <div className="mt-5 flex justify-center">
@@ -124,10 +124,10 @@ export function PixModal({
         </div>
 
         <details className="mt-4">
-          <summary className="cursor-pointer text-xs text-zinc-500 hover:text-zinc-300">
+          <summary className="cursor-pointer text-xs text-zinc-600 dark:text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300">
             Ver o código PIX
           </summary>
-          <code className="mt-2 block break-all rounded-lg bg-zinc-900 p-3 font-mono text-[10px] leading-relaxed text-zinc-300">
+          <code className="mt-2 block break-all rounded-lg bg-zinc-100 p-3 font-mono text-[10px] leading-relaxed text-zinc-800 dark:bg-zinc-900 dark:text-zinc-300">
             {pix.payload}
           </code>
         </details>

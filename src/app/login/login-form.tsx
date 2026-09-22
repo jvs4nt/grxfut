@@ -2,6 +2,7 @@
 
 import { ActionForm, useBusyAction } from "@/components/busy-overlay";
 import { PasswordInput } from "@/components/password-input";
+import { buttonClass, inputClass, labelClass } from "@/lib/ui";
 import { loginAction, type LoginState } from "./actions";
 
 const initialState: LoginState = { error: null };
@@ -11,35 +12,31 @@ export function LoginForm() {
 
   return (
     <ActionForm action={action} className="flex flex-col gap-4">
-      <label className="flex flex-col gap-1.5 text-sm">
-        <span className="text-zinc-300">Usuário</span>
+      <label className={labelClass}>
+        Usuário
         <input
           name="username"
           type="text"
           autoComplete="username"
           required
-          className="rounded-xl border border-zinc-800 bg-zinc-900 px-3 py-2.5 text-zinc-100 outline-none ring-emerald-400/40 focus:ring-2"
+          className={inputClass}
         />
       </label>
-      <label className="flex flex-col gap-1.5 text-sm">
-        <span className="text-zinc-300">Senha</span>
+      <label className={labelClass}>
+        Senha
         <PasswordInput
           name="password"
           autoComplete="current-password"
           required
-          className="w-full rounded-xl border border-zinc-800 bg-zinc-900 px-3 py-2.5 text-zinc-100 outline-none ring-emerald-400/40 focus:ring-2"
+          className={`w-full ${inputClass}`}
         />
       </label>
       {state.error ? (
-        <p className="text-sm text-red-300" role="alert">
+        <p className="text-sm text-red-600 dark:text-red-300" role="alert">
           {state.error}
         </p>
       ) : null}
-      <button
-        type="submit"
-        disabled={pending}
-        className="mt-2 rounded-full bg-emerald-400 px-4 py-2.5 text-sm font-semibold text-zinc-950 transition hover:bg-emerald-300 disabled:opacity-60"
-      >
+      <button type="submit" disabled={pending} className={`mt-2 ${buttonClass}`}>
         {pending ? "Entrando…" : "Entrar"}
       </button>
     </ActionForm>

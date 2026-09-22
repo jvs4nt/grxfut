@@ -35,7 +35,7 @@ export default async function DrawPage() {
             ? `Times de ${formatDayMonthYear(match.date)}`
             : "Sem próximo jogo"}
         </h1>
-        <p className="text-sm text-zinc-400">
+        <p className="text-sm text-zinc-600 dark:text-zinc-400">
           Só quem confirmou e pagou entra. Dois times de até 6, balanceados por
           nível, no máximo um Capitão por lado. O resto começa de próximo.
         </p>
@@ -44,7 +44,7 @@ export default async function DrawPage() {
       {admin && match ? (
         <section className={cardClass}>
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <p className="text-sm text-zinc-400">
+            <p className="text-sm text-zinc-600 dark:text-zinc-400">
               {confirmed.length === 0
                 ? "Sem confirmados — o sorteio não gera times."
                 : `${confirmed.length} confirmados. Um novo sorteio substitui o anterior.`}
@@ -60,11 +60,11 @@ export default async function DrawPage() {
       ) : null}
 
       {!match ? (
-        <p className="text-sm text-zinc-500">
+        <p className="text-sm text-zinc-600 dark:text-zinc-500">
           Marque um próximo jogo para sortear os times.
         </p>
       ) : !draw ? (
-        <p className="text-sm text-zinc-500">
+        <p className="text-sm text-zinc-600 dark:text-zinc-500">
           Ainda não há sorteio salvo para este jogo.
         </p>
       ) : (

@@ -71,8 +71,8 @@ function FlagCard({
         </p>
         <span className={`h-2 w-2 rounded-full ${pip}`} />
       </div>
-      <p className="mt-3 text-lg font-semibold text-zinc-50">{value}</p>
-      <p className="mt-1 text-sm leading-5 text-zinc-400">{detail}</p>
+      <p className="mt-3 text-lg font-semibold text-zinc-900 dark:text-zinc-50">{value}</p>
+      <p className="mt-1 text-sm leading-5 text-zinc-600 dark:text-zinc-400">{detail}</p>
     </article>
   );
 }
@@ -135,23 +135,23 @@ export function HealthConsole({ user }: { user: SessionUser | null }) {
           <h1 className="text-3xl font-semibold tracking-tight">
             Console de health
           </h1>
-          <p className="max-w-xl text-sm leading-6 text-zinc-400">
+          <p className="max-w-xl text-sm leading-6 text-zinc-600 dark:text-zinc-400">
             Painel interno. Atualiza a cada 5s. A home do produto está em /.
           </p>
         </div>
         <div className="flex flex-col items-start gap-3 sm:items-end">
           {user ? (
             <div className="flex flex-wrap items-center gap-3 text-sm">
-              <span className="text-zinc-300">
+              <span className="text-zinc-700 dark:text-zinc-300">
                 {user.username}
-                <span className="ml-2 rounded-full border border-zinc-700 px-2 py-0.5 text-xs uppercase tracking-wide text-zinc-400">
+                <span className="ml-2 rounded-full border border-zinc-300 px-2 dark:border-zinc-700 py-0.5 text-xs uppercase tracking-wide text-zinc-600 dark:text-zinc-400">
                   {user.role}
                 </span>
               </span>
               <form action={logoutAction}>
                 <button
                   type="submit"
-                  className="text-xs font-medium text-zinc-500 transition hover:text-zinc-200"
+                  className="text-xs font-medium text-zinc-600 transition hover:text-zinc-900 dark:text-zinc-500 dark:hover:text-zinc-200"
                 >
                   Sair
                 </button>
@@ -171,7 +171,7 @@ export function HealthConsole({ user }: { user: SessionUser | null }) {
         <p className="text-sm font-semibold">
           {health ? statusCopy[health.status] : "Consultando…"}
         </p>
-        <p className="mt-1 text-sm text-zinc-400">
+        <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
           {error
             ? error
             : health
@@ -227,7 +227,7 @@ export function HealthConsole({ user }: { user: SessionUser | null }) {
 
       <section className="flex flex-col gap-3">
         <div className="flex items-center justify-between gap-3">
-          <h2 className="text-sm font-semibold uppercase tracking-wider text-zinc-500">
+          <h2 className="text-sm font-semibold uppercase tracking-wider text-zinc-600 dark:text-zinc-500">
             Requests
           </h2>
           <button
@@ -235,14 +235,14 @@ export function HealthConsole({ user }: { user: SessionUser | null }) {
             onClick={() => {
               void clearLog();
             }}
-            className="text-xs font-medium text-zinc-500 transition hover:text-zinc-200"
+            className="text-xs font-medium text-zinc-600 transition hover:text-zinc-900 dark:text-zinc-500 dark:hover:text-zinc-200"
           >
             Limpar
           </button>
         </div>
-        <div className="overflow-hidden rounded-2xl border border-zinc-800">
+        <div className="overflow-hidden rounded-2xl border border-zinc-200 dark:border-zinc-800">
           <table className="w-full text-left text-sm">
-            <thead className="bg-zinc-900 text-xs uppercase tracking-wider text-zinc-500">
+            <thead className="bg-zinc-100 text-xs uppercase tracking-wider text-zinc-600 dark:bg-zinc-900 dark:text-zinc-500">
               <tr>
                 <th className="px-4 py-3 font-medium">Hora</th>
                 <th className="px-4 py-3 font-medium">Método</th>
@@ -254,7 +254,7 @@ export function HealthConsole({ user }: { user: SessionUser | null }) {
                 <tr>
                   <td
                     colSpan={3}
-                    className="px-4 py-8 text-center text-zinc-500"
+                    className="px-4 py-8 text-center text-zinc-600 dark:text-zinc-500"
                   >
                     Nenhuma request ainda. Navegue o app — /_next e o poll do
                     console não entram aqui.
@@ -264,9 +264,9 @@ export function HealthConsole({ user }: { user: SessionUser | null }) {
                 requests.map((entry) => (
                   <tr
                     key={entry.id}
-                    className="border-t border-zinc-800/80 text-zinc-300"
+                    className="border-t border-zinc-200 dark:border-zinc-800/80 text-zinc-700 dark:text-zinc-300"
                   >
-                    <td className="px-4 py-2.5 font-mono text-xs text-zinc-500">
+                    <td className="px-4 py-2.5 font-mono text-xs text-zinc-600 dark:text-zinc-500">
                       {formatTime(entry.at)}
                     </td>
                     <td className="px-4 py-2.5 font-mono text-xs">

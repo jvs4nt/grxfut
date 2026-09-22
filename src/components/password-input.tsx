@@ -18,7 +18,7 @@ export function PasswordInput({ className, ...props }: PasswordInputProps) {
       <button
         type="button"
         onClick={() => setVisible((current) => !current)}
-        className="absolute inset-y-0 right-0 flex items-center px-3 text-zinc-400 transition hover:text-zinc-200"
+        className="absolute inset-y-0 right-0 flex items-center px-3 text-zinc-600 transition hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-200"
         aria-label={visible ? "Ocultar senha" : "Mostrar senha"}
       >
         {visible ? <EyeOffIcon /> : <EyeIcon />}

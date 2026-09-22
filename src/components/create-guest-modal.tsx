@@ -48,13 +48,13 @@ export function CreateGuestModal() {
             }
           }}
         >
-          <div className="w-full max-w-md rounded-2xl border border-zinc-800 bg-zinc-950 p-6 shadow-2xl">
+          <div className="w-full max-w-md rounded-2xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950 p-6 shadow-2xl">
             <div className="flex items-start justify-between gap-4">
               <div>
                 <h2 id={titleId} className="text-lg font-semibold">
                   Criar Convidado
                 </h2>
-                <p className="mt-1 text-sm text-zinc-400">
+                <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
                   Acesso limitado. Expira na 2ª feira.
                 </p>
               </div>
@@ -70,17 +70,17 @@ export function CreateGuestModal() {
             {credentials ? (
               <div className="mt-6 flex flex-col gap-4 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-center">
                 <p className="text-sm font-medium text-emerald-400">Convidado criado com sucesso!</p>
-                <div className="flex flex-col gap-2 rounded-lg bg-zinc-900 p-3 text-left">
+                <div className="flex flex-col gap-2 rounded-lg bg-zinc-100 p-3 text-left dark:bg-zinc-900">
                   <p className="text-sm">
-                    <span className="text-zinc-500">Usuário:</span>{" "}
-                    <span className="font-mono text-zinc-200">{credentials.username}</span>
+                    <span className="text-zinc-600 dark:text-zinc-500">Usuário:</span>{" "}
+                    <span className="font-mono text-zinc-900 dark:text-zinc-200">{credentials.username}</span>
                   </p>
                   <p className="text-sm">
-                    <span className="text-zinc-500">Senha:</span>{" "}
-                    <span className="font-mono text-zinc-200">{credentials.password}</span>
+                    <span className="text-zinc-600 dark:text-zinc-500">Senha:</span>{" "}
+                    <span className="font-mono text-zinc-900 dark:text-zinc-200">{credentials.password}</span>
                   </p>
                 </div>
-                <p className="text-xs text-zinc-400">Copie as credenciais. A senha não poderá ser vista novamente.</p>
+                <p className="text-xs text-zinc-600 dark:text-zinc-400">Copie as credenciais. A senha não poderá ser vista novamente.</p>
               </div>
             ) : (
               <form action={handleSubmit} className="mt-5 flex flex-col gap-4">
@@ -91,7 +91,7 @@ export function CreateGuestModal() {
                     name="name"
                     type="text"
                     required
-                    className="rounded-lg border border-zinc-800 bg-zinc-900 px-3 py-2 text-sm focus:border-zinc-500 focus:outline-none"
+                    className="rounded-lg border border-zinc-300 bg-white dark:border-zinc-800 dark:bg-zinc-900 px-3 py-2 text-sm focus:border-zinc-500 focus:outline-none"
                   />
                 </div>
                 <div className="flex flex-col gap-1.5">
@@ -102,7 +102,7 @@ export function CreateGuestModal() {
                     id="tier"
                     name="tier"
                     required
-                    className="rounded-lg border border-zinc-800 bg-zinc-900 px-3 py-2 text-sm focus:border-zinc-500 focus:outline-none"
+                    className="rounded-lg border border-zinc-300 bg-white dark:border-zinc-800 dark:bg-zinc-900 px-3 py-2 text-sm focus:border-zinc-500 focus:outline-none"
                   >
                     <option value="">Selecione...</option>
                     {USER_TIERS.map((tier) => (

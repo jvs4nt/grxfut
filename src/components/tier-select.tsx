@@ -15,7 +15,7 @@ export function TierSelect({
   canEdit: boolean;
 }) {
   if (!canEdit) {
-    return <span className="text-sm text-zinc-300">{TIER_LABELS[tier]}</span>;
+    return <span className="text-sm text-zinc-700 dark:text-zinc-300">{TIER_LABELS[tier]}</span>;
   }
 
   return (

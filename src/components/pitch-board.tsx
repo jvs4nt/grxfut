@@ -26,7 +26,7 @@ const initial: FormState = { error: null };
 const sideClass: Record<Side, string> = {
   a: "text-emerald-300",
   b: "text-sky-300",
-  next: "text-zinc-400",
+  next: "text-zinc-600 dark:text-zinc-400",
 };
 
 export function PitchBoard({
@@ -86,13 +86,13 @@ export function PitchBoard({
           />
         </div>
       </div>
-      <aside className="flex w-full flex-col gap-3 rounded-3xl border border-zinc-800 bg-zinc-900/40 p-4 lg:w-52">
-        <h3 className="text-sm font-semibold uppercase tracking-wider text-zinc-400">
+      <aside className="flex w-full flex-col gap-3 rounded-3xl border border-zinc-200 bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900/40 p-4 lg:w-52">
+        <h3 className="text-sm font-semibold uppercase tracking-wider text-zinc-600 dark:text-zinc-400">
           Próximo{" "}
-          <span className="font-normal text-zinc-500">({reserve.length})</span>
+          <span className="font-normal text-zinc-600 dark:text-zinc-500">({reserve.length})</span>
         </h3>
         {reserve.length === 0 ? (
-          <p className="text-sm text-zinc-500">Ninguém na fila.</p>
+          <p className="text-sm text-zinc-600 dark:text-zinc-500">Ninguém na fila.</p>
         ) : (
           <ul className="grid grid-cols-3 gap-3 lg:grid-cols-1">
             {sortPlayers(reserve).map((player) => (
@@ -209,7 +209,7 @@ function JerseySlot({
       />
       {player ? (
         <>
-          <p className="max-w-20 truncate text-xs font-medium text-zinc-100" title={player.name}>
+          <p className="max-w-20 truncate text-xs font-medium text-zinc-800 dark:text-zinc-100" title={player.name}>
             {player.name}
           </p>
           {swap ? (

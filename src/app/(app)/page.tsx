@@ -65,11 +65,11 @@ export default async function HomePage() {
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <FutRulesModal />
-            <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500">
+            <p className="text-xs font-semibold uppercase tracking-wider text-zinc-600 dark:text-zinc-500">
               Próximo fut
             </p>
             <Highlight highlight={highlight} />
-            <p className="mt-3 text-sm text-zinc-400">
+            <p className="mt-3 text-sm text-zinc-600 dark:text-zinc-400">
               {confirmed.length} confirmados
               {pendingPayment.length > 0
                 ? ` · ${pendingPayment.length} aguardando pagamento`
@@ -143,7 +143,7 @@ function Highlight({
         <h1 className="mt-2 text-3xl font-semibold tracking-tight">
           Sem jogo marcado
         </h1>
-        <p className="mt-2 text-sm text-zinc-400">
+        <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
           Quando o administrador definir a data, ela aparece aqui.
         </p>
       </>
@@ -160,7 +160,7 @@ function Highlight({
         <h1 className="mt-2 text-3xl font-semibold tracking-tight">
           Semana de descanso; Próximo fut: {next}
         </h1>
-        <p className="mt-2 text-sm capitalize text-zinc-400">
+        <p className="mt-2 text-sm capitalize text-zinc-600 dark:text-zinc-400">
           {formatWeekday(highlight.rest.date)} ·{" "}
           {formatDayMonthYear(highlight.rest.date)}
         </p>
@@ -173,7 +173,7 @@ function Highlight({
       <h1 className="mt-2 text-3xl font-semibold tracking-tight">
         {formatDayMonthYear(highlight.match.date)}
       </h1>
-      <p className="mt-2 text-sm capitalize text-zinc-400">
+      <p className="mt-2 text-sm capitalize text-zinc-600 dark:text-zinc-400">
         {formatWeekday(highlight.match.date)}
         {highlight.match.time ? ` · ${formatTime(highlight.match.time)}` : ""}
         {highlight.match.location ? ` · ${highlight.match.location}` : ""}
@@ -203,19 +203,19 @@ function AttendanceList({
     >
       <h2 className="text-lg font-semibold">
         {title}{" "}
-        <span className="text-sm font-normal text-zinc-500">({rows.length})</span>
+        <span className="text-sm font-normal text-zinc-600 dark:text-zinc-500">({rows.length})</span>
       </h2>
       {rows.length === 0 ? (
-        <p className="mt-3 text-sm text-zinc-500">{empty}</p>
+        <p className="mt-3 text-sm text-zinc-600 dark:text-zinc-500">{empty}</p>
       ) : (
         <ul className="mt-4 flex flex-col gap-2">
           {rows.map((row) => (
             <li
               key={row.id}
-              className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-zinc-800/80 px-3 py-2"
+              className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-zinc-200 dark:border-zinc-800/80 px-3 py-2"
             >
               <span className="font-medium">{row.name}</span>
-              <span className="text-sm text-zinc-400">{TIER_LABELS[row.tier]}</span>
+              <span className="text-sm text-zinc-600 dark:text-zinc-400">{TIER_LABELS[row.tier]}</span>
             </li>
           ))}
         </ul>

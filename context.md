@@ -8,7 +8,7 @@ Admin cria, edita (usuário/senha) e exclui membros em `/membros` (só role memb
 Status da fase: `**Status:** pronto|pendente` no README da pasta em roadmap/.
 
 ## Último
-Navbar: engrenagem abre configurações (nome, usuário, senha) para admin e membro; convidados não veem.
+Navbar: sol/lua alterna tema claro/escuro (localStorage, padrão escuro); toggle também no login e roadmap.
 
 ## Pendente
 Conectar GitHub no serviço Railway para deploys automáticos; 9 deploy Vercel ainda no roadmap.

@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { logoutAction } from "@/app/login/actions";
 import { PaymentModal } from "@/components/payment-modal";
 import { SettingsModal } from "@/components/settings-modal";
+import { ThemeToggle } from "@/components/theme-toggle";
 import type { SessionUser } from "@/lib/auth";
 import { ROLE_LABELS } from "@/lib/labels";
 import type { PaymentStatus } from "@/lib/labels";
@@ -45,20 +46,21 @@ export function AppShell({
           scheduledOn={paymentModal.scheduledOn}
         />
       ) : null}
-      <header className="border-b border-zinc-800">
+      <header className="border-b border-zinc-200 dark:border-zinc-800">
         <div className="mx-auto flex w-full max-w-5xl flex-col gap-4 px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center justify-between gap-4">
             <Link href="/" className="flex items-center gap-2">
               <img src="/logo.png" alt="GARUX" className="h-26 w-auto" />
             </Link>
             <div className="flex items-center gap-2 sm:hidden">
+              <ThemeToggle />
               {user.role !== "guest" ? (
                 <SettingsModal username={user.username} name={user.name} />
               ) : null}
               <form action={logoutAction}>
                 <button
                   type="submit"
-                  className="text-xs font-medium text-zinc-500 transition hover:text-zinc-200"
+                  className="text-xs font-medium text-zinc-600 transition hover:text-zinc-900 dark:text-zinc-500 dark:hover:text-zinc-200"
                 >
                   Sair
                 </button>
@@ -79,8 +81,8 @@ export function AppShell({
                   key={item.href}
                   href={item.href}
                   className={`rounded-full px-3 py-1.5 text-sm transition ${active
-                    ? "bg-zinc-100 text-zinc-950"
-                    : "text-zinc-400 hover:bg-zinc-900 hover:text-zinc-100"
+                    ? "bg-zinc-900 text-zinc-50 dark:bg-zinc-100 dark:text-zinc-950"
+                    : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-900 dark:hover:text-zinc-100"
                     }`}
                 >
                   {item.label}
@@ -89,19 +91,20 @@ export function AppShell({
             })}
           </nav>
           <div className="hidden items-center gap-3 text-sm sm:flex">
-            <span className="text-zinc-300">
+            <span className="text-zinc-800 dark:text-zinc-300">
               {user.username}
-              <span className="ml-2 rounded-full border border-zinc-700 px-2 py-0.5 text-xs uppercase tracking-wide text-zinc-400">
+              <span className="ml-2 rounded-full border border-zinc-300 px-2 py-0.5 text-xs uppercase tracking-wide text-zinc-600 dark:border-zinc-700 dark:text-zinc-400">
                 {ROLE_LABELS[user.role]}
               </span>
             </span>
+            <ThemeToggle />
             {user.role !== "guest" ? (
               <SettingsModal username={user.username} name={user.name} />
             ) : null}
             <form action={logoutAction}>
               <button
                 type="submit"
-                className="text-xs font-medium text-zinc-500 transition hover:text-zinc-200"
+                className="text-xs font-medium text-zinc-600 transition hover:text-zinc-900 dark:text-zinc-500 dark:hover:text-zinc-200"
               >
                 Sair
               </button>
@@ -112,12 +115,12 @@ export function AppShell({
       <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col px-6 py-8">
         {children}
       </div>
-      <footer className="border-t border-zinc-800">
-        <div className="mx-auto flex w-full max-w-5xl gap-4 px-6 py-4 text-xs text-zinc-600">
-          <Link href="/roadmap" className="hover:text-zinc-400">
+      <footer className="border-t border-zinc-200 dark:border-zinc-800">
+        <div className="mx-auto flex w-full max-w-5xl gap-4 px-6 py-4 text-xs text-zinc-500 dark:text-zinc-600">
+          <Link href="/roadmap" className="text-zinc-500 hover:text-zinc-800 dark:text-zinc-600 dark:hover:text-zinc-400">
             Roadmap
           </Link>
-          <Link href="/dev" className="hover:text-zinc-400">
+          <Link href="/dev" className="text-zinc-500 hover:text-zinc-800 dark:text-zinc-600 dark:hover:text-zinc-400">
             Console
           </Link>
         </div>

@@ -108,13 +108,13 @@ function MatchDialog({
         }
       }}
     >
-      <div className="w-full max-w-md rounded-2xl border border-zinc-800 bg-zinc-950 p-6 shadow-2xl">
+      <div className="w-full max-w-md rounded-2xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950 p-6 shadow-2xl">
         <div className="flex items-start justify-between gap-4">
           <div>
             <h2 id={titleId} className="text-lg font-semibold">
               {title}
             </h2>
-            <p className="mt-1 text-sm text-zinc-400">{description}</p>
+            <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">{description}</p>
           </div>
           <button
             type="button"

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Markdown } from "@/components/markdown";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { PhaseStatusFlag } from "@/components/phase-status-flag";
 import { getPhase, listPhases } from "@/lib/roadmap";
 
@@ -28,23 +29,26 @@ export default async function RoadmapPhasePage({
   const next = index < phases.length - 1 ? phases[index + 1] : null;
 
   return (
-    <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-8 px-6 py-12">
+    <main className="relative mx-auto flex w-full max-w-3xl flex-1 flex-col gap-8 px-6 py-12">
+      <div className="absolute right-6 top-6">
+        <ThemeToggle />
+      </div>
       <header className="flex flex-col gap-3">
         <Link
           href="/roadmap"
-          className="text-sm text-zinc-500 hover:text-zinc-300"
+          className="text-sm text-zinc-600 dark:text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300"
         >
           ← Roadmap
         </Link>
         <div className="flex flex-wrap items-center gap-2">
-          <p className="w-fit rounded-full border border-amber-500/30 bg-amber-500/10 px-3 py-1 text-xs font-medium text-amber-200">
+          <p className="w-fit rounded-full border border-amber-500/30 bg-amber-500/10 px-3 py-1 text-xs font-medium text-amber-800 dark:text-amber-200">
             Rota provisória
           </p>
           <PhaseStatusFlag status={phase.status} />
         </div>
       </header>
 
-      <article className="rounded-2xl border border-zinc-800 bg-zinc-900/40 p-6 sm:p-8">
+      <article className="rounded-2xl border border-zinc-200 bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900/40 p-6 sm:p-8">
         <Markdown content={phase.content} />
       </article>
 
