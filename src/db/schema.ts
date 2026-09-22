@@ -6,6 +6,7 @@ export const matchStatusEnum = pgEnum("match_status", ["scheduled", "rest"]);
 export const attendanceStatusEnum = pgEnum("attendance_status", [
   "confirmed",
   "reserve",
+  "pending_payment",
 ]);
 export const paymentStatusEnum = pgEnum("payment_status", [
   "calote",

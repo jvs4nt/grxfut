@@ -5,13 +5,15 @@ import { getSession } from "@/lib/auth";
 import {
   cancelAttendance,
   confirmAttendance,
+  confirmPaymentAndAttendance,
+  startAttendancePendingPayment,
   setAttendanceStatus,
   type AttendanceStatus,
 } from "@/lib/attendance";
 import { getAdminSession } from "@/lib/guards";
 import { parseRole, parseTier } from "@/lib/labels";
 import { getNextScheduledMatch } from "@/lib/matches";
-import { ensurePaymentsForMatch } from "@/lib/payments";
+import { ensurePaymentsForMatch, getPaymentForUser } from "@/lib/payments";
 import {
   createGuestUser,
   createUser,
@@ -134,42 +136,109 @@ export async function updateMemberAction(
   return { error: null, ok: true };
 }
 
-export async function confirmAttendanceAction() {
-  const user = await getSession();
+export type RsvpResult =
+  | { ok: true; needsPayment: boolean }
+  | { ok: false; error: string };
 
-  if (!user) {
-    return;
-  }
-
+/**
+ * O fluxo de RSVP tem três passos (confirmar → pagar → confirmar pagamento) e o
+ * jogo pode mudar no meio, então cada action recebe o `matchId` que a página
+ * renderizou e recusa se ele não for mais o próximo jogo.
+ */
+async function currentMatchOr(matchId: string) {
   const match = await getNextScheduledMatch();
 
-  if (!match) {
-    return;
-  }
-
-  await confirmAttendance(match.id, user.id);
-  refreshApp();
+  return !match || match.id !== matchId ? null : match;
 }
 
-export async function cancelAttendanceAction() {
+export async function startAttendanceAction(
+  matchId: string,
+): Promise<RsvpResult> {
+  const user = await getSession();
+
+  if (!user) {
+    return { ok: false, error: "Sessão expirada. Entre de novo." };
+  }
+
+  const match = await currentMatchOr(matchId);
+
+  if (!match) {
+    return { ok: false, error: "O jogo mudou. Atualize a página." };
+  }
+
+  // Admin não passa pelo gate de pagamento.
+  if (user.role === "admin") {
+    await confirmAttendance(match.id, user.id);
+    refreshApp();
+    return { ok: true, needsPayment: false };
+  }
+
+  // Já pagou este fut (desistiu e voltou): não cobra de novo.
+  const payment = await getPaymentForUser(match.id, user.id);
+
+  if (payment.status === "pago") {
+    await confirmAttendance(match.id, user.id);
+    refreshApp();
+    return { ok: true, needsPayment: false };
+  }
+
+  const result = await startAttendancePendingPayment(match.id, user.id);
+  refreshApp();
+
+  return { ok: true, needsPayment: result.status === "pending_payment" };
+}
+
+export async function confirmPixPaymentAction(
+  matchId: string,
+): Promise<RsvpResult> {
+  const user = await getSession();
+
+  if (!user) {
+    return { ok: false, error: "Sessão expirada. Entre de novo." };
+  }
+
+  const match = await currentMatchOr(matchId);
+
+  if (!match) {
+    return { ok: false, error: "O jogo mudou. Atualize a página." };
+  }
+
+  const result = await confirmPaymentAndAttendance(match.id, user.id);
+
+  if (!result.ok) {
+    return { ok: false, error: "Confirme a presença primeiro." };
+  }
+
+  refreshApp();
+  return { ok: true, needsPayment: false };
+}
+
+export async function cancelAttendanceAction(matchId: string) {
   const user = await getSession();
 
   if (!user) {
     return;
   }
 
-  const match = await getNextScheduledMatch();
+  const match = await currentMatchOr(matchId);
 
   if (!match) {
     return;
   }
 
+  // Não mexe em `payments`: quem pagou e desistiu continua `pago`, para o Admin
+  // enxergar que o dinheiro entrou.
   await cancelAttendance(match.id, user.id);
   refreshApp();
 }
 
 function parseAttendanceStatus(value: string): AttendanceStatus | "out" | null {
-  if (value === "confirmed" || value === "reserve" || value === "out") {
+  if (
+    value === "confirmed" ||
+    value === "reserve" ||
+    value === "pending_payment" ||
+    value === "out"
+  ) {
     return value;
   }
 

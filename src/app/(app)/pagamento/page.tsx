@@ -28,8 +28,8 @@ export default async function PaymentPage() {
         </h1>
         <p className="text-sm text-zinc-400">
           {admin
-            ? "Só o Admin marca PAGO, AGENDADO ou CALOTE."
-            : "Você só visualiza. O Admin marca as flags."}
+            ? "Quem confirma presença pelo PIX já entra como PAGO. Reverta pra CALOTE se o dinheiro não cair."
+            : "Sua flag vira PAGO quando você confirma o PIX na home. O Admin confere o extrato."}
         </p>
       </header>
 
@@ -58,7 +58,8 @@ export default async function PaymentPage() {
 
       {match && rows.length === 0 ? (
         <p className="text-sm text-zinc-500">
-          A lista só mostra quem confirmou presença.
+          A lista só mostra quem já confirmou. Quem está aguardando pagamento
+          ainda não aparece aqui.
         </p>
       ) : null}
 

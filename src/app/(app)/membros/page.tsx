@@ -34,7 +34,8 @@ export default async function MembersPage() {
     listUsers(),
   ]);
   const attendances = match ? await listAttendances(match.id) : [];
-  const { confirmed, reserves } = splitAttendances(attendances);
+  const { confirmed, reserves, pendingPayment } =
+    splitAttendances(attendances);
   const attendanceByUser = new Map(
     attendances.map((row) => [row.userId, row.status]),
   );
@@ -61,7 +62,11 @@ export default async function MembersPage() {
         ) : null}
       </header>
 
-      <section className="grid gap-6 lg:grid-cols-2">
+      <section
+        className={`grid gap-6 ${
+          pendingPayment.length > 0 ? "lg:grid-cols-3" : "lg:grid-cols-2"
+        }`}
+      >
         <PlayerList
           title="Confirmados"
           empty="Ninguém confirmou ainda."
@@ -69,6 +74,16 @@ export default async function MembersPage() {
           canEditTier={admin}
           canManage={admin && Boolean(match)}
         />
+        {pendingPayment.length > 0 ? (
+          <PlayerList
+            title="Aguardando pagamento"
+            empty="Ninguém aguardando."
+            rows={pendingPayment}
+            canEditTier={admin}
+            canManage={admin && Boolean(match)}
+            tone="pending"
+          />
+        ) : null}
         <PlayerList
           title="Reservas"
           empty="Fila de espera vazia."
@@ -147,15 +162,21 @@ function PlayerList({
   rows,
   canEditTier,
   canManage,
+  tone,
 }: {
   title: string;
   empty: string;
   rows: AttendanceRow[];
   canEditTier: boolean;
   canManage: boolean;
+  tone?: "pending";
 }) {
   return (
-    <div className={cardClass}>
+    <div
+      className={
+        tone === "pending" ? `${cardClass} border-amber-500/30` : cardClass
+      }
+    >
       <h2 className="text-lg font-semibold">
         {title}{" "}
         <span className="text-sm font-normal text-zinc-500">({rows.length})</span>

@@ -37,6 +37,7 @@ export function AttendanceSelect({
     >
       <option value="out">Fora</option>
       <option value="confirmed">Confirmados</option>
+      <option value="pending_payment">Aguardando pgto</option>
       <option value="reserve">Reservas</option>
     </select>
   );
@@ -106,7 +107,8 @@ export function AttendanceMoveButton({
                 Mover {name}
               </h2>
               <p className="mt-1 text-sm text-zinc-400">
-                Escolha Confirmados, Reservas ou tire da lista.
+                Escolha Confirmados, Aguardando pagamento, Reservas ou tire da
+                lista.
               </p>
             </div>
             <div className="flex flex-wrap gap-2">
@@ -119,6 +121,16 @@ export function AttendanceMoveButton({
                 }}
               >
                 Confirmados
+              </button>
+              <button
+                type="button"
+                className={secondaryButtonClass}
+                onClick={() => {
+                  setOpen(false);
+                  void run(() => submitAttendance(userId, "pending_payment"));
+                }}
+              >
+                Aguardando
               </button>
               <button
                 type="button"

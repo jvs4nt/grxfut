@@ -1,5 +1,6 @@
 import { MatchAdminModals } from "@/components/match-admin-modals";
 import { RsvpForm } from "@/components/rsvp-form";
+import type { RsvpState } from "@/components/rsvp-controls";
 import { HomeTeamsControls } from "@/components/teams-modal";
 import {
   listAttendances,
@@ -30,8 +31,17 @@ export default async function HomePage() {
     ? await listAttendances(nextScheduled.id)
     : [];
   const draw = nextScheduled ? await getDrawForMatch(nextScheduled.id) : null;
-  const { confirmed, reserves } = splitAttendances(attendances);
+  const { confirmed, reserves, pendingPayment } =
+    splitAttendances(attendances);
   const own = attendances.find((row) => row.userId === user.id);
+  const rsvpState: RsvpState =
+    own?.status === "confirmed"
+      ? "confirmed"
+      : own?.status === "reserve"
+        ? "reserve"
+        : own?.status === "pending_payment"
+          ? "pending"
+          : "out";
   const admin = isAdmin(user);
   const homeDraw = draw
     ? {
@@ -59,11 +69,14 @@ export default async function HomePage() {
             <Highlight highlight={highlight} />
             <p className="mt-3 text-sm text-zinc-400">
               {confirmed.length} confirmados
+              {pendingPayment.length > 0
+                ? ` · ${pendingPayment.length} aguardando pagamento`
+                : ""}
             </p>
           </div>
           {nextScheduled ? (
             <div className="flex flex-col items-stretch gap-3 sm:items-end">
-              <RsvpForm attending={Boolean(own)} />
+              <RsvpForm matchId={nextScheduled.id} state={rsvpState} />
               <HomeTeamsControls
                 admin={admin}
                 canDraw={confirmed.length > 0}
@@ -89,12 +102,24 @@ export default async function HomePage() {
         />
       ) : null}
 
-      <section className="grid gap-6 lg:grid-cols-2">
+      <section
+        className={`grid gap-6 ${
+          pendingPayment.length > 0 ? "lg:grid-cols-3" : "lg:grid-cols-2"
+        }`}
+      >
         <AttendanceList
           title="Confirmados"
           empty="Ninguém confirmou ainda."
           rows={confirmed}
         />
+        {pendingPayment.length > 0 ? (
+          <AttendanceList
+            title="Aguardando pagamento"
+            empty="Ninguém aguardando."
+            rows={pendingPayment}
+            tone="pending"
+          />
+        ) : null}
         <AttendanceList
           title="Reservas"
           empty="Fila de espera vazia."
@@ -159,13 +184,21 @@ function AttendanceList({
   title,
   empty,
   rows,
+  tone,
 }: {
   title: string;
   empty: string;
   rows: AttendanceRow[];
+  tone?: "pending";
 }) {
   return (
-    <div className={cardClass}>
+    <div
+      className={
+        tone === "pending"
+          ? `${cardClass} border-amber-500/30`
+          : cardClass
+      }
+    >
       <h2 className="text-lg font-semibold">
         {title}{" "}
         <span className="text-sm font-normal text-zinc-500">({rows.length})</span>

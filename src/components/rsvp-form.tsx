@@ -1,30 +1,34 @@
+import { RsvpControls, type RsvpState } from "@/components/rsvp-controls";
 import {
-  cancelAttendanceAction,
-  confirmAttendanceAction,
-} from "@/app/(app)/membros/actions";
-import { PendingForm } from "@/components/busy-overlay";
-import { buttonClass, secondaryButtonClass } from "@/lib/ui";
+  PIX_AMOUNT_LABEL,
+  PIX_KEY,
+  PIX_PAYLOAD,
+  PIX_RECEIVER,
+} from "@/lib/pix";
+import { getPixQrSvg } from "@/lib/pix-qr";
 
-export function RsvpForm({
-  attending,
+export async function RsvpForm({
+  matchId,
+  state,
 }: {
-  attending: boolean;
+  matchId: string;
+  state: RsvpState;
 }) {
-  if (attending) {
-    return (
-      <PendingForm action={cancelAttendanceAction}>
-        <button type="submit" className={secondaryButtonClass}>
-          Desistir
-        </button>
-      </PendingForm>
-    );
-  }
+  // O QR é gerado no servidor e desce como string: assim o pacote `qrcode`
+  // nunca entra no bundle do cliente.
+  const qrSvg = await getPixQrSvg();
 
   return (
-    <PendingForm action={confirmAttendanceAction}>
-      <button type="submit" className={buttonClass}>
-        Confirmar presença
-      </button>
-    </PendingForm>
+    <RsvpControls
+      matchId={matchId}
+      state={state}
+      pix={{
+        payload: PIX_PAYLOAD,
+        pixKey: PIX_KEY,
+        receiver: PIX_RECEIVER,
+        amountLabel: PIX_AMOUNT_LABEL,
+        qrSvg,
+      }}
+    />
   );
 }

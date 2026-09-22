@@ -16,7 +16,7 @@ export default async function DrawPage() {
   const admin = isAdmin(user);
   const match = await getNextScheduledMatch();
   const attendances = match ? await listAttendances(match.id) : [];
-  const { confirmed } = splitAttendances(attendances);
+  const { confirmed, pendingPayment } = splitAttendances(attendances);
   const draw = match ? await getDrawForMatch(match.id) : null;
 
   const teamA = draw?.players.filter((player) => player.team === "team_a") ?? [];
@@ -36,8 +36,8 @@ export default async function DrawPage() {
             : "Sem próximo jogo"}
         </h1>
         <p className="text-sm text-zinc-400">
-          Só confirmados entram. Dois times de até 6, balanceados por tier, no
-          máximo um Capitão por lado. O resto começa de próximo.
+          Só quem confirmou e pagou entra. Dois times de até 6, balanceados por
+          tier, no máximo um Capitão por lado. O resto começa de próximo.
         </p>
       </header>
 
@@ -48,6 +48,9 @@ export default async function DrawPage() {
               {confirmed.length === 0
                 ? "Ninguém confirmado — o sorteio não gera times."
                 : `${confirmed.length} confirmados. Um novo sorteio substitui o anterior.`}
+              {pendingPayment.length > 0
+                ? ` ${pendingPayment.length} ainda não pagaram e ficam de fora.`
+                : ""}
             </p>
             {confirmed.length > 0 ? (
               <RunDrawForm hasResult={Boolean(draw)} />

@@ -39,7 +39,8 @@ Horário e local da partida também podem ser definidos/editados pelo Admin.
 
 ### Tela de membros
 
-- **Confirmados**: lista de jogadores que confirmaram presença no próximo fut.
+- **Confirmados**: lista de jogadores que confirmaram presença **e pagaram** o próximo fut.
+- **Aguardando pagamento**: quem confirmou presença mas ainda não confirmou o PIX. Aparece só quando há alguém nesse estado.
 - **Reservas**: lista de jogadores na fila de espera, caso haja vagas limitadas.
 - **Tier**: classificação do jogador, visível na lista. Os tiers disponíveis são:
   - **Capitão**
@@ -50,9 +51,15 @@ Somente o Admin altera o tier. O membro visualiza o próprio tier e o dos demais
 
 ### Pagamento
 
-A tela de pagamento mostra o estado de cada jogador no próximo fut e um **progresso (%)** com o percentual de jogadores que já efetuaram o pagamento (flag PAGO).
+O pagamento do fut é **R$ 17,00 via PIX, pagos na hora de confirmar presença**. Ao clicar em `Confirmar presença`, o jogador recebe um modal com a chave PIX fixa (copia e cola + QR Code). Enquanto não confirmar o pagamento, ele fica em **Aguardando pagamento**: não entra nos Confirmados e não participa do sorteio.
 
-Somente o Admin altera as flags. Para cada jogador, o Admin pode:
+Quando o jogador clica em `Confirmar pagamento`, sua flag vira **PAGO** e ele entra nos Confirmados. É um fluxo baseado em confiança: o app não verifica o extrato. O Admin confere o dinheiro e reverte para **CALOTE** quem não pagou de verdade — reverter a flag **não** tira o jogador da lista de confirmados.
+
+O Admin não passa pelo modal: ao confirmar presença, entra direto nos Confirmados.
+
+A tela de pagamento mostra o estado de cada jogador no próximo fut e um **progresso (%)** com o percentual de jogadores que já efetuaram o pagamento (flag PAGO). Ela lista apenas os confirmados — quem está aguardando pagamento ainda não aparece.
+
+Além do fluxo do jogador, o Admin pode, para cada jogador:
 
 - Colocar ou remover a flag **PAGO**.
 - Colocar a flag de **pagamento agendado**, anotando o dia em que será pago.
@@ -65,7 +72,7 @@ Estados visuais (mutuamente exclusivos):
 | AGENDADO  | Amarelo  | Pagamento marcado para uma data (`dd/mm`)        |
 | CALOTE    | Vermelho | Não pagou e não agendou (estado padrão)          |
 
-**CALOTE** é o estado inicial: o jogador permanece vermelho até o Admin marcar PAGO ou AGENDADO.
+**CALOTE** é o estado inicial: o jogador permanece vermelho até confirmar o pagamento do PIX (que marca PAGO automaticamente) ou até o Admin marcar PAGO ou AGENDADO.
 
 O dia anotado no agendamento é o prazo exibido na lista e no modal de cobrança. Jogadores em CALOTE aparecem em destaque como atrasados/pendentes.
 
@@ -75,7 +82,7 @@ O Admin dispara o sorteio dos times do **próximo fut**.
 
 Regras:
 
-- Participam apenas os jogadores **confirmados**.
+- Participam apenas os jogadores **confirmados** — ou seja, os que pagaram. Quem está aguardando pagamento fica de fora.
 - O resultado é **aleatório** e **balanceado por tier**: os tiers são distribuídos entre os times.
 - **Não pode haver mais de um Capitão por time**.
 - O resultado fica **salvo no app** e permanece visível depois do sorteio.
@@ -109,6 +116,7 @@ GARUX/
 │   └── Lista de pagamento
 ├── Membros
 │   ├── Confirmados
+│   ├── Aguardando pagamento
 │   ├── Reservas
 │   └── Tier (Capitão / Tenente / Soldado)
 ├── Pagamento
@@ -133,9 +141,13 @@ GARUX/
 - Login somente com usuário e senha; não existe auto-cadastro.
 - Novos usuários são criados exclusivamente pelo Admin.
 - Admin edita data, cancela semana, altera tier, sorteia times e muda flags de pagamento.
-- Membro confirma presença, visualiza informações e recebe o modal de cobrança.
+- Membro confirma presença, paga R$ 17,00 no PIX, visualiza informações e recebe o modal de cobrança.
+- Confirmar presença abre o modal do PIX; só depois de `Confirmar pagamento` o jogador entra nos Confirmados e no sorteio. Membros e convidados passam pelo gate; o Admin não.
+- Confirmar o pagamento marca a flag PAGO. O Admin reverte para CALOTE se o dinheiro não cair, sem tirar o jogador da lista.
+- Desistir apaga a presença e **não** mexe na flag de pagamento: quem pagou e desistiu continua registrado como PAGO.
 - Tiers válidos: Capitão, Tenente, Soldado.
 - Cancelar a semana marca descanso e aponta o próximo fut (`dd/mm`); o calendário permanece.
 - Sorteio: confirmados, dois times de até 6, distribuição equilibrada de tiers, no máximo um Capitão por time; excedente em Próximo; resultado persistido no app.
 - Pagamento do próximo fut: PAGO (verde), AGENDADO com data (amarelo) ou CALOTE (vermelho, padrão).
+- Estados de presença: Confirmado, Aguardando pagamento e Reserva.
 - Modal do membro: vermelho se CALOTE, amarelo se AGENDADO, ausente se PAGO.
