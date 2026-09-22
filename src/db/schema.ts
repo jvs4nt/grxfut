@@ -1,4 +1,4 @@
-import { boolean, date, pgEnum, pgTable, text, time, timestamp, unique, uuid } from "drizzle-orm/pg-core";
+import { boolean, date, integer, pgEnum, pgTable, text, time, timestamp, unique, uuid } from "drizzle-orm/pg-core";
 
 export const userRoleEnum = pgEnum("user_role", ["admin", "member", "guest"]);
 export const userTierEnum = pgEnum("user_tier", ["capitao", "tenente", "soldado"]);
@@ -102,3 +102,26 @@ export const drawPlayers = pgTable(
   },
   (table) => [unique("draw_players_draw_user_unique").on(table.drawId, table.userId)],
 );
+
+export const transactionsTypeEnum = pgEnum("transaction_type", ["add", "remove", "edit"]);
+
+export const fundBalance = pgTable("fund_balance", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  balance: integer("balance").notNull().default(0), // stored in cents
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+});
+
+export const fundTransactions = pgTable("fund_transactions", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  amount: integer("amount").notNull(), // stored in cents
+  type: transactionsTypeEnum("type").notNull(),
+  description: text("description").notNull(),
+  createdBy: uuid("created_by")
+    .notNull()
+    .references(() => users.id),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+});

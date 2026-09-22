@@ -16,6 +16,7 @@ const NAV = [
   { href: "/membros", label: "Membros" },
   { href: "/pagamento", label: "Pagamento" },
   { href: "/sorteio", label: "Sorteio" },
+  { href: "/caixa", label: "Caixa" },
 ];
 
 export type PaymentModalState = {
@@ -69,7 +70,7 @@ export function AppShell({
           </div>
           <nav className="flex flex-wrap gap-1">
             {NAV.filter((item) =>
-              user.role !== "guest" || (item.href !== "/membros" && item.href !== "/sorteio")
+              user.role !== "guest" || (item.href !== "/membros" && item.href !== "/sorteio" && item.href !== "/caixa")
             ).map((item) => {
               const active =
                 item.href === "/"
