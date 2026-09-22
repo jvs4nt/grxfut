@@ -1,3 +1,4 @@
+import { FutRulesModal } from "@/components/fut-rules-modal";
 import { MatchAdminModals } from "@/components/match-admin-modals";
 import { RsvpForm } from "@/components/rsvp-form";
 import type { RsvpState } from "@/components/rsvp-controls";
@@ -63,6 +64,7 @@ export default async function HomePage() {
       <section className={cardClass}>
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
+            <FutRulesModal />
             <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500">
               Próximo fut
             </p>
