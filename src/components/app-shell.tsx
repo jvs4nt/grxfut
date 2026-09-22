@@ -10,7 +10,7 @@ import { ROLE_LABELS } from "@/lib/labels";
 import type { PaymentStatus } from "@/lib/labels";
 
 const NAV = [
-  { href: "/", label: "Home" },
+  { href: "/", label: "Início" },
   { href: "/membros", label: "Membros" },
   { href: "/pagamento", label: "Pagamento" },
   { href: "/sorteio", label: "Sorteio" },

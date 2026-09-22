@@ -56,11 +56,11 @@ export function CreateUserForm({ onSuccess }: { onSuccess?: () => void }) {
         Papel
         <select name="role" defaultValue="member" className={inputClass}>
           <option value="member">Membro</option>
-          <option value="admin">Admin</option>
+          <option value="admin">Administrador</option>
         </select>
       </label>
       <label className={labelClass}>
-        Tier
+        Nível
         <select name="tier" defaultValue="soldado" className={inputClass}>
           <option value="capitao">Capitão</option>
           <option value="tenente">Tenente</option>

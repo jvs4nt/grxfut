@@ -38,7 +38,8 @@ export function CreateUserModal() {
                   Criar usuário
                 </h2>
                 <p className="mt-1 text-sm text-zinc-400">
-                  Só o Admin cria contas. A senha é hasheada no servidor.
+                  Só administradores criam contas. A senha é guardada com
+                  segurança no servidor.
                 </p>
               </div>
               <button

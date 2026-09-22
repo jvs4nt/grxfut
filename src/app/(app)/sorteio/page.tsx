@@ -37,7 +37,7 @@ export default async function DrawPage() {
         </h1>
         <p className="text-sm text-zinc-400">
           Só quem confirmou e pagou entra. Dois times de até 6, balanceados por
-          tier, no máximo um Capitão por lado. O resto começa de próximo.
+          nível, no máximo um Capitão por lado. O resto começa de próximo.
         </p>
       </header>
 
@@ -61,7 +61,7 @@ export default async function DrawPage() {
 
       {!match ? (
         <p className="text-sm text-zinc-500">
-          Marque um jogo scheduled para sortear os times.
+          Marque um próximo jogo para sortear os times.
         </p>
       ) : !draw ? (
         <p className="text-sm text-zinc-500">

@@ -143,7 +143,8 @@ export function PixModal({
         </button>
 
         <p className="mt-4 rounded-xl border border-amber-500/30 bg-amber-500/5 px-3 py-2 text-xs text-amber-200">
-          Só confirme depois de pagar de verdade. O Admin confere o extrato.
+          Só confirme depois de pagar de verdade. O administrador confere o
+          extrato.
         </p>
 
         {error ? (

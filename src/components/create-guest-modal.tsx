@@ -95,7 +95,9 @@ export function CreateGuestModal() {
                   />
                 </div>
                 <div className="flex flex-col gap-1.5">
-                  <label htmlFor="tier" className="text-sm font-medium">Nível (Tier)</label>
+                  <label htmlFor="tier" className="text-sm font-medium">
+                    Nível
+                  </label>
                   <select
                     id="tier"
                     name="tier"

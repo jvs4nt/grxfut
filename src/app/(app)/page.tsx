@@ -142,7 +142,7 @@ function Highlight({
           Sem jogo marcado
         </h1>
         <p className="mt-2 text-sm text-zinc-400">
-          Quando o Admin definir a data, ela aparece aqui.
+          Quando o administrador definir a data, ela aparece aqui.
         </p>
       </>
     );

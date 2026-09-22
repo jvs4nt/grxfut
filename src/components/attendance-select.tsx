@@ -36,9 +36,9 @@ export function AttendanceSelect({
       className={`${inputClass} min-w-36 py-1.5 text-sm`}
     >
       <option value="out">Fora</option>
-      <option value="confirmed">Confirmados</option>
-      <option value="pending_payment">Aguardando pgto</option>
-      <option value="reserve">Reservas</option>
+      <option value="confirmed">Confirmado</option>
+      <option value="pending_payment">Aguardando pagamento</option>
+      <option value="reserve">Reserva</option>
     </select>
   );
 }

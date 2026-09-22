@@ -48,7 +48,7 @@ export async function createUserAction(
   const tier = parseTier(String(formData.get("tier") ?? ""));
 
   if (!username || !password || !role || !tier) {
-    return { error: "Preencha nome, usuário, senha, papel e tier." };
+    return { error: "Preencha nome, usuário, senha, papel e nível." };
   }
 
   const result = await createUser({ username, name, password, role, tier });
@@ -287,7 +287,7 @@ export async function createGuestAction(
   const tier = parseTier(String(formData.get("tier") ?? ""));
 
   if (!name || !tier) {
-    return { error: "Preencha nome e tier." };
+    return { error: "Preencha nome e nível." };
   }
 
   const result = await createGuestUser({ name, tier });

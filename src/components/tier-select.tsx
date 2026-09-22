@@ -26,7 +26,7 @@ export function TierSelect({
         defaultValue={tier}
         onChange={(event) => event.currentTarget.form?.requestSubmit()}
         className={`${inputClass} py-1.5 text-sm`}
-        aria-label="Alterar tier"
+        aria-label="Alterar nível"
       >
         <option value="capitao">Capitão</option>
         <option value="tenente">Tenente</option>

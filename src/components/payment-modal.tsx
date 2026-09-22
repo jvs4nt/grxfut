@@ -64,7 +64,7 @@ export function PaymentModal({
     >
       <div className={`w-full max-w-md rounded-2xl border p-6 shadow-2xl ${tone}`}>
         <p className="text-xs font-semibold uppercase tracking-wider opacity-70">
-          {isCalote ? "Calote" : "Agendado"}
+          {isCalote ? "Devendo" : "Pagamento combinado"}
         </p>
         <p
           id="garux-pay-modal-title"

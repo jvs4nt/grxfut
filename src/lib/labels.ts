@@ -7,15 +7,15 @@ export const TIER_LABELS = {
 } as const;
 
 export const ROLE_LABELS = {
-  admin: "Admin",
+  admin: "Administrador",
   member: "Membro",
   guest: "Convidado",
 } as const;
 
 export const PAYMENT_LABELS = {
-  pago: "PAGO",
-  agendado: "AGENDADO",
-  calote: "CALOTE",
+  pago: "Pago",
+  agendado: "Combinado",
+  calote: "Devendo",
 } as const;
 
 export type UserRole = SessionUser["role"];

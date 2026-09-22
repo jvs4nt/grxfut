@@ -51,7 +51,7 @@ export default async function MembersPage() {
           <p className="text-sm text-zinc-400">
             {match
               ? `Presença do próximo fut em ${formatDayMonthYear(match.date)}.`
-              : "Sem próximo jogo scheduled — as listas de presença ficam vazias."}
+              : "Sem próximo jogo marcado — as listas de presença ficam vazias."}
           </p>
         </div>
         {admin ? (

@@ -1,5 +1,6 @@
 import { setPaymentAction } from "@/app/(app)/pagamento/actions";
 import { PendingForm } from "@/components/busy-overlay";
+import { PAYMENT_LABELS } from "@/lib/labels";
 import { inputClass, secondaryButtonClass } from "@/lib/ui";
 
 export function PaymentAdminControls({
@@ -21,7 +22,7 @@ export function PaymentAdminControls({
             type="submit"
             className={`${secondaryButtonClass} ${status === "pago" ? "border-emerald-500/50 text-emerald-200" : ""}`}
           >
-            PAGO
+            {PAYMENT_LABELS.pago}
           </button>
         </PendingForm>
         <PendingForm action={setPaymentAction}>
@@ -31,7 +32,7 @@ export function PaymentAdminControls({
             type="submit"
             className={`${secondaryButtonClass} ${status === "calote" ? "border-red-500/50 text-red-200" : ""}`}
           >
-            CALOTE
+            {PAYMENT_LABELS.calote}
           </button>
         </PendingForm>
       </div>
@@ -44,12 +45,13 @@ export function PaymentAdminControls({
           required
           defaultValue={scheduledOn ?? ""}
           className={`${inputClass} py-1.5 text-sm`}
+          aria-label="Data combinada para pagamento"
         />
         <button
           type="submit"
           className={`${secondaryButtonClass} ${status === "agendado" ? "border-amber-500/50 text-amber-200" : ""}`}
         >
-          AGENDADO
+          {PAYMENT_LABELS.agendado}
         </button>
       </PendingForm>
     </div>

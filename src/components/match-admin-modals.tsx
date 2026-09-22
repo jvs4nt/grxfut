@@ -68,7 +68,7 @@ export function MatchAdminModals({
       {open === "create" ? (
         <MatchDialog
           title="Agendar próximo jogo"
-          description="Marca uma data futura. Depois de um descanso, crie o próximo scheduled aqui."
+          description="Escolha uma data futura. Depois de uma semana de descanso, agende o próximo jogo por aqui."
           onClose={close}
         >
           <CreateMatchForm onSuccess={close} />

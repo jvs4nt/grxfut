@@ -17,7 +17,8 @@ export default async function LoginPage() {
         </div>
         <h1 className="text-3xl font-semibold tracking-tight">Entrar</h1>
         <p className="text-sm leading-6 text-zinc-400">
-          Acesso só com usuário e senha. Contas novas vêm do Admin.
+          Acesso só com usuário e senha. Contas novas são criadas pelo
+          administrador.
         </p>
       </div>
       <LoginForm />

@@ -28,8 +28,8 @@ export default async function PaymentPage() {
         </h1>
         <p className="text-sm text-zinc-400">
           {admin
-            ? "Quem confirma presença pelo PIX já entra como PAGO. Reverta pra CALOTE se o dinheiro não cair."
-            : "Sua flag vira PAGO quando você confirma o PIX na home. O Admin confere o extrato."}
+            ? "Quem confirma o PIX na home já aparece como pago. Marque como devendo se o valor não cair no extrato."
+            : "Você entra como pago ao confirmar o PIX na home. O administrador confere o extrato."}
         </p>
       </header>
 
@@ -40,7 +40,7 @@ export default async function PaymentPage() {
           </p>
           <p className="mt-2 text-4xl font-semibold tracking-tight">{progress}%</p>
           <p className="mt-1 text-sm text-zinc-400">
-            Percentual dos confirmados com flag PAGO.
+            Dos confirmados, quantos já pagaram.
           </p>
           <div className="mt-4 h-2 overflow-hidden rounded-full bg-zinc-800">
             <div
@@ -51,8 +51,8 @@ export default async function PaymentPage() {
         </section>
       ) : (
         <p className="text-sm text-zinc-500">
-          Quando houver um jogo scheduled, as flags aparecem aqui. Todo mundo
-          começa em CALOTE.
+          Quando houver um próximo jogo marcado, a lista de pagamentos aparece
+          aqui. Quem ainda não pagou começa como devendo.
         </p>
       )}
 

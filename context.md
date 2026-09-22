@@ -8,7 +8,7 @@ Admin cria, edita (usuário/senha) e exclui membros em `/membros` (só role memb
 Status da fase: `**Status:** pronto|pendente` no README da pasta em roadmap/.
 
 ## Último
-Desistir e voltar exige de novo modal PIX e Confirmar pagamento; flag PAGO no banco não pula o gate.
+Copy da UI em português claro (pagamento, presença, admin): sem “flag/scheduled/tier” na interface; status Pago/Devendo/Combinado nos badges.
 
 ## Pendente
 Conectar GitHub no serviço Railway para deploys automáticos; 9 deploy Vercel ainda no roadmap.
