@@ -8,7 +8,7 @@ Admin cria, edita (usuário/senha) e exclui membros em `/membros` (só role memb
 Status da fase: `**Status:** pronto|pendente` no README da pasta em roadmap/.
 
 ## Último
-AttendanceRow e PaymentRow usam UserRole (inclui guest). `npm run build` passa.
+Desistir e voltar exige de novo modal PIX e Confirmar pagamento; flag PAGO no banco não pula o gate.
 
 ## Pendente
 Conectar GitHub no serviço Railway para deploys automáticos; 9 deploy Vercel ainda no roadmap.

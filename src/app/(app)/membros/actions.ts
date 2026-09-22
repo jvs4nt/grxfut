@@ -4,7 +4,6 @@ import { revalidatePath } from "next/cache";
 import { getSession } from "@/lib/auth";
 import {
   cancelAttendance,
-  confirmAttendance,
   confirmPaymentAndAttendance,
   startAttendancePendingPayment,
   setAttendanceStatus,
@@ -13,7 +12,7 @@ import {
 import { getAdminSession } from "@/lib/guards";
 import { parseRole, parseTier } from "@/lib/labels";
 import { getNextScheduledMatch } from "@/lib/matches";
-import { ensurePaymentsForMatch, getPaymentForUser } from "@/lib/payments";
+import { ensurePaymentsForMatch } from "@/lib/payments";
 import {
   createGuestUser,
   createUser,
@@ -164,22 +163,6 @@ export async function startAttendanceAction(
 
   if (!match) {
     return { ok: false, error: "O jogo mudou. Atualize a página." };
-  }
-
-  // Admin não passa pelo gate de pagamento.
-  if (user.role === "admin") {
-    await confirmAttendance(match.id, user.id);
-    refreshApp();
-    return { ok: true, needsPayment: false };
-  }
-
-  // Já pagou este fut (desistiu e voltou): não cobra de novo.
-  const payment = await getPaymentForUser(match.id, user.id);
-
-  if (payment.status === "pago") {
-    await confirmAttendance(match.id, user.id);
-    refreshApp();
-    return { ok: true, needsPayment: false };
   }
 
   const result = await startAttendancePendingPayment(match.id, user.id);

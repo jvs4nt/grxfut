@@ -56,8 +56,6 @@ O pagamento do fut é **R$ 17,00 via PIX, pagos na hora de confirmar presença**
 
 Quando o jogador clica em `Confirmar pagamento`, sua flag vira **PAGO** e ele entra nos Confirmados. É um fluxo baseado em confiança: o app não verifica o extrato. O Admin confere o dinheiro e reverte para **CALOTE** quem não pagou de verdade — reverter a flag **não** tira o jogador da lista de confirmados.
 
-O Admin não passa pelo modal: ao confirmar presença, entra direto nos Confirmados.
-
 A tela de pagamento mostra o estado de cada jogador no próximo fut e um **progresso (%)** com o percentual de jogadores que já efetuaram o pagamento (flag PAGO). Ela lista apenas os confirmados — quem está aguardando pagamento ainda não aparece.
 
 Além do fluxo do jogador, o Admin pode, para cada jogador:
@@ -143,9 +141,9 @@ GARUX/
 - Novos usuários são criados exclusivamente pelo Admin.
 - Admin edita data, cancela semana, altera tier, sorteia times e muda flags de pagamento.
 - Membro confirma presença, paga R$ 17,00 no PIX, visualiza informações e recebe o modal de cobrança.
-- Confirmar presença abre o modal do PIX; só depois de `Confirmar pagamento` o jogador entra nos Confirmados e no sorteio. Membros e convidados passam pelo gate; o Admin não.
+- Confirmar presença abre o modal do PIX; só depois de `Confirmar pagamento` o jogador entra nos Confirmados e no sorteio. Desistiu e voltou: repete o fluxo (PIX + confirmar pagamento), mesmo que a flag PAGO ainda conste para o Admin.
 - Confirmar o pagamento marca a flag PAGO. O Admin reverte para CALOTE se o dinheiro não cair, sem tirar o jogador da lista.
-- Desistir apaga a presença e **não** mexe na flag de pagamento: quem pagou e desistiu continua registrado como PAGO.
+- Desistir apaga a presença e **não** mexe na flag de pagamento: o Admin continua vendo quem já tinha pago; ao voltar, o jogador confirma pagamento de novo no app.
 - Tiers válidos: Capitão, Tenente, Soldado.
 - Cancelar a semana marca descanso e aponta o próximo fut (`dd/mm`); o calendário permanece.
 - Sorteio: confirmados, dois times de até 6, distribuição equilibrada de tiers, no máximo um Capitão por time; excedente em Próximo; resultado persistido no app.
