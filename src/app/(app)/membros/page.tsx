@@ -69,7 +69,7 @@ export default async function MembersPage() {
       >
         <PlayerList
           title="Confirmados"
-          empty="Ninguém confirmou ainda."
+          empty="Sem confirmados até o momento."
           rows={confirmed}
           canEditTier={admin}
           canManage={admin && Boolean(match)}

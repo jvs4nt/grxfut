@@ -46,7 +46,7 @@ export default async function DrawPage() {
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-sm text-zinc-400">
               {confirmed.length === 0
-                ? "Ninguém confirmado — o sorteio não gera times."
+                ? "Sem confirmados — o sorteio não gera times."
                 : `${confirmed.length} confirmados. Um novo sorteio substitui o anterior.`}
               {pendingPayment.length > 0
                 ? ` ${pendingPayment.length} ainda não pagaram e ficam de fora.`

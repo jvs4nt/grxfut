@@ -71,7 +71,7 @@ export function RsvpControls({
             PAGAR {pix.amountLabel}
           </button>
           <p className="text-xs text-amber-300">
-            Falta pagar pra entrar na lista.
+            Realize o pagamento para confirmar sua presença.
           </p>
           <button
             type="button"

@@ -109,7 +109,7 @@ export default async function HomePage() {
       >
         <AttendanceList
           title="Confirmados"
-          empty="Ninguém confirmou ainda."
+          empty="Sem confirmados até o momento."
           rows={confirmed}
         />
         {pendingPayment.length > 0 ? (
