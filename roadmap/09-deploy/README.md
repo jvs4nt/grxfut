@@ -6,6 +6,10 @@
 
 **Status:** pendente
 
+Código local pronto para publicar: `next build` passa; cookie já usa `secure` quando `NODE_ENV === production`; senhas ficam no `.env` / dashboard, não no git.
+
+Falta ligar o projeto na Vercel (`npx vercel login` + `npx vercel --prod`) e definir `DATABASE_URL` e `SESSION_SECRET` no ambiente de produção.
+
 ## Implementar
 
 - Projeto na Vercel (Next.js App Router)
@@ -21,8 +25,9 @@
 - [ ] Login no URL de produção funciona com o Admin de prod
 - [ ] Criar usuário, editar jogo, confirmar presença, marcar pagamento e sortear gravam no Neon
 - [ ] Refresh no URL de produção mantém sessão e dados
-- [ ] HTTP sem cookie `secure` não é o caminho de prod (só HTTPS)
-- [ ] `.env.local` e senhas continuam fora do git
+- [x] Cookie `secure` em produção (`NODE_ENV === production`); HTTP sem `secure` não é o caminho de prod
+- [x] `.env.local` e senhas continuam fora do git
+- [x] `next build` local passa
 
 ## Pronto quando
 

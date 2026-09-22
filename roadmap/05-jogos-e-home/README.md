@@ -4,7 +4,7 @@
 
 **Depende de:** [4. Usuários e tiers](../04-usuarios-e-tiers/README.md).
 
-**Status:** pendente
+**Status:** pronto
 
 ## Implementar
 
@@ -17,15 +17,15 @@
 
 ## Testar
 
-- [ ] Home sem jogo futuro trata o vazio (não quebra)
-- [ ] Admin cria/edita data, horário e local; home e calendário atualizam
-- [ ] Membro vê as mesmas informações e não tem controles de edição
-- [ ] API de editar/cancelar com sessão de Membro retorna 403
-- [ ] Cancelar a semana atual marca `rest` e o destaque vira `Semana de descanso; Próximo fut: dd/mm`
-- [ ] A semana cancelada continua no calendário
-- [ ] Depois de um `rest`, o destaque aponta para a próxima data `scheduled`
-- [ ] Calendário lista os próximos jogos em ordem vertical
-- [ ] Refresh mantém data, status e local (persistido no Neon)
+- [x] Home sem jogo futuro trata o vazio (não quebra)
+- [x] Admin cria/edita data, horário e local; home e calendário atualizam
+- [x] Membro vê as mesmas informações e não tem controles de edição
+- [x] API de editar/cancelar com sessão de Membro retorna 403
+- [x] Cancelar a semana atual marca `rest` e o destaque vira `Semana de descanso; Próximo fut: dd/mm`
+- [x] A semana cancelada continua no calendário
+- [x] Depois de um `rest`, o destaque aponta para a próxima data `scheduled`
+- [x] Calendário lista os próximos jogos em ordem vertical
+- [x] Refresh mantém data, status e local (persistido no Neon)
 
 ## Pronto quando
 

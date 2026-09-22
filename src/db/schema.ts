@@ -1,11 +1,12 @@
-import { date, pgEnum, pgTable, text, time, timestamp, unique, uuid } from "drizzle-orm/pg-core";
+import { boolean, date, pgEnum, pgTable, text, time, timestamp, unique, uuid } from "drizzle-orm/pg-core";
 
-export const userRoleEnum = pgEnum("user_role", ["admin", "member"]);
+export const userRoleEnum = pgEnum("user_role", ["admin", "member", "guest"]);
 export const userTierEnum = pgEnum("user_tier", ["capitao", "tenente", "soldado"]);
 export const matchStatusEnum = pgEnum("match_status", ["scheduled", "rest"]);
 export const attendanceStatusEnum = pgEnum("attendance_status", [
   "confirmed",
   "reserve",
+  "pending_payment",
 ]);
 export const paymentStatusEnum = pgEnum("payment_status", [
   "calote",
@@ -21,9 +22,11 @@ export const drawTeamEnum = pgEnum("draw_team", [
 export const users = pgTable("users", {
   id: uuid("id").defaultRandom().primaryKey(),
   username: text("username").notNull().unique(),
+  name: text("name").notNull(),
   passwordHash: text("password_hash").notNull(),
   role: userRoleEnum("role").notNull(),
   tier: userTierEnum("tier").notNull(),
+  active: boolean("active").default(true).notNull(),
   createdAt: timestamp("created_at", { withTimezone: true })
     .defaultNow()
     .notNull(),
@@ -51,6 +54,9 @@ export const attendances = pgTable(
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
     status: attendanceStatusEnum("status").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
   },
   (table) => [unique("attendances_match_user_unique").on(table.matchId, table.userId)],
 );

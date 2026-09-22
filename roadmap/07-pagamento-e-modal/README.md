@@ -4,7 +4,7 @@
 
 **Depende de:** [6. Presença e membros](../06-presenca-e-membros/README.md).
 
-**Status:** pendente
+**Status:** pronto
 
 ## Implementar
 
@@ -23,18 +23,18 @@
 
 ## Testar
 
-- [ ] Jogador novo no próximo fut começa vermelho (CALOTE)
-- [ ] Admin marca PAGO: linha verde; remove PAGO: volta a CALOTE (ou ao estado anterior definido)
-- [ ] Admin marca AGENDADO com data: linha amarela e `dd/mm` visível
-- [ ] Não dá para ter PAGO e AGENDADO ao mesmo tempo
-- [ ] Progresso % conta só `PAGO` e atualiza na hora
-- [ ] Home mostra a lista rápida com as mesmas cores
-- [ ] Membro em CALOTE vê o modal vermelho com o texto do spec
-- [ ] Membro em AGENDADO vê o modal amarelo com a data anotada
-- [ ] Membro em PAGO não vê modal
-- [ ] Admin logado nunca vê o modal, independente da própria flag
-- [ ] API de alterar flag com sessão de Membro retorna 403
-- [ ] Refresh mantém flags, data de agendamento e progresso
+- [x] Jogador novo no próximo fut começa vermelho (CALOTE)
+- [x] Admin marca PAGO: linha verde; remove PAGO: volta a CALOTE (ou ao estado anterior definido)
+- [x] Admin marca AGENDADO com data: linha amarela e `dd/mm` visível
+- [x] Não dá para ter PAGO e AGENDADO ao mesmo tempo
+- [x] Progresso % conta só `PAGO` e atualiza na hora
+- [x] Home mostra a lista rápida com as mesmas cores
+- [x] Membro em CALOTE vê o modal vermelho com o texto do spec
+- [x] Membro em AGENDADO vê o modal amarelo com a data anotada
+- [x] Membro em PAGO não vê modal
+- [x] Admin logado nunca vê o modal, independente da própria flag
+- [x] API de alterar flag com sessão de Membro retorna 403
+- [x] Refresh mantém flags, data de agendamento e progresso
 
 ## Pronto quando
 
