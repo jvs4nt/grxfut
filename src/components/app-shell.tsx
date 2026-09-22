@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { logoutAction } from "@/app/login/actions";
 import { PaymentModal } from "@/components/payment-modal";
+import { SettingsModal } from "@/components/settings-modal";
 import type { SessionUser } from "@/lib/auth";
 import { ROLE_LABELS } from "@/lib/labels";
 import type { PaymentStatus } from "@/lib/labels";
@@ -50,14 +51,19 @@ export function AppShell({
             <Link href="/" className="flex items-center gap-2">
               <img src="/logo.png" alt="GARUX" className="h-26 w-auto" />
             </Link>
-            <form action={logoutAction} className="sm:hidden">
-              <button
-                type="submit"
-                className="text-xs font-medium text-zinc-500 transition hover:text-zinc-200"
-              >
-                Sair
-              </button>
-            </form>
+            <div className="flex items-center gap-2 sm:hidden">
+              {user.role !== "guest" ? (
+                <SettingsModal username={user.username} name={user.name} />
+              ) : null}
+              <form action={logoutAction}>
+                <button
+                  type="submit"
+                  className="text-xs font-medium text-zinc-500 transition hover:text-zinc-200"
+                >
+                  Sair
+                </button>
+              </form>
+            </div>
           </div>
           <nav className="flex flex-wrap gap-1">
             {NAV.filter((item) =>
@@ -89,6 +95,9 @@ export function AppShell({
                 {ROLE_LABELS[user.role]}
               </span>
             </span>
+            {user.role !== "guest" ? (
+              <SettingsModal username={user.username} name={user.name} />
+            ) : null}
             <form action={logoutAction}>
               <button
                 type="submit"

@@ -174,6 +174,53 @@ export async function updateMemberUser(input: {
   }
 }
 
+export async function updateOwnAccount(input: {
+  userId: string;
+  username: string;
+  name: string;
+  password?: string;
+}) {
+  const db = getDb();
+  const [existing] = await db
+    .select({ id: users.id, role: users.role })
+    .from(users)
+    .where(eq(users.id, input.userId))
+    .limit(1);
+
+  if (!existing || existing.role === "guest") {
+    return { ok: false as const, error: "not_allowed" as const };
+  }
+
+  const values: { username: string; name: string; passwordHash?: string } = {
+    username: input.username,
+    name: input.name,
+  };
+
+  if (input.password) {
+    values.passwordHash = await hashPassword(input.password);
+  }
+
+  try {
+    const [user] = await db
+      .update(users)
+      .set(values)
+      .where(eq(users.id, input.userId))
+      .returning(publicUserColumns);
+
+    if (!user) {
+      return { ok: false as const, error: "not_allowed" as const };
+    }
+
+    return { ok: true as const, user };
+  } catch (error) {
+    if (isUniqueViolation(error)) {
+      return { ok: false as const, error: "duplicate" as const };
+    }
+
+    throw error;
+  }
+}
+
 export async function deleteMemberUser(userId: string) {
   const db = getDb();
   const [user] = await db

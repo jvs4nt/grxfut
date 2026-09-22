@@ -18,6 +18,8 @@ Dois perfis de acesso:
 - **Admin**: cria usuários, gerencia jogos, altera data do fut, cancela a semana, controla tiers, realiza sorteios e marca flags de pagamento.
 - **Membro**: acessa informações do fut, confirma presença e visualiza pagamentos.
 
+Admin e Membro atualizam o próprio cadastro (nome, usuário e senha) pelo ícone de engrenagem na navbar. Convidados não têm essa opção.
+
 ## Painel admin
 
 Área exclusiva do perfil Admin. A partir dela é possível:

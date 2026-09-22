@@ -8,7 +8,7 @@ Admin cria, edita (usuário/senha) e exclui membros em `/membros` (só role memb
 Status da fase: `**Status:** pronto|pendente` no README da pasta em roadmap/.
 
 ## Último
-Copy da UI em português claro (pagamento, presença, admin): sem “flag/scheduled/tier” na interface; status Pago/Devendo/Combinado nos badges.
+Navbar: engrenagem abre configurações (nome, usuário, senha) para admin e membro; convidados não veem.
 
 ## Pendente
 Conectar GitHub no serviço Railway para deploys automáticos; 9 deploy Vercel ainda no roadmap.

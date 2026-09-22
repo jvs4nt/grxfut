@@ -19,6 +19,7 @@ const BCRYPT_ROUNDS = 12;
 export type SessionUser = {
   id: string;
   username: string;
+  name: string;
   role: "admin" | "member" | "guest";
   tier: "capitao" | "tenente" | "soldado";
   active: boolean;
@@ -69,6 +70,7 @@ export const getSession = cache(async (): Promise<SessionUser | null> => {
     .select({
       id: users.id,
       username: users.username,
+      name: users.name,
       role: users.role,
       tier: users.tier,
       active: users.active,
