@@ -41,7 +41,11 @@ export function RsvpControls({
 
   async function cancel() {
     setError(null);
-    await run(() => cancelAttendanceAction(matchId));
+    const result = await run(() => cancelAttendanceAction(matchId));
+
+    if (!result.ok) {
+      setError(result.error);
+    }
   }
 
   return (

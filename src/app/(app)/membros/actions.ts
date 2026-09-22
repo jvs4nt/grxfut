@@ -213,23 +213,26 @@ export async function confirmPixPaymentAction(
   return { ok: true, needsPayment: false };
 }
 
-export async function cancelAttendanceAction(matchId: string) {
+export async function cancelAttendanceAction(
+  matchId: string,
+): Promise<RsvpResult> {
   const user = await getSession();
 
   if (!user) {
-    return;
+    return { ok: false, error: "Sessão expirada. Entre de novo." };
   }
 
   const match = await currentMatchOr(matchId);
 
   if (!match) {
-    return;
+    return { ok: false, error: "O jogo mudou. Atualize a página." };
   }
 
   // Não mexe em `payments`: quem pagou e desistiu continua `pago`, para o Admin
   // enxergar que o dinheiro entrou.
   await cancelAttendance(match.id, user.id);
   refreshApp();
+  return { ok: true, needsPayment: false };
 }
 
 function parseAttendanceStatus(value: string): AttendanceStatus | "out" | null {
