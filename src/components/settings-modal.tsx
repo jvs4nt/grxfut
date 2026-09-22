@@ -6,7 +6,7 @@ import {
   type FormState,
 } from "@/app/(app)/account/actions";
 import { ActionForm, useBusyAction } from "@/components/busy-overlay";
-import { GearIcon } from "@/components/icons";
+import { UserIcon } from "@/components/icons";
 import { PasswordInput } from "@/components/password-input";
 import {
   buttonClass,
@@ -38,7 +38,7 @@ export function SettingsModal({
         aria-label="Configurações"
         title="Configurações"
       >
-        <GearIcon />
+        <UserIcon />
       </button>
       {open ? (
         <div
