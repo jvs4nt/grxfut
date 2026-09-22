@@ -17,6 +17,30 @@ export function PencilIcon({ className = "h-4 w-4" }: { className?: string }) {
   );
 }
 
+/** Folha / documento com lápis (regras). */
+export function RulesSheetIcon({ className = "h-4 w-4" }: { className?: string }) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      aria-hidden="true"
+    >
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+      <path d="M14 2v6h6" />
+      <path d="M8 13h4" />
+      <path d="M8 17h6" />
+      <path d="M16.5 11.5 19 14" />
+      <path d="m19 14-2.5 2.5a1.5 1.5 0 0 1-2.12 0l-.88-.88a1.5 1.5 0 0 1 0-2.12L16.5 11.5" />
+    </svg>
+  );
+}
+
 export function SwapIcon({ className = "h-4 w-4" }: { className?: string }) {
   return (
     <svg
