@@ -12,7 +12,7 @@ export default async function LoginPage() {
 
   return (
     <main className="relative mx-auto flex w-full max-w-md flex-1 flex-col justify-center gap-8 px-6 py-16">
-      <div className="absolute right-0 top-0">
+      <div className="fixed right-6 top-6 sm:right-8 sm:top-8">
         <ThemeToggle />
       </div>
       <div className="flex flex-col gap-2">
