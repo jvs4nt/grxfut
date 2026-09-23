@@ -1,16 +1,14 @@
 "use client";
 
-import { useCallback, useEffect, useId, useState } from "react";
+import { useCallback, useId, useState } from "react";
 import {
-  deleteDrawAction,
   runDrawAction,
-  type FormState,
 } from "@/app/(app)/sorteio/actions";
-import { ActionForm, PendingForm, useBusyAction } from "@/components/busy-overlay";
+import { PendingForm } from "@/components/busy-overlay";
+import { DeleteDrawForm } from "@/components/delete-draw-form";
 import { PitchBoard, type PitchPlayer } from "@/components/pitch-board";
 import {
   buttonClass,
-  dangerButtonClass,
   secondaryButtonClass,
 } from "@/lib/ui";
 
@@ -22,8 +20,6 @@ export type HomeDraw = {
   teamB: TeamPlayer[];
   reserve: TeamPlayer[];
 };
-
-const initial: FormState = { error: null };
 
 export function HomeTeamsControls({
   admin,
@@ -135,28 +131,5 @@ function TeamsDialog({
         </div>
       </div>
     </div>
-  );
-}
-
-function DeleteDrawForm({ onSuccess }: { onSuccess: () => void }) {
-  const [state, action, pending] = useBusyAction(deleteDrawAction, initial);
-
-  useEffect(() => {
-    if (state.ok) {
-      onSuccess();
-    }
-  }, [state.ok, onSuccess]);
-
-  return (
-    <ActionForm action={action}>
-      <button type="submit" disabled={pending} className={dangerButtonClass}>
-        {pending ? "Excluindo…" : "Excluir sorteio"}
-      </button>
-      {state.error ? (
-        <p className="mt-2 text-sm text-red-300" role="alert">
-          {state.error}
-        </p>
-      ) : null}
-    </ActionForm>
   );
 }

@@ -1,4 +1,5 @@
 import { PitchBoard } from "@/components/pitch-board";
+import { DeleteDrawForm } from "@/components/delete-draw-form";
 import { RunDrawForm } from "@/components/run-draw-form";
 import { listAttendances, splitAttendances } from "@/lib/attendance";
 import { redirect } from "next/navigation";
@@ -53,7 +54,10 @@ export default async function DrawPage() {
                 : ""}
             </p>
             {confirmed.length > 0 ? (
-              <RunDrawForm hasResult={Boolean(draw)} />
+              <div className="flex flex-wrap gap-3 sm:justify-end">
+                <RunDrawForm hasResult={Boolean(draw)} />
+                {draw ? <DeleteDrawForm /> : null}
+              </div>
             ) : null}
           </div>
         </section>
