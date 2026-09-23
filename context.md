@@ -8,7 +8,7 @@ Admin cria, edita (usuário/senha) e exclui membros em `/membros` (só role memb
 Status da fase: `**Status:** pronto|pendente` no README da pasta em roadmap/.
 
 ## Último
-Modais: enter/exit (fade + painel) via `ModalBackdrop`/`ModalPanel` com portal no body; animação scroll nos cards (`Reveal`).
+Lista em `/pagamento`: nome + badge (Pago/Aguardando) e, para admin, um botão por linha (alterna Pago ↔ Aguardando). Modais com enter/exit via `ModalBackdrop`/`ModalPanel`.
 
 ## Pendente
 Conectar GitHub no serviço Railway para deploys automáticos; 9 deploy Vercel ainda no roadmap.

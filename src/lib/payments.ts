@@ -1,6 +1,12 @@
 import { and, asc, eq } from "drizzle-orm";
 import { getDb } from "@/db";
 import { attendances, payments, users } from "@/db/schema";
+import {
+  confirmPaymentAndAttendance,
+  getAttendanceForUser,
+  listAttendances,
+  setAttendanceStatus,
+} from "@/lib/attendance";
 import type { PaymentStatus, UserRole, UserTier } from "@/lib/labels";
 
 export type PaymentRow = {
@@ -12,6 +18,11 @@ export type PaymentRow = {
   tier: UserTier;
   status: PaymentStatus;
   scheduledOn: string | null;
+};
+
+/** Linha da tela de pagamento: confirmados + quem ainda está no fluxo do PIX. */
+export type PaymentPageRow = PaymentRow & {
+  awaitingPix: boolean;
 };
 
 export async function ensurePaymentsForMatch(matchId: string) {
@@ -78,6 +89,38 @@ export async function listPayments(matchId: string): Promise<PaymentRow[]> {
   }));
 }
 
+export async function listPaymentPageRows(
+  matchId: string,
+): Promise<PaymentPageRow[]> {
+  const [confirmedRows, attendances] = await Promise.all([
+    listPayments(matchId),
+    listAttendances(matchId),
+  ]);
+
+  const confirmedIds = new Set(confirmedRows.map((row) => row.userId));
+  const awaitingPix = attendances
+    .filter((row) => row.status === "pending_payment")
+    .filter((row) => !confirmedIds.has(row.userId))
+    .map(
+      (row): PaymentPageRow => ({
+        id: null,
+        userId: row.userId,
+        username: row.username,
+        name: row.name,
+        role: row.role,
+        tier: row.tier,
+        status: "calote",
+        scheduledOn: null,
+        awaitingPix: true,
+      }),
+    );
+
+  return [
+    ...confirmedRows.map((row) => ({ ...row, awaitingPix: false })),
+    ...awaitingPix,
+  ];
+}
+
 export async function getPaymentForUser(matchId: string, userId: string) {
   await ensurePaymentsForMatch(matchId);
 
@@ -142,4 +185,65 @@ export function paymentProgress(rows: PaymentRow[], pendingCount: number = 0) {
 
   const paid = rows.filter((row) => row.status === "pago").length;
   return Math.round((paid / total) * 100);
+}
+
+export function paymentProgressFromPageRows(rows: PaymentPageRow[]) {
+  if (rows.length === 0) {
+    return 0;
+  }
+
+  const paid = rows.filter(
+    (row) => !row.awaitingPix && row.status === "pago",
+  ).length;
+  return Math.round((paid / rows.length) * 100);
+}
+
+export function isPaymentPageRowPaid(row: PaymentPageRow) {
+  return !row.awaitingPix && row.status === "pago";
+}
+
+export async function adminMarkPaymentPagePaid(
+  matchId: string,
+  userId: string,
+) {
+  const attendance = await getAttendanceForUser(matchId, userId);
+
+  if (!attendance) {
+    return { ok: false as const, error: "Sem presença registrada." };
+  }
+
+  if (attendance.status === "pending_payment") {
+    const result = await confirmPaymentAndAttendance(matchId, userId);
+    if (!result.ok) {
+      return { ok: false as const, error: "Não estava aguardando pagamento." };
+    }
+    return { ok: true as const };
+  }
+
+  await setPaymentStatus({
+    matchId,
+    userId,
+    status: "pago",
+    scheduledOn: null,
+  });
+
+  if (attendance.status !== "confirmed") {
+    await setAttendanceStatus(matchId, userId, "confirmed");
+  }
+
+  return { ok: true as const };
+}
+
+export async function adminMarkPaymentPageAwaiting(
+  matchId: string,
+  userId: string,
+) {
+  await setAttendanceStatus(matchId, userId, "pending_payment");
+  await setPaymentStatus({
+    matchId,
+    userId,
+    status: "calote",
+    scheduledOn: null,
+  });
+  return { ok: true as const };
 }

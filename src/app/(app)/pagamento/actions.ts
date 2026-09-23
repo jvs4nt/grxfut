@@ -4,7 +4,15 @@ import { revalidatePath } from "next/cache";
 import { getAdminSession } from "@/lib/guards";
 import { parsePaymentStatus } from "@/lib/labels";
 import { getNextScheduledMatch } from "@/lib/matches";
-import { setPaymentStatus } from "@/lib/payments";
+import {
+  adminMarkPaymentPageAwaiting,
+  adminMarkPaymentPagePaid,
+  setPaymentStatus,
+} from "@/lib/payments";
+
+function refreshApp() {
+  revalidatePath("/", "layout");
+}
 
 export async function setPaymentAction(formData: FormData) {
   const admin = await getAdminSession();
@@ -34,5 +42,45 @@ export async function setPaymentAction(formData: FormData) {
     scheduledOn,
   });
 
-  revalidatePath("/", "layout");
+  refreshApp();
+}
+
+export async function markPaymentPaidAction(formData: FormData) {
+  const admin = await getAdminSession();
+  if (!admin.ok) {
+    return;
+  }
+
+  const match = await getNextScheduledMatch();
+  if (!match) {
+    return;
+  }
+
+  const userId = String(formData.get("userId") ?? "");
+  if (!userId) {
+    return;
+  }
+
+  await adminMarkPaymentPagePaid(match.id, userId);
+  refreshApp();
+}
+
+export async function markPaymentAwaitingAction(formData: FormData) {
+  const admin = await getAdminSession();
+  if (!admin.ok) {
+    return;
+  }
+
+  const match = await getNextScheduledMatch();
+  if (!match) {
+    return;
+  }
+
+  const userId = String(formData.get("userId") ?? "");
+  if (!userId) {
+    return;
+  }
+
+  await adminMarkPaymentPageAwaiting(match.id, userId);
+  refreshApp();
 }
