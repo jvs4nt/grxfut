@@ -3,6 +3,9 @@ import { Markdown } from "@/components/markdown";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { PhaseStatusFlag } from "@/components/phase-status-flag";
 import { extractSection, getRoadmapIndex, listPhases } from "@/lib/roadmap";
+import { linkCardClass } from "@/lib/ui";
+import { Reveal } from "@/components/reveal";
+import { revealDelay } from "@/lib/reveal";
 
 export const dynamic = "force-dynamic";
 
@@ -47,14 +50,15 @@ export default async function RoadmapPage() {
           Ordem de implementação
         </h2>
         <ol className="flex flex-col gap-3">
-          {phases.map((phase) => (
+          {phases.map((phase, index) => (
             <li key={phase.slug}>
+              <Reveal className="block" delayMs={revealDelay(index)}>
               <Link
                 href={`/roadmap/${phase.slug}`}
-                className={`block rounded-2xl border p-5 transition hover:bg-zinc-100 dark:hover:bg-zinc-900 ${
+                className={`${linkCardClass} ${
                   phase.status === "pronto"
                     ? "border-emerald-500/30 bg-emerald-500/5 hover:border-emerald-500/50"
-                    : "border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900/60 hover:border-emerald-500/40"
+                    : "hover:border-emerald-500/40"
                 }`}
               >
                 <div className="flex items-center justify-between gap-4">
@@ -79,6 +83,7 @@ export default async function RoadmapPage() {
                   </p>
                 ) : null}
               </Link>
+              </Reveal>
             </li>
           ))}
         </ol>

@@ -2,6 +2,7 @@
 
 import { useCallback, useId, useState } from "react";
 import { createGuestAction } from "@/app/(app)/membros/actions";
+import { ModalBackdrop, ModalPanel } from "@/components/modal-backdrop";
 import { buttonClass, secondaryButtonClass } from "@/lib/ui";
 import { USER_TIERS, TIER_LABELS } from "@/lib/labels";
 
@@ -36,19 +37,18 @@ export function CreateGuestModal() {
       <button type="button" onClick={() => setOpen(true)} className={secondaryButtonClass}>
         Criar convidado
       </button>
-      {open ? (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby={titleId}
-          onClick={(event) => {
-            if (event.target === event.currentTarget && !credentials) {
-              close();
-            }
-          }}
-        >
-          <div className="w-full max-w-md rounded-2xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950 p-6 shadow-2xl">
+      <ModalBackdrop
+        open={open}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={titleId}
+        onClick={(event) => {
+          if (event.target === event.currentTarget && !credentials) {
+            close();
+          }
+        }}
+      >
+        <ModalPanel>
             <div className="flex items-start justify-between gap-4">
               <div>
                 <h2 id={titleId} className="text-lg font-semibold">
@@ -124,9 +124,8 @@ export function CreateGuestModal() {
                 </button>
               </form>
             )}
-          </div>
-        </div>
-      ) : null}
+        </ModalPanel>
+      </ModalBackdrop>
     </>
   );
 }

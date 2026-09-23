@@ -6,6 +6,7 @@ import {
   CreateMatchForm,
   EditMatchForm,
 } from "@/components/match-forms";
+import { ModalBackdrop, ModalPanel } from "@/components/modal-backdrop";
 import { buttonClass, secondaryButtonClass } from "@/lib/ui";
 
 type ScheduledMatch = {
@@ -46,8 +47,9 @@ export function MatchAdminModals({
         AGENDAR PRÓXIMO JOGO
       </button>
 
-      {open === "edit" && scheduled ? (
+      {scheduled ? (
         <MatchDialog
+          open={open === "edit"}
           title="Personalizar o próximo jogo"
           description="Data, horário e local. Cancelar marca a semana como descanso."
           onClose={close}
@@ -65,25 +67,26 @@ export function MatchAdminModals({
         </MatchDialog>
       ) : null}
 
-      {open === "create" ? (
-        <MatchDialog
-          title="Agendar próximo jogo"
-          description="Escolha uma data futura. Depois de uma semana de descanso, agende o próximo jogo por aqui."
-          onClose={close}
-        >
-          <CreateMatchForm onSuccess={close} />
-        </MatchDialog>
-      ) : null}
+      <MatchDialog
+        open={open === "create"}
+        title="Agendar próximo jogo"
+        description="Escolha uma data futura. Depois de uma semana de descanso, agende o próximo jogo por aqui."
+        onClose={close}
+      >
+        <CreateMatchForm onSuccess={close} />
+      </MatchDialog>
     </section>
   );
 }
 
 function MatchDialog({
+  open,
   title,
   description,
   onClose,
   children,
 }: {
+  open: boolean;
   title: string;
   description: string;
   onClose: () => void;
@@ -92,8 +95,8 @@ function MatchDialog({
   const titleId = useId();
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4"
+    <ModalBackdrop
+      open={open}
       role="dialog"
       aria-modal="true"
       aria-labelledby={titleId}
@@ -108,7 +111,7 @@ function MatchDialog({
         }
       }}
     >
-      <div className="w-full max-w-md rounded-2xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950 p-6 shadow-2xl">
+      <ModalPanel>
         <div className="flex items-start justify-between gap-4">
           <div>
             <h2 id={titleId} className="text-lg font-semibold">
@@ -125,7 +128,7 @@ function MatchDialog({
           </button>
         </div>
         <div className="mt-5">{children}</div>
-      </div>
-    </div>
+      </ModalPanel>
+    </ModalBackdrop>
   );
 }

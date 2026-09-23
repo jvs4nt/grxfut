@@ -2,6 +2,7 @@
 
 import { useCallback, useId, useState } from "react";
 import { RulesSheetIcon } from "@/components/icons";
+import { ModalBackdrop, ModalPanel } from "@/components/modal-backdrop";
 import { iconButtonClass, secondaryButtonClass } from "@/lib/ui";
 
 const RULES = [
@@ -28,47 +29,45 @@ export function FutRulesModal() {
       >
         <RulesSheetIcon className="h-5 w-5" />
       </button>
-      {open ? (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby={titleId}
-          onClick={(event) => {
-            if (event.target === event.currentTarget) {
-              close();
-            }
-          }}
-          onKeyDown={(event) => {
-            if (event.key === "Escape") {
-              close();
-            }
-          }}
-        >
-          <div className="w-full max-w-md rounded-2xl border border-zinc-200 bg-white p-6 shadow-2xl dark:border-zinc-800 dark:bg-zinc-950">
-            <div className="flex items-start justify-between gap-4">
-              <div className="flex items-start gap-3">
-                <RulesSheetIcon className="mt-0.5 h-6 w-6 shrink-0 text-emerald-500 dark:text-emerald-400" />
-                <h2 id={titleId} className="text-lg font-semibold tracking-wide">
-                  REGRAS FUT GARUX
-                </h2>
-              </div>
-              <button
-                type="button"
-                onClick={close}
-                className={secondaryButtonClass}
-              >
-                Fechar
-              </button>
+      <ModalBackdrop
+        open={open}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={titleId}
+        onClick={(event) => {
+          if (event.target === event.currentTarget) {
+            close();
+          }
+        }}
+        onKeyDown={(event) => {
+          if (event.key === "Escape") {
+            close();
+          }
+        }}
+      >
+        <ModalPanel>
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex items-start gap-3">
+              <RulesSheetIcon className="mt-0.5 h-6 w-6 shrink-0 text-emerald-500 dark:text-emerald-400" />
+              <h2 id={titleId} className="text-lg font-semibold tracking-wide">
+                REGRAS FUT GARUX
+              </h2>
             </div>
-            <ul className="mt-5 flex flex-col gap-3 text-xs font-semibold uppercase leading-5 tracking-wide text-zinc-700 dark:text-zinc-300">
-              {RULES.map((rule) => (
-                <li key={rule}>{rule}</li>
-              ))}
-            </ul>
+            <button
+              type="button"
+              onClick={close}
+              className={secondaryButtonClass}
+            >
+              Fechar
+            </button>
           </div>
-        </div>
-      ) : null}
+          <ul className="mt-5 flex flex-col gap-3 text-xs font-semibold uppercase leading-5 tracking-wide text-zinc-700 dark:text-zinc-300">
+            {RULES.map((rule) => (
+              <li key={rule}>{rule}</li>
+            ))}
+          </ul>
+        </ModalPanel>
+      </ModalBackdrop>
     </>
   );
 }

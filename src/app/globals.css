@@ -4,6 +4,19 @@
 
 :root {
   --background: #fafafa;
+  --modal-duration-backdrop: 200ms;
+  --modal-duration-panel: 280ms;
+  --modal-unmount-delay: 320ms;
+  --background-glow: radial-gradient(
+      ellipse 120% 80% at 50% -20%,
+      rgb(16 185 129 / 0.07),
+      transparent 55%
+    ),
+    radial-gradient(
+      ellipse 80% 50% at 100% 50%,
+      rgb(244 244 245 / 0.9),
+      transparent 50%
+    );
   --foreground: #18181b;
   --markdown-body: #52525b;
   --markdown-heading: #18181b;
@@ -15,6 +28,16 @@
 
 .dark {
   --background: #09090b;
+  --background-glow: radial-gradient(
+      ellipse 100% 60% at 50% -10%,
+      rgb(16 185 129 / 0.06),
+      transparent 50%
+    ),
+    radial-gradient(
+      ellipse 70% 40% at 0% 100%,
+      rgb(39 39 42 / 0.5),
+      transparent 45%
+    );
   --foreground: #f4f4f5;
   --markdown-body: #d4d4d8;
   --markdown-heading: #fafafa;
@@ -31,10 +54,104 @@
   --font-mono: var(--font-geist-mono);
 }
 
+html {
+  min-height: 100%;
+  background-color: var(--background);
+}
+
 body {
-  background: var(--background);
+  min-height: 100%;
+  background-color: var(--background);
+  background-image: var(--background-glow);
+  background-repeat: no-repeat;
+  background-attachment: fixed;
   color: var(--foreground);
   font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@layer utilities {
+  .ux-lift {
+    transition-property: transform, box-shadow, border-color, background-color;
+    transition-duration: 200ms;
+    transition-timing-function: cubic-bezier(0, 0, 0.2, 1);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .ux-lift-hover:hover {
+      transform: translateY(-2px);
+    }
+  }
+
+  .reveal {
+    transition-property: opacity, transform;
+    transition-duration: 550ms;
+    transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .reveal-hidden {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+
+  .reveal-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .reveal,
+    .reveal-hidden,
+    .reveal-visible {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+  }
+
+  .modal-backdrop {
+    opacity: 0;
+    transition: opacity var(--modal-duration-backdrop) ease-out;
+  }
+
+  .modal-backdrop[data-state="open"] {
+    opacity: 1;
+  }
+
+  .modal-panel {
+    opacity: 0;
+    transform: scale(0.97) translateY(12px);
+    transition:
+      opacity var(--modal-duration-panel) cubic-bezier(0.22, 1, 0.36, 1),
+      transform var(--modal-duration-panel) cubic-bezier(0.22, 1, 0.36, 1);
+    transition-delay: 40ms;
+  }
+
+  .modal-backdrop[data-state="open"] .modal-panel {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .modal-backdrop {
+      transition: opacity 80ms ease-out;
+    }
+
+    .modal-panel {
+      transform: none;
+      transition: opacity 80ms ease-out;
+      transition-delay: 0ms;
+    }
+  }
 }
 
 .markdown {
