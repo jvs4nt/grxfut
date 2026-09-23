@@ -1,5 +1,6 @@
 import { PaymentAdminControls } from "@/components/payment-admin-controls";
 import { PaymentBadge } from "@/components/payment-badge";
+import { listAttendances, splitAttendances } from "@/lib/attendance";
 import { requireSession, isAdmin } from "@/lib/auth";
 import { formatDayMonthYear } from "@/lib/dates";
 import { getNextScheduledMatch } from "@/lib/matches";
@@ -13,7 +14,9 @@ export default async function PaymentPage() {
   const admin = isAdmin(user);
   const match = await getNextScheduledMatch();
   const rows = match ? await listPayments(match.id) : [];
-  const progress = paymentProgress(rows);
+  const attendances = match ? await listAttendances(match.id) : [];
+  const { pendingPayment } = splitAttendances(attendances);
+  const progress = paymentProgress(rows, pendingPayment.length);
 
   return (
     <main className="flex flex-col gap-8">

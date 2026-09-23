@@ -134,11 +134,12 @@ export async function setPaymentStatus(input: {
   return { ok: true as const, payment: row };
 }
 
-export function paymentProgress(rows: PaymentRow[]) {
-  if (rows.length === 0) {
+export function paymentProgress(rows: PaymentRow[], pendingCount: number = 0) {
+  const total = rows.length + pendingCount;
+  if (total === 0) {
     return 0;
   }
 
   const paid = rows.filter((row) => row.status === "pago").length;
-  return Math.round((paid / rows.length) * 100);
+  return Math.round((paid / total) * 100);
 }
