@@ -1,6 +1,8 @@
 import { redirect } from "next/navigation";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { getSession } from "@/lib/auth";
+import { glassPanelClass } from "@/lib/ui";
+import { Reveal } from "@/components/reveal";
 import { LoginForm } from "./login-form";
 
 export default async function LoginPage() {
@@ -25,14 +27,14 @@ export default async function LoginPage() {
         <div className="flex justify-center mb-4">
           <img src="/logo.png" alt="GARUX" className="h-48 w-auto drop-shadow-lg" />
         </div>
-        <div className="flex flex-col gap-6 p-8 rounded-3xl bg-white/90 shadow-2xl backdrop-blur-md dark:bg-zinc-900/80">
+        <Reveal className={glassPanelClass} delayMs={0}>
           <h1 className="text-3xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">Entrar</h1>
           <p className="text-sm leading-6 text-zinc-700 dark:text-zinc-300">
             Acesso só com usuário e senha. Contas novas são criadas pelo
             administrador.
           </p>
           <LoginForm />
-        </div>
+        </Reveal>
       </div>
     </main>
   );

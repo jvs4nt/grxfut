@@ -3,6 +3,10 @@
 import { useState } from "react";
 import { PencilIcon } from "@/components/icons";
 import { addFundsAction, removeFundsAction, updateBalanceAction } from "./actions";
+import { cardClass } from "@/lib/ui";
+import { ModalBackdrop, ModalPanel } from "@/components/modal-backdrop";
+import { Reveal } from "@/components/reveal";
+import { revealDelay } from "@/lib/reveal";
 
 type Transaction = {
   id: string;
@@ -70,7 +74,7 @@ export function CaixaClient({
 
   return (
     <div className="flex flex-col gap-8">
-      <div className="flex flex-col items-center justify-center rounded-2xl border border-zinc-200 bg-white p-8 dark:border-zinc-800 dark:bg-zinc-900">
+      <Reveal className={`${cardClass} flex flex-col items-center justify-center p-8`} delayMs={revealDelay(0)}>
         <h1 className="text-sm font-medium uppercase tracking-widest text-zinc-500 dark:text-zinc-400">
           Saldo em Caixa
         </h1>
@@ -105,8 +109,9 @@ export function CaixaClient({
             </button>
           </div>
         )}
-      </div>
+      </Reveal>
 
+      <Reveal delayMs={revealDelay(1)}>
       <div>
         <h2 className="mb-4 text-lg font-bold text-zinc-900 dark:text-zinc-100">
           Últimas Movimentações
@@ -159,10 +164,10 @@ export function CaixaClient({
           </div>
         )}
       </div>
+      </Reveal>
 
-      {modal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4 backdrop-blur-sm">
-          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800">
+      <ModalBackdrop open={modal !== null}>
+        <ModalPanel>
             <h3 className="mb-4 text-lg font-bold text-zinc-900 dark:text-zinc-100">
               {modal === "add" && "Adicionar ao Caixa"}
               {modal === "remove" && "Retirar do Caixa"}
@@ -216,9 +221,8 @@ export function CaixaClient({
                 </button>
               </div>
             </form>
-          </div>
-        </div>
-      )}
+        </ModalPanel>
+      </ModalBackdrop>
     </div>
   );
 }

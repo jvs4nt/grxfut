@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { ModalBackdrop, ModalPanel } from "@/components/modal-backdrop";
 import { formatDayMonth } from "@/lib/dates";
 import type { PaymentStatus } from "@/lib/labels";
 
@@ -34,14 +35,10 @@ export function PaymentModal({
     }
   }, [matchId, sessionId, status]);
 
-  if (!open || status === "pago") {
-    return null;
-  }
-
   const isCalote = status === "calote";
   const tone = isCalote
-    ? "border-red-500/50 bg-red-950 text-red-50"
-    : "border-amber-500/50 bg-amber-950 text-amber-50";
+    ? "border-red-500/50 bg-red-950 text-red-50 ring-white/10"
+    : "border-amber-500/50 bg-amber-950 text-amber-50 ring-white/10";
   const title = isCalote
     ? "PAGA O FUTEBOL ARROMBADO"
     : `NÃO ESQUECE DE PAGAR ATÉ O DIA ${scheduledOn ? formatDayMonth(scheduledOn) : "—"}`;
@@ -55,14 +52,16 @@ export function PaymentModal({
     setOpen(false);
   }
 
+  const visible = open && status !== "pago";
+
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4"
+    <ModalBackdrop
+      open={visible}
       role="dialog"
       aria-modal="true"
       aria-labelledby="garux-pay-modal-title"
     >
-      <div className={`w-full max-w-md rounded-2xl border p-6 shadow-2xl ${tone}`}>
+      <ModalPanel className={tone}>
         <p className="text-xs font-semibold uppercase tracking-wider opacity-70">
           {isCalote ? "Devendo" : "Pagamento combinado"}
         </p>
@@ -79,7 +78,7 @@ export function PaymentModal({
         >
           Fechar
         </button>
-      </div>
-    </div>
+      </ModalPanel>
+    </ModalBackdrop>
   );
 }

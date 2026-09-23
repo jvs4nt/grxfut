@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { adminSetAttendanceAction } from "@/app/(app)/membros/actions";
 import { PendingForm, useBusy } from "@/components/busy-overlay";
+import { ModalBackdrop, ModalPanel } from "@/components/modal-backdrop";
 import type { AttendanceStatus } from "@/lib/attendance";
 import { buttonClass, inputClass, secondaryButtonClass } from "@/lib/ui";
 
@@ -84,24 +85,23 @@ export function AttendanceMoveButton({
       >
         Mover
       </button>
-      {open ? (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby={`move-${userId}`}
-          onClick={(event) => {
-            if (event.target === event.currentTarget) {
-              setOpen(false);
-            }
-          }}
-          onKeyDown={(event) => {
-            if (event.key === "Escape") {
-              setOpen(false);
-            }
-          }}
-        >
-          <div className="flex w-full max-w-md flex-col gap-4 rounded-2xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950 p-6 shadow-2xl">
+      <ModalBackdrop
+        open={open}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={`move-${userId}`}
+        onClick={(event) => {
+          if (event.target === event.currentTarget) {
+            setOpen(false);
+          }
+        }}
+        onKeyDown={(event) => {
+          if (event.key === "Escape") {
+            setOpen(false);
+          }
+        }}
+      >
+        <ModalPanel className="flex flex-col gap-4">
             <div>
               <h2 id={`move-${userId}`} className="text-lg font-semibold">
                 Mover {name}
@@ -158,11 +158,10 @@ export function AttendanceMoveButton({
               onClick={() => setOpen(false)}
               className="self-start text-sm text-zinc-600 dark:text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300"
             >
-              Cancelar
-            </button>
-          </div>
-        </div>
-      ) : null}
+            Cancelar
+          </button>
+        </ModalPanel>
+      </ModalBackdrop>
     </>
   );
 }

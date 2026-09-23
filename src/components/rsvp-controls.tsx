@@ -106,13 +106,12 @@ export function RsvpControls({
         dispara o revalidate, `state` vai de "out" para "pending" e um modal
         montado dentro daquele ramo fecharia sozinho no meio do fluxo.
       */}
-      {open ? (
-        <PixModal
-          matchId={matchId}
-          pix={pix}
-          onClose={() => setOpen(false)}
-        />
-      ) : null}
+      <PixModal
+        matchId={matchId}
+        pix={pix}
+        open={open}
+        onClose={() => setOpen(false)}
+      />
     </div>
   );
 }

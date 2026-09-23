@@ -8,7 +8,7 @@ Admin cria, edita (usuário/senha) e exclui membros em `/membros` (só role memb
 Status da fase: `**Status:** pronto|pendente` no README da pasta em roadmap/.
 
 ## Último
-Home: folha+lápis abre regras (REGRAS); navbar: sol/lua (tema), ícone user (cadastro admin/membro).
+Modais: enter/exit (fade + painel) via `ModalBackdrop`/`ModalPanel` com portal no body; animação scroll nos cards (`Reveal`).
 
 ## Pendente
 Conectar GitHub no serviço Railway para deploys automáticos; 9 deploy Vercel ainda no roadmap.
