@@ -7,6 +7,8 @@ import { CreateUserModal } from "@/components/create-user-modal";
 import { CreateGuestModal } from "@/components/create-guest-modal";
 import { DeleteMemberButton } from "@/components/delete-member-button";
 import { EditMemberModal } from "@/components/edit-member-modal";
+import { Reveal } from "@/components/reveal";
+import { revealDelay } from "@/lib/reveal";
 import { TierSelect } from "@/components/tier-select";
 import { ToggleActiveButton } from "@/components/toggle-active-button";
 import {
@@ -19,7 +21,7 @@ import { formatDayMonthYear } from "@/lib/dates";
 import { TIER_LABELS } from "@/lib/labels";
 import { getNextScheduledMatch } from "@/lib/matches";
 import { listUsers } from "@/lib/users";
-import { cardClass } from "@/lib/ui";
+import { cardClass, listRowClass, listRowClassLoose } from "@/lib/ui";
 
 import { redirect } from "next/navigation";
 
@@ -42,7 +44,8 @@ export default async function MembersPage() {
 
   return (
     <main className="flex flex-col gap-8">
-      <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+      <Reveal delayMs={revealDelay(0)}>
+        <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div className="flex flex-col gap-2">
           <p className="text-sm font-medium tracking-wide text-emerald-400">
             Membros
@@ -61,6 +64,7 @@ export default async function MembersPage() {
           </div>
         ) : null}
       </header>
+      </Reveal>
 
       <section
         className={`grid gap-6 ${
@@ -73,6 +77,7 @@ export default async function MembersPage() {
           rows={confirmed}
           canEditTier={admin}
           canManage={admin && Boolean(match)}
+          delayMs={revealDelay(1)}
         />
         {pendingPayment.length > 0 ? (
           <PlayerList
@@ -82,6 +87,7 @@ export default async function MembersPage() {
             canEditTier={admin}
             canManage={admin && Boolean(match)}
             tone="pending"
+            delayMs={revealDelay(2)}
           />
         ) : null}
         <PlayerList
@@ -90,10 +96,12 @@ export default async function MembersPage() {
           rows={reserves}
           canEditTier={admin}
           canManage={admin && Boolean(match)}
+          delayMs={revealDelay(pendingPayment.length > 0 ? 3 : 2)}
         />
       </section>
 
-      <section className="flex flex-col gap-3">
+      <Reveal delayMs={revealDelay(pendingPayment.length > 0 ? 4 : 3)}>
+        <section className="flex flex-col gap-3">
         <h2 className="text-sm font-semibold uppercase tracking-wider text-zinc-600 dark:text-zinc-500">
           Elenco{" "}
           <span className="font-normal">({roster.length})</span>
@@ -102,7 +110,7 @@ export default async function MembersPage() {
           {roster.map((member) => (
             <li
               key={member.id}
-              className="flex flex-col gap-3 rounded-2xl border border-zinc-200 px-4 dark:border-zinc-800 py-3 sm:flex-row sm:items-center sm:justify-between"
+              className={listRowClassLoose}
             >
               <div>
                 <p className="font-medium">
@@ -152,6 +160,7 @@ export default async function MembersPage() {
           ))}
         </ul>
       </section>
+      </Reveal>
     </main>
   );
 }
@@ -163,6 +172,7 @@ function PlayerList({
   canEditTier,
   canManage,
   tone,
+  delayMs = 0,
 }: {
   title: string;
   empty: string;
@@ -170,12 +180,14 @@ function PlayerList({
   canEditTier: boolean;
   canManage: boolean;
   tone?: "pending";
+  delayMs?: number;
 }) {
   return (
-    <div
+    <Reveal
       className={
         tone === "pending" ? `${cardClass} border-amber-500/30` : cardClass
       }
+      delayMs={delayMs}
     >
       <h2 className="text-lg font-semibold">
         {title}{" "}
@@ -188,7 +200,7 @@ function PlayerList({
           {rows.map((row) => (
             <li
               key={row.id}
-              className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-zinc-200 dark:border-zinc-800/80 px-3 py-2"
+              className={listRowClass}
             >
               <span className="font-medium">{row.name}</span>
               <div className="flex flex-wrap items-center gap-2">
@@ -216,6 +228,6 @@ function PlayerList({
           ))}
         </ul>
       )}
-    </div>
+    </Reveal>
   );
 }

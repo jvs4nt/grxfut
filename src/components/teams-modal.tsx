@@ -7,6 +7,7 @@ import {
 import { PendingForm } from "@/components/busy-overlay";
 import { DeleteDrawForm } from "@/components/delete-draw-form";
 import { PitchBoard, type PitchPlayer } from "@/components/pitch-board";
+import { ModalBackdrop, ModalPanel } from "@/components/modal-backdrop";
 import {
   buttonClass,
   secondaryButtonClass,
@@ -64,18 +65,18 @@ export function HomeTeamsControls({
       >
         TIMES
       </button>
-      {open ? (
-        <TeamsDialog admin={admin} draw={draw} onClose={close} />
-      ) : null}
+      <TeamsDialog open={open} admin={admin} draw={draw} onClose={close} />
     </>
   );
 }
 
 function TeamsDialog({
+  open,
   admin,
   draw,
   onClose,
 }: {
+  open: boolean;
   admin: boolean;
   draw: HomeDraw;
   onClose: () => void;
@@ -83,8 +84,8 @@ function TeamsDialog({
   const titleId = useId();
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4"
+    <ModalBackdrop
+      open={open}
       role="dialog"
       aria-modal="true"
       aria-labelledby={titleId}
@@ -99,7 +100,7 @@ function TeamsDialog({
         }
       }}
     >
-      <div className="max-h-[90vh] w-full max-w-5xl overflow-y-auto rounded-2xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950 p-6 shadow-2xl">
+      <ModalPanel className="max-h-[90vh] max-w-5xl overflow-y-auto">
         <div className="flex items-start justify-between gap-4">
           <h2 id={titleId} className="text-lg font-semibold">
             Times
@@ -129,7 +130,7 @@ function TeamsDialog({
             canSwap={admin}
           />
         </div>
-      </div>
-    </div>
+      </ModalPanel>
+    </ModalBackdrop>
   );
 }

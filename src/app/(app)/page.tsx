@@ -1,5 +1,7 @@
 import { FutRulesModal } from "@/components/fut-rules-modal";
 import { MatchAdminModals } from "@/components/match-admin-modals";
+import { Reveal } from "@/components/reveal";
+import { revealDelay } from "@/lib/reveal";
 import { RsvpForm } from "@/components/rsvp-form";
 import type { RsvpState } from "@/components/rsvp-controls";
 import { HomeTeamsControls } from "@/components/teams-modal";
@@ -18,7 +20,7 @@ import {
 import { getDrawForMatch } from "@/lib/draw";
 import { TIER_LABELS } from "@/lib/labels";
 import { getHomeHighlight, getNextScheduledMatch } from "@/lib/matches";
-import { cardClass } from "@/lib/ui";
+import { cardClass, listRowClass } from "@/lib/ui";
 
 export const dynamic = "force-dynamic";
 
@@ -61,7 +63,7 @@ export default async function HomePage() {
 
   return (
     <main className="flex flex-col gap-8">
-      <section className={cardClass}>
+      <Reveal as="section" className={cardClass} delayMs={revealDelay(0)}>
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <FutRulesModal />
@@ -87,10 +89,11 @@ export default async function HomePage() {
             </div>
           ) : null}
         </div>
-      </section>
+      </Reveal>
 
       {admin ? (
-        <MatchAdminModals
+        <Reveal delayMs={revealDelay(1)}>
+          <MatchAdminModals
           scheduled={
             highlight.kind === "scheduled"
               ? {
@@ -102,6 +105,7 @@ export default async function HomePage() {
               : null
           }
         />
+        </Reveal>
       ) : null}
 
       <section
@@ -113,6 +117,7 @@ export default async function HomePage() {
           title="Confirmados"
           empty="Sem confirmados até o momento."
           rows={confirmed}
+          delayMs={revealDelay(2)}
         />
         {pendingPayment.length > 0 ? (
           <AttendanceList
@@ -120,12 +125,14 @@ export default async function HomePage() {
             empty="Ninguém aguardando."
             rows={pendingPayment}
             tone="pending"
+            delayMs={revealDelay(3)}
           />
         ) : null}
         <AttendanceList
           title="Reservas"
           empty="Fila de espera vazia."
           rows={reserves}
+          delayMs={revealDelay(pendingPayment.length > 0 ? 4 : 3)}
         />
       </section>
     </main>
@@ -187,19 +194,22 @@ function AttendanceList({
   empty,
   rows,
   tone,
+  delayMs = 0,
 }: {
   title: string;
   empty: string;
   rows: AttendanceRow[];
   tone?: "pending";
+  delayMs?: number;
 }) {
   return (
-    <div
+    <Reveal
       className={
         tone === "pending"
           ? `${cardClass} border-amber-500/30`
           : cardClass
       }
+      delayMs={delayMs}
     >
       <h2 className="text-lg font-semibold">
         {title}{" "}
@@ -212,7 +222,7 @@ function AttendanceList({
           {rows.map((row) => (
             <li
               key={row.id}
-              className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-zinc-200 dark:border-zinc-800/80 px-3 py-2"
+              className={listRowClass}
             >
               <span className="font-medium">{row.name}</span>
               <span className="text-sm text-zinc-600 dark:text-zinc-400">{TIER_LABELS[row.tier]}</span>
@@ -220,6 +230,6 @@ function AttendanceList({
           ))}
         </ul>
       )}
-    </div>
+    </Reveal>
   );
 }

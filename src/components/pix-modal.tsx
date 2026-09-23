@@ -3,16 +3,19 @@
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { confirmPixPaymentAction } from "@/app/(app)/membros/actions";
 import { useBusy } from "@/components/busy-overlay";
+import { ModalBackdrop, ModalPanel } from "@/components/modal-backdrop";
 import type { PixInfo } from "@/lib/pix";
 import { buttonClass, secondaryButtonClass } from "@/lib/ui";
 
 export function PixModal({
   matchId,
   pix,
+  open,
   onClose,
 }: {
   matchId: string;
   pix: PixInfo;
+  open: boolean;
   onClose: () => void;
 }) {
   const titleId = useId();
@@ -25,6 +28,9 @@ export function PixModal({
   // Os diálogos do app prendem o Escape num div que nunca recebe foco; focar o
   // backdrop na montagem faz a tecla funcionar de verdade.
   useEffect(() => {
+    if (!open) {
+      return;
+    }
     backdropRef.current?.focus();
 
     return () => {
@@ -32,7 +38,7 @@ export function PixModal({
         clearTimeout(copyTimer.current);
       }
     };
-  }, []);
+  }, [open]);
 
   const copyPayload = useCallback(async () => {
     // `navigator.clipboard` é undefined em http:// de origem não-local, que é
@@ -69,10 +75,11 @@ export function PixModal({
   }
 
   return (
-    <div
+    <ModalBackdrop
+      open={open}
       ref={backdropRef}
       tabIndex={-1}
-      className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/70 p-4 outline-none"
+      className="overflow-y-auto outline-none"
       role="dialog"
       aria-modal="true"
       aria-labelledby={titleId}
@@ -87,7 +94,7 @@ export function PixModal({
         }
       }}
     >
-      <div className="my-auto w-full max-w-md rounded-2xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950 p-6 shadow-2xl">
+      <ModalPanel className="my-auto">
         <div className="flex items-start justify-between gap-4">
           <div>
             <h2 id={titleId} className="text-lg font-semibold">
@@ -161,8 +168,8 @@ export function PixModal({
         >
           Confirmar pagamento
         </button>
-      </div>
-    </div>
+      </ModalPanel>
+    </ModalBackdrop>
   );
 }
 
