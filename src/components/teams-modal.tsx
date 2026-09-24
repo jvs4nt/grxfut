@@ -1,16 +1,15 @@
 "use client";
 
-import { useCallback, useEffect, useId, useState } from "react";
+import { useCallback, useId, useState } from "react";
 import {
-  deleteDrawAction,
   runDrawAction,
-  type FormState,
 } from "@/app/(app)/sorteio/actions";
-import { ActionForm, PendingForm, useBusyAction } from "@/components/busy-overlay";
+import { PendingForm } from "@/components/busy-overlay";
+import { DeleteDrawForm } from "@/components/delete-draw-form";
 import { PitchBoard, type PitchPlayer } from "@/components/pitch-board";
+import { ModalBackdrop, ModalPanel } from "@/components/modal-backdrop";
 import {
   buttonClass,
-  dangerButtonClass,
   secondaryButtonClass,
 } from "@/lib/ui";
 
@@ -22,8 +21,6 @@ export type HomeDraw = {
   teamB: TeamPlayer[];
   reserve: TeamPlayer[];
 };
-
-const initial: FormState = { error: null };
 
 export function HomeTeamsControls({
   admin,
@@ -68,18 +65,18 @@ export function HomeTeamsControls({
       >
         TIMES
       </button>
-      {open ? (
-        <TeamsDialog admin={admin} draw={draw} onClose={close} />
-      ) : null}
+      <TeamsDialog open={open} admin={admin} draw={draw} onClose={close} />
     </>
   );
 }
 
 function TeamsDialog({
+  open,
   admin,
   draw,
   onClose,
 }: {
+  open: boolean;
   admin: boolean;
   draw: HomeDraw;
   onClose: () => void;
@@ -87,8 +84,8 @@ function TeamsDialog({
   const titleId = useId();
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4"
+    <ModalBackdrop
+      open={open}
       role="dialog"
       aria-modal="true"
       aria-labelledby={titleId}
@@ -103,7 +100,7 @@ function TeamsDialog({
         }
       }}
     >
-      <div className="max-h-[90vh] w-full max-w-5xl overflow-y-auto rounded-2xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950 p-6 shadow-2xl">
+      <ModalPanel className="max-h-[90vh] max-w-5xl overflow-y-auto">
         <div className="flex items-start justify-between gap-4">
           <h2 id={titleId} className="text-lg font-semibold">
             Times
@@ -133,30 +130,7 @@ function TeamsDialog({
             canSwap={admin}
           />
         </div>
-      </div>
-    </div>
-  );
-}
-
-function DeleteDrawForm({ onSuccess }: { onSuccess: () => void }) {
-  const [state, action, pending] = useBusyAction(deleteDrawAction, initial);
-
-  useEffect(() => {
-    if (state.ok) {
-      onSuccess();
-    }
-  }, [state.ok, onSuccess]);
-
-  return (
-    <ActionForm action={action}>
-      <button type="submit" disabled={pending} className={dangerButtonClass}>
-        {pending ? "Excluindo…" : "Excluir sorteio"}
-      </button>
-      {state.error ? (
-        <p className="mt-2 text-sm text-red-300" role="alert">
-          {state.error}
-        </p>
-      ) : null}
-    </ActionForm>
+      </ModalPanel>
+    </ModalBackdrop>
   );
 }

@@ -47,7 +47,7 @@ export function AppShell({
           scheduledOn={paymentModal.scheduledOn}
         />
       ) : null}
-      <header className="border-b border-zinc-200 dark:border-zinc-800">
+      <header className="sticky top-0 z-40 border-b border-zinc-200/80 bg-background/80 backdrop-blur-md dark:border-zinc-800/80">
         <div className="mx-auto flex w-full max-w-5xl flex-col gap-4 px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center justify-between gap-4">
             <Link href="/" className="flex items-center gap-2">
@@ -81,9 +81,9 @@ export function AppShell({
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`rounded-full px-3 py-1.5 text-sm transition ${active
-                    ? "bg-zinc-900 text-zinc-50 dark:bg-zinc-100 dark:text-zinc-950"
-                    : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-900 dark:hover:text-zinc-100"
+                  className={`rounded-full px-3 py-1.5 text-sm transition-all duration-200 ease-out ${active
+                    ? "bg-zinc-900 text-zinc-50 shadow-sm dark:bg-zinc-100 dark:text-zinc-950"
+                    : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 hover:shadow-sm dark:text-zinc-400 dark:hover:bg-zinc-900 dark:hover:text-zinc-100"
                     }`}
                 >
                   {item.label}
@@ -116,12 +116,12 @@ export function AppShell({
       <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col px-6 py-8">
         {children}
       </div>
-      <footer className="border-t border-zinc-200 dark:border-zinc-800">
+      <footer className="border-t border-zinc-200/80 bg-background/60 backdrop-blur-sm dark:border-zinc-800/80">
         <div className="mx-auto flex w-full max-w-5xl gap-4 px-6 py-4 text-xs text-zinc-500 dark:text-zinc-600">
-          <Link href="/roadmap" className="text-zinc-500 hover:text-zinc-800 dark:text-zinc-600 dark:hover:text-zinc-400">
+          <Link href="/roadmap" className="text-zinc-500 transition-colors duration-200 hover:text-zinc-800 dark:text-zinc-600 dark:hover:text-zinc-400">
             Roadmap
           </Link>
-          <Link href="/dev" className="text-zinc-500 hover:text-zinc-800 dark:text-zinc-600 dark:hover:text-zinc-400">
+          <Link href="/dev" className="text-zinc-500 transition-colors duration-200 hover:text-zinc-800 dark:text-zinc-600 dark:hover:text-zinc-400">
             Console
           </Link>
         </div>

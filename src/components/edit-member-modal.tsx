@@ -7,6 +7,7 @@ import {
 } from "@/app/(app)/membros/actions";
 import { ActionForm, useBusyAction } from "@/components/busy-overlay";
 import { PencilIcon } from "@/components/icons";
+import { ModalBackdrop, ModalPanel } from "@/components/modal-backdrop";
 import { PasswordInput } from "@/components/password-input";
 import {
   buttonClass,
@@ -42,48 +43,46 @@ export function EditMemberModal({
       >
         <PencilIcon />
       </button>
-      {open ? (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby={titleId}
-          onClick={(event) => {
-            if (event.target === event.currentTarget) {
-              close();
-            }
-          }}
-          onKeyDown={(event) => {
-            if (event.key === "Escape") {
-              close();
-            }
-          }}
-        >
-          <div className="w-full max-w-md rounded-2xl border border-zinc-200 bg-white p-6 shadow-2xl dark:border-zinc-800 dark:bg-zinc-950">
-            <div className="flex items-start justify-between gap-4">
-              <h2 id={titleId} className="text-lg font-semibold">
-                Editar usuário
-              </h2>
-              <button
-                type="button"
-                onClick={close}
-                className={secondaryButtonClass}
-              >
-                Fechar
-              </button>
-            </div>
-            <div className="mt-5">
-              <EditMemberForm
-                key={`${username}-${name}`}
-                userId={userId}
-                username={username}
-                name={name}
-                onSuccess={close}
-              />
-            </div>
+      <ModalBackdrop
+        open={open}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={titleId}
+        onClick={(event) => {
+          if (event.target === event.currentTarget) {
+            close();
+          }
+        }}
+        onKeyDown={(event) => {
+          if (event.key === "Escape") {
+            close();
+          }
+        }}
+      >
+        <ModalPanel>
+          <div className="flex items-start justify-between gap-4">
+            <h2 id={titleId} className="text-lg font-semibold">
+              Editar usuário
+            </h2>
+            <button
+              type="button"
+              onClick={close}
+              className={secondaryButtonClass}
+            >
+              Fechar
+            </button>
           </div>
-        </div>
-      ) : null}
+          <div className="mt-5">
+            <EditMemberForm
+              key={`${username}-${name}`}
+              userId={userId}
+              username={username}
+              name={name}
+              onSuccess={close}
+            />
+          </div>
+        </ModalPanel>
+      </ModalBackdrop>
     </>
   );
 }

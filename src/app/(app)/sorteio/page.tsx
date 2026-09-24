@@ -1,5 +1,8 @@
+import { DeleteDrawForm } from "@/components/delete-draw-form";
 import { PitchBoard } from "@/components/pitch-board";
+import { Reveal } from "@/components/reveal";
 import { RunDrawForm } from "@/components/run-draw-form";
+import { revealDelay } from "@/lib/reveal";
 import { listAttendances, splitAttendances } from "@/lib/attendance";
 import { redirect } from "next/navigation";
 import { requireSession, isAdmin } from "@/lib/auth";
@@ -26,7 +29,8 @@ export default async function DrawPage() {
 
   return (
     <main className="flex flex-col gap-8">
-      <header className="flex flex-col gap-2">
+      <Reveal delayMs={revealDelay(0)}>
+        <header className="flex flex-col gap-2">
         <p className="text-sm font-medium tracking-wide text-emerald-400">
           Sorteio
         </p>
@@ -40,9 +44,10 @@ export default async function DrawPage() {
           nível, no máximo um Capitão por lado. O resto começa de próximo.
         </p>
       </header>
+      </Reveal>
 
       {admin && match ? (
-        <section className={cardClass}>
+        <Reveal as="section" className={cardClass} delayMs={revealDelay(1)}>
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-sm text-zinc-600 dark:text-zinc-400">
               {confirmed.length === 0
@@ -53,21 +58,29 @@ export default async function DrawPage() {
                 : ""}
             </p>
             {confirmed.length > 0 ? (
-              <RunDrawForm hasResult={Boolean(draw)} />
+              <div className="flex flex-wrap gap-3 sm:justify-end">
+                <RunDrawForm hasResult={Boolean(draw)} />
+                {draw ? <DeleteDrawForm /> : null}
+              </div>
             ) : null}
           </div>
-        </section>
+        </Reveal>
       ) : null}
 
       {!match ? (
+        <Reveal delayMs={revealDelay(1)}>
         <p className="text-sm text-zinc-600 dark:text-zinc-500">
           Marque um próximo jogo para sortear os times.
         </p>
+        </Reveal>
       ) : !draw ? (
+        <Reveal delayMs={revealDelay(1)}>
         <p className="text-sm text-zinc-600 dark:text-zinc-500">
           Ainda não há sorteio salvo para este jogo.
         </p>
+        </Reveal>
       ) : (
+        <Reveal delayMs={revealDelay(1)}>
         <PitchBoard
           teamA={teamA}
           teamB={teamB}
@@ -75,6 +88,7 @@ export default async function DrawPage() {
           drawId={draw.id}
           canSwap={admin}
         />
+        </Reveal>
       )}
     </main>
   );

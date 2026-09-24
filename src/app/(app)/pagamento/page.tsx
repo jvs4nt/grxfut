@@ -1,11 +1,16 @@
-import { PaymentAdminControls } from "@/components/payment-admin-controls";
-import { PaymentBadge } from "@/components/payment-badge";
-import { listAttendances, splitAttendances } from "@/lib/attendance";
+import { AwaitingPixBadge, PaymentBadge } from "@/components/payment-badge";
+import { PaymentRowToggle } from "@/components/payment-row-toggle";
+import { Reveal } from "@/components/reveal";
+import { revealDelay } from "@/lib/reveal";
 import { requireSession, isAdmin } from "@/lib/auth";
 import { formatDayMonthYear } from "@/lib/dates";
 import { getNextScheduledMatch } from "@/lib/matches";
-import { listPayments, paymentProgress } from "@/lib/payments";
-import { cardClass } from "@/lib/ui";
+import {
+  isPaymentPageRowPaid,
+  listPaymentPageRows,
+  paymentProgressFromPageRows,
+} from "@/lib/payments";
+import { cardClass, listRowClassLoose } from "@/lib/ui";
 
 export const dynamic = "force-dynamic";
 
@@ -13,14 +18,13 @@ export default async function PaymentPage() {
   const user = await requireSession();
   const admin = isAdmin(user);
   const match = await getNextScheduledMatch();
-  const rows = match ? await listPayments(match.id) : [];
-  const attendances = match ? await listAttendances(match.id) : [];
-  const { pendingPayment } = splitAttendances(attendances);
-  const progress = paymentProgress(rows, pendingPayment.length);
+  const rows = match ? await listPaymentPageRows(match.id) : [];
+  const progress = paymentProgressFromPageRows(rows);
 
   return (
     <main className="flex flex-col gap-8">
-      <header className="flex flex-col gap-2">
+      <Reveal delayMs={revealDelay(0)}>
+        <header className="flex flex-col gap-2">
         <p className="text-sm font-medium tracking-wide text-emerald-400">
           Pagamento
         </p>
@@ -31,19 +35,20 @@ export default async function PaymentPage() {
         </h1>
         <p className="text-sm text-zinc-600 dark:text-zinc-400">
           {admin
-            ? "Quem confirma o PIX na home já aparece como pago. Marque como devendo se o valor não cair no extrato."
+            ? "Cada linha: status e um botão para alternar entre Pago e Aguardando pagamento."
             : "Você entra como pago ao confirmar o PIX na home. O administrador confere o extrato."}
         </p>
       </header>
+      </Reveal>
 
       {match ? (
-        <section className={cardClass}>
+        <Reveal as="section" className={cardClass} delayMs={revealDelay(1)}>
           <p className="text-xs font-semibold uppercase tracking-wider text-zinc-600 dark:text-zinc-500">
             Progresso
           </p>
           <p className="mt-2 text-4xl font-semibold tracking-tight">{progress}%</p>
           <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
-            Dos confirmados, quantos já pagaram.
+            Entre confirmados e quem está aguardando o PIX, quantos já pagaram.
           </p>
           <div className="mt-4 h-2 overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-800">
             <div
@@ -51,40 +56,49 @@ export default async function PaymentPage() {
               style={{ width: `${progress}%` }}
             />
           </div>
-        </section>
+        </Reveal>
       ) : (
+        <Reveal delayMs={revealDelay(1)}>
         <p className="text-sm text-zinc-600 dark:text-zinc-500">
           Quando houver um próximo jogo marcado, a lista de pagamentos aparece
           aqui. Quem ainda não pagou começa como devendo.
         </p>
+        </Reveal>
       )}
 
       {match && rows.length === 0 ? (
+        <Reveal delayMs={revealDelay(2)}>
         <p className="text-sm text-zinc-600 dark:text-zinc-500">
-          Ninguém confirmou ou está aguardando pagamento ainda.
+          Ninguém confirmou presença nem iniciou o pagamento do PIX ainda.
         </p>
+        </Reveal>
       ) : null}
 
       {match && rows.length > 0 ? (
         <ul className="flex flex-col gap-2">
-          {rows.map((row) => (
-            <li
+          {rows.map((row, index) => {
+            const paid = isPaymentPageRowPaid(row);
+            return (
+            <Reveal
+              as="li"
               key={row.userId}
-              className="flex flex-col gap-3 rounded-2xl border border-zinc-200 px-4 dark:border-zinc-800 py-3 sm:flex-row sm:items-center sm:justify-between"
+              className={listRowClassLoose}
+              delayMs={revealDelay(2 + index)}
             >
               <div className="flex items-center gap-3">
                 <span className="font-medium">{row.name}</span>
-                <PaymentBadge status={row.status} scheduledOn={row.scheduledOn} />
+                {paid ? (
+                  <PaymentBadge status="pago" />
+                ) : (
+                  <AwaitingPixBadge />
+                )}
               </div>
               {admin ? (
-                <PaymentAdminControls
-                  userId={row.userId}
-                  status={row.status}
-                  scheduledOn={row.scheduledOn}
-                />
+                <PaymentRowToggle userId={row.userId} paid={paid} />
               ) : null}
-            </li>
-          ))}
+            </Reveal>
+            );
+          })}
         </ul>
       ) : null}
     </main>
