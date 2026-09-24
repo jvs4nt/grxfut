@@ -61,8 +61,7 @@ export default async function PaymentPage() {
 
       {match && rows.length === 0 ? (
         <p className="text-sm text-zinc-600 dark:text-zinc-500">
-          A lista só mostra quem já confirmou. Quem está aguardando pagamento
-          ainda não aparece aqui.
+          Ninguém confirmou ou está aguardando pagamento ainda.
         </p>
       ) : null}
 

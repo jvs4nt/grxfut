@@ -1,4 +1,4 @@
-import { and, asc, eq } from "drizzle-orm";
+import { and, asc, eq, inArray } from "drizzle-orm";
 import { getDb } from "@/db";
 import { attendances, payments, users } from "@/db/schema";
 import type { PaymentStatus, UserRole, UserTier } from "@/lib/labels";
@@ -61,7 +61,7 @@ export async function listPayments(matchId: string): Promise<PaymentRow[]> {
     .where(
       and(
         eq(attendances.matchId, matchId),
-        eq(attendances.status, "confirmed"),
+        inArray(attendances.status, ["confirmed", "pending_payment"]),
       ),
     )
     .orderBy(asc(users.tier), asc(users.name));
@@ -114,24 +114,35 @@ export async function setPaymentStatus(input: {
   }
 
   const db = getDb();
-  const [row] = await db
-    .insert(payments)
-    .values({
-      matchId: input.matchId,
-      userId: input.userId,
-      status: input.status,
-      scheduledOn,
-    })
-    .onConflictDoUpdate({
-      target: [payments.matchId, payments.userId],
-      set: {
+
+  const attendanceStatus = input.status === "pago" ? "confirmed" : "pending_payment";
+
+  const [row] = await db.batch([
+    db
+      .insert(payments)
+      .values({
+        matchId: input.matchId,
+        userId: input.userId,
         status: input.status,
         scheduledOn,
-      },
-    })
-    .returning();
+      })
+      .onConflictDoUpdate({
+        target: [payments.matchId, payments.userId],
+        set: {
+          status: input.status,
+          scheduledOn,
+        },
+      })
+      .returning(),
+    db
+      .update(attendances)
+      .set({ status: attendanceStatus })
+      .where(
+        and(eq(attendances.matchId, input.matchId), eq(attendances.userId, input.userId))
+      ),
+  ]);
 
-  return { ok: true as const, payment: row };
+  return { ok: true as const, payment: row[0] };
 }
 
 export function paymentProgress(rows: PaymentRow[], pendingCount: number = 0) {
