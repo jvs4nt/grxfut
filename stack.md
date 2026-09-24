@@ -9,7 +9,7 @@ Referência da stack e do banco. Regras de produto estão em [doc.md](doc.md).
 | Framework | Next.js (App Router) |
 | Linguagem | TypeScript |
 | UI | React + Tailwind CSS |
-| Deploy | Vercel |
+| Deploy | Railway (GitHub → `master`) |
 
 ## Banco de dados
 
@@ -38,12 +38,13 @@ Segredos **não** entram neste arquivo nem no git.
 
 | Variável | Onde | Uso |
 | --- | --- | --- |
-| `DATABASE_URL` | `.env` / `.env.local` (dev) e env da Vercel (prod) | Connection string do Neon |
-| `SESSION_SECRET` | `.env` / env da Vercel | Assinatura do cookie de sessão |
+| `DATABASE_URL` | `.env` / `.env.local` (dev) e vars do Railway (prod) | Connection string do Neon |
+| `SESSION_SECRET` | `.env` / vars do Railway | Assinatura do cookie de sessão |
+| `CRON_SECRET` | vars do Railway (prod) | Bearer do `/api/cron/deactivate-guests` (opcional em dev) |
 | `ADMIN_USERNAME` | `.env` (dev) | Seed do primeiro Admin |
 | `ADMIN_PASSWORD` | `.env` (dev) | Senha do seed (nunca no git) |
 
-`.env.local` fica no `.gitignore`. Em produção, a mesma variável é configurada no projeto Vercel.
+`.env.local` fica no `.gitignore`. Em produção, as mesmas variáveis são configuradas no serviço Railway (`grxfut`).
 
 ## Modelo de dados
 

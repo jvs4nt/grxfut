@@ -20,6 +20,9 @@
 # production
 /build
 
+# DCC / Cursor — contexto local (não versionar)
+.ai/
+
 # misc
 .DS_Store
 *.pem
