@@ -35,7 +35,7 @@ export default async function PaymentPage() {
         </h1>
         <p className="text-sm text-zinc-600 dark:text-zinc-400">
           {admin
-            ? "Cada linha: status e um botão para alternar entre Pago e Aguardando pagamento."
+            ? "Cada linha mostra o status atual. Use Alterar status e confirme no modal para atualizar o pagamento."
             : "Você entra como pago ao confirmar o PIX na home. O administrador confere o extrato."}
         </p>
       </header>
@@ -94,7 +94,11 @@ export default async function PaymentPage() {
                 )}
               </div>
               {admin ? (
-                <PaymentRowToggle userId={row.userId} paid={paid} />
+                <PaymentRowToggle
+                  userId={row.userId}
+                  memberName={row.name}
+                  paid={paid}
+                />
               ) : null}
             </Reveal>
             );
