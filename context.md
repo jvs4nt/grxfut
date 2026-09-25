@@ -10,7 +10,7 @@ Deploy: Railway `grxfut-production.up.railway.app`, repo `jvs4nt/grxfut@master`.
 Status da fase: `**Status:** pronto|pendente` no README da pasta em roadmap/.
 
 ## Último
-`/estatisticas` lista o ranking por pontos, com gols, assistências e defesas, nas abas Mês atual e All-time.
+Mobile (`< sm`): bottom nav com ícones (`bottom-nav-bar`); desktop mantém pills no header. Nav em `src/lib/nav.ts`.
 
 ## Pendente
 Fase 9: checklist manual em prod (login, fluxos CRUD); `CRON_SECRET` + cron Railway para guests (`vercel.json` não vale em Railway).
