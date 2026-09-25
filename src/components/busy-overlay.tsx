@@ -12,6 +12,7 @@ import {
   type ReactNode,
 } from "react";
 import { createPortal } from "react-dom";
+import { lockBodyScroll } from "@/lib/body-scroll-lock";
 
 const garuxBusyOverlayClass =
   "fixed inset-0 flex items-center justify-center bg-black/75 p-4 backdrop-blur-sm";
@@ -87,11 +88,8 @@ export function GaruxBusyDialog({
     if (!open) {
       return;
     }
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = prev;
-    };
+
+    return lockBodyScroll();
   }, [open]);
 
   if (!open || !portalReady) {

@@ -14,16 +14,17 @@ Código publicado no **Railway** (`jvs4nt/grxfut` → branch `master`). URL: `ht
 - [x] `DATABASE_URL` e `SESSION_SECRET` no ambiente de produção
 - [x] Cookie de sessão com `secure` em HTTPS
 - [x] Build de produção (`next build`) passando
-- [ ] `CRON_SECRET` em produção + agendamento do endpoint `/api/cron/deactivate-guests` (ver abaixo)
+- [x] `CRON_SECRET` em produção no serviço `grxfut`
+- [ ] Cron Schedule `0 3 * * 1` no serviço `guest-cron` (Railway Settings; ver abaixo)
 - [ ] Seed/admin de produção validado manualmente (sem commitar senha)
 
 ### Cron de convidados (Railway)
 
 O `vercel.json` só aplica na Vercel. Em Railway, use um dos caminhos:
 
-1. **Serviço cron** (recomendado): serviço mínimo com schedule `0 3 * * 1` (UTC; segunda 00:00 BRT ≈ `0 3 * * 1`) e comando que chama o app e sai, por exemplo:
-   `curl -fsS -H "Authorization: Bearer $CRON_SECRET" "$APP_URL/api/cron/deactivate-guests"`
-2. Definir `CRON_SECRET` no app **e** no serviço cron; sem `CRON_SECRET`, o endpoint aceita qualquer GET.
+1. Serviço **`guest-cron`** no mesmo projeto: código em `cron/` (Dockerfile + `run.sh`). Variáveis: `APP_URL` (URL pública do app), `CRON_SECRET` (referência `${{grxfut.CRON_SECRET}}` ou o mesmo valor).
+2. Em **Settings → Cron Schedule** do `guest-cron`, usar `0 3 * * 1` (UTC; segunda 00:00 BRT ≈ `0 3 * * 1`). O container chama `GET /api/cron/deactivate-guests` e encerra.
+3. Rota pública no proxy (`src/proxy.ts`); sem `CRON_SECRET`, o endpoint aceita qualquer GET; com secret, exige `Authorization: Bearer`.
 
 ## Testar
 

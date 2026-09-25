@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { FutRulesModal } from "@/components/fut-rules-modal";
 import { MatchAdminModals } from "@/components/match-admin-modals";
 import { Reveal } from "@/components/reveal";
@@ -20,7 +21,7 @@ import {
 import { getDrawForMatch } from "@/lib/draw";
 import { TIER_LABELS } from "@/lib/labels";
 import { getHomeHighlight, getNextScheduledMatch } from "@/lib/matches";
-import { cardClass, listRowClass } from "@/lib/ui";
+import { buttonClass, cardClass, listRowClass } from "@/lib/ui";
 
 export const dynamic = "force-dynamic";
 
@@ -81,6 +82,11 @@ export default async function HomePage() {
           {nextScheduled ? (
             <div className="flex flex-col items-stretch gap-3 sm:items-end">
               <RsvpForm matchId={nextScheduled.id} state={rsvpState} />
+              {user.role !== "guest" ? (
+                <Link href="/jogo" className={`${buttonClass} text-center`}>
+                  Jogo
+                </Link>
+              ) : null}
               <HomeTeamsControls
                 admin={admin}
                 canDraw={confirmed.length > 0}

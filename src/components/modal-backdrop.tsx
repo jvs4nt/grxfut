@@ -1,5 +1,6 @@
 "use client";
 
+import { lockBodyScroll } from "@/lib/body-scroll-lock";
 import { modalBackdropClass, modalPanelClass } from "@/lib/ui";
 import {
   forwardRef,
@@ -93,11 +94,8 @@ export const ModalBackdrop = forwardRef<HTMLDivElement, ModalBackdropProps>(
       if (!shouldRender) {
         return;
       }
-      const prev = document.body.style.overflow;
-      document.body.style.overflow = "hidden";
-      return () => {
-        document.body.style.overflow = prev;
-      };
+
+      return lockBodyScroll();
     }, [shouldRender]);
 
     if (!portalReady || !shouldRender) {

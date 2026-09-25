@@ -46,13 +46,31 @@ flowchart LR
 
 Fase 8 depende de presença (quem entra no sorteio) e de tiers (balanceamento). Pagamento pode estar pronto em paralelo depois da 6, mas o modal usa o mesmo “próximo fut”.
 
+## Pós-MVP
+
+Features depois do deploy; não bloqueiam o fechamento das fases 1–9.
+
+```mermaid
+flowchart LR
+  draw[8_Sorteio]
+  ship[9_Deploy]
+  stats[10_Estatisticas]
+  draw --> ship
+  draw --> stats
+```
+
+| Fase | Feature | Depende de | Status |
+| --- | --- | --- | --- |
+| 10 | [Estatísticas do jogo](10-estatisticas-jogo/README.md) | 5 e 6 (confirmados do próximo fut) | pendente |
+
 ## Fora do MVP
 
-Não entra nesta versão:
+Não entra nesta versão (e não está na fase 10):
 
 - Recuperação de senha por e-mail
 - OAuth / login social
 - Cadastro público
 - Histórico financeiro além da flag do próximo fut
 - Notificações externas (e-mail, WhatsApp, push)
-- Ranking, estatísticas ou terceiro time
+- Terceiro time no sorteio
+- Ranking avançado / gráficos além do escopo da fase 10

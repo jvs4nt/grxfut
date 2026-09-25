@@ -1,4 +1,5 @@
-import { boolean, date, integer, pgEnum, pgTable, text, time, timestamp, unique, uuid } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
+import { boolean, date, index, integer, pgEnum, pgTable, text, time, timestamp, unique, uniqueIndex, uuid } from "drizzle-orm/pg-core";
 
 export const userRoleEnum = pgEnum("user_role", ["admin", "member", "guest"]);
 export const userTierEnum = pgEnum("user_tier", ["capitao", "tenente", "soldado"]);
@@ -108,6 +109,82 @@ export const transactionsTypeEnum = pgEnum("transaction_type", ["add", "remove",
 export const fundBalance = pgTable("fund_balance", {
   id: uuid("id").defaultRandom().primaryKey(),
   balance: integer("balance").notNull().default(0), // stored in cents
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+});
+
+export const matchStatSessionStatusEnum = pgEnum("match_stat_session_status", [
+  "live",
+  "finished",
+]);
+export const matchStatEventTypeEnum = pgEnum("match_stat_event_type", [
+  "goal",
+  "assist",
+  "defense",
+]);
+
+export const matchStatSessions = pgTable(
+  "match_stat_sessions",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    matchId: uuid("match_id")
+      .notNull()
+      .references(() => matches.id, { onDelete: "cascade" }),
+    status: matchStatSessionStatusEnum("status").notNull().default("live"),
+    startedAt: timestamp("started_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    endedAt: timestamp("ended_at", { withTimezone: true }),
+    durationSeconds: integer("duration_seconds"),
+    elapsedSeconds: integer("elapsed_seconds").notNull().default(0),
+    timerRunning: boolean("timer_running").notNull().default(true),
+    timerAnchorAt: timestamp("timer_anchor_at", { withTimezone: true }),
+    startedBy: uuid("started_by").references(() => users.id, {
+      onDelete: "set null",
+    }),
+    endedBy: uuid("ended_by").references(() => users.id, {
+      onDelete: "set null",
+    }),
+  },
+  (table) => [
+    uniqueIndex("match_stat_sessions_one_live_idx")
+      .on(table.matchId)
+      .where(sql`${table.status} = 'live'`),
+  ],
+);
+
+export const matchStatEvents = pgTable(
+  "match_stat_events",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    sessionId: uuid("session_id")
+      .notNull()
+      .references(() => matchStatSessions.id, { onDelete: "cascade" }),
+    targetUserId: uuid("target_user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    type: matchStatEventTypeEnum("type").notNull(),
+    points: integer("points").notNull(),
+    recordedBy: uuid("recorded_by").references(() => users.id, {
+      onDelete: "set null",
+    }),
+    recordedName: text("recorded_name").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => [index("match_stat_events_session_idx").on(table.sessionId)],
+);
+
+export const playerStatTotals = pgTable("player_stat_totals", {
+  userId: uuid("user_id")
+    .primaryKey()
+    .references(() => users.id, { onDelete: "cascade" }),
+  goals: integer("goals").notNull().default(0),
+  assists: integer("assists").notNull().default(0),
+  defenses: integer("defenses").notNull().default(0),
+  points: integer("points").notNull().default(0),
   updatedAt: timestamp("updated_at", { withTimezone: true })
     .defaultNow()
     .notNull(),

@@ -3,7 +3,12 @@ import type { NextRequest } from "next/server";
 import { shouldLogRequest } from "@/lib/request-log";
 import { SESSION_COOKIE, readSessionUserId } from "@/lib/session-token";
 
-const PUBLIC_PATHS = new Set(["/login", "/api/health", "/api/dev/requests"]);
+const PUBLIC_PATHS = new Set([
+  "/login",
+  "/api/health",
+  "/api/dev/requests",
+  "/api/cron/deactivate-guests",
+]);
 
 function isPublicPath(pathname: string) {
   return PUBLIC_PATHS.has(pathname);
