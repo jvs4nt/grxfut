@@ -4,22 +4,14 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { logoutAction } from "@/app/login/actions";
+import { AppMobileNav } from "@/components/app-mobile-nav";
 import { PaymentModal } from "@/components/payment-modal";
 import { SettingsModal } from "@/components/settings-modal";
 import { ThemeToggle } from "@/components/theme-toggle";
 import type { SessionUser } from "@/lib/auth";
 import { ROLE_LABELS } from "@/lib/labels";
 import type { PaymentStatus } from "@/lib/labels";
-
-const NAV = [
-  { href: "/", label: "Início" },
-  { href: "/membros", label: "Membros" },
-  { href: "/pagamento", label: "Pagamento" },
-  { href: "/sorteio", label: "Sorteio" },
-  { href: "/jogo", label: "Jogo" },
-  { href: "/estatisticas", label: "Estatísticas" },
-  { href: "/caixa", label: "Caixa" },
-];
+import { isNavItemActive, navItemsForRole } from "@/lib/nav";
 
 export type PaymentModalState = {
   matchId: string;
@@ -70,19 +62,9 @@ export function AppShell({
               </form>
             </div>
           </div>
-          <nav className="flex flex-wrap gap-1">
-            {NAV.filter((item) =>
-              user.role !== "guest" ||
-              (item.href !== "/membros" &&
-                item.href !== "/sorteio" &&
-                item.href !== "/jogo" &&
-                item.href !== "/estatisticas" &&
-                item.href !== "/caixa")
-            ).map((item) => {
-              const active =
-                item.href === "/"
-                  ? pathname === "/"
-                  : pathname.startsWith(item.href);
+          <nav className="hidden flex-wrap gap-1 sm:flex">
+            {navItemsForRole(user.role).map((item) => {
+              const active = isNavItemActive(pathname, item.href);
 
               return (
                 <Link
@@ -120,9 +102,10 @@ export function AppShell({
           </div>
         </div>
       </header>
-      <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col px-6 py-8">
+      <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col px-6 py-8 pb-24 sm:pb-8">
         {children}
       </div>
+      <AppMobileNav user={user} />
       <footer className="border-t border-zinc-200/80 bg-background/60 backdrop-blur-sm dark:border-zinc-800/80">
         <div className="mx-auto flex w-full max-w-5xl gap-4 px-6 py-4 text-xs text-zinc-500 dark:text-zinc-600">
           <Link href="/roadmap" className="text-zinc-500 transition-colors duration-200 hover:text-zinc-800 dark:text-zinc-600 dark:hover:text-zinc-400">
