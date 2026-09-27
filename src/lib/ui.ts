@@ -94,3 +94,22 @@ export const glassPanelClass = [
 
 export const labelClass =
   "flex flex-col gap-1.5 text-sm text-zinc-700 dark:text-zinc-300";
+
+export const dataTableScrollClass = [
+  "max-h-[min(70dvh,32rem)] overflow-auto overscroll-contain [-webkit-overflow-scrolling:touch]",
+  "nav:max-h-[min(75dvh,36rem)]",
+  "rounded-xl border border-zinc-200 dark:border-zinc-800",
+].join(" ");
+
+export const dataTableClass =
+  "w-full min-w-[40rem] text-left text-sm text-zinc-600 dark:text-zinc-400";
+
+export const dataTableHeadClass = [
+  "sticky top-0 z-10 bg-zinc-50 text-xs uppercase text-zinc-500",
+  "border-b border-zinc-200 dark:bg-zinc-900/50 dark:text-zinc-400 dark:border-zinc-800",
+].join(" ");
+
+export const dataTableHeadConsoleClass = [
+  "sticky top-0 z-10 bg-zinc-100 text-xs uppercase tracking-wider text-zinc-600",
+  "dark:bg-zinc-900 dark:text-zinc-500",
+].join(" ");

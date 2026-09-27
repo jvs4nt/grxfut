@@ -3,7 +3,12 @@
 import { useState } from "react";
 import { PencilIcon } from "@/components/icons";
 import { addFundsAction, removeFundsAction, updateBalanceAction } from "./actions";
-import { cardClass } from "@/lib/ui";
+import {
+  cardClass,
+  dataTableClass,
+  dataTableHeadClass,
+  dataTableScrollClass,
+} from "@/lib/ui";
 import { ModalBackdrop, ModalPanel } from "@/components/modal-backdrop";
 import { Reveal } from "@/components/reveal";
 import { revealDelay } from "@/lib/reveal";
@@ -121,9 +126,9 @@ export function CaixaClient({
             Nenhuma movimentação registrada.
           </p>
         ) : (
-          <div className="overflow-hidden rounded-xl border border-zinc-200 dark:border-zinc-800">
-            <table className="w-full text-left text-sm text-zinc-600 dark:text-zinc-400">
-              <thead className="bg-zinc-50 text-xs uppercase text-zinc-500 dark:bg-zinc-900/50 dark:text-zinc-400 border-b border-zinc-200 dark:border-zinc-800">
+          <div className={dataTableScrollClass}>
+            <table className={dataTableClass}>
+              <thead className={dataTableHeadClass}>
                 <tr>
                   <th className="px-4 py-3 font-medium">Data</th>
                   <th className="px-4 py-3 font-medium">Tipo</th>

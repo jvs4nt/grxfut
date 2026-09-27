@@ -10,7 +10,7 @@ Deploy: Railway `grxfut-production.up.railway.app`, repo `jvs4nt/grxfut@master`.
 Status da fase: `**Status:** pronto|pendente` no README da pasta em roadmap/.
 
 ## Último
-Nav: bottom bar até 1024px; pills no header a partir de 1025px (`--breakpoint-nav` / prefixo `nav:`).
+Tabelas `/caixa` e `/dev`: scroll vertical/horizontal no celular (`dataTableScrollClass` em `ui.ts`, thead sticky).
 
 ## Pendente
 Rodar `npm run db:push` (coluna `team_size` em `draws`) em ambiente com TTY se ainda não aplicado.

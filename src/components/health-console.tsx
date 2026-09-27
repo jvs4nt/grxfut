@@ -6,6 +6,11 @@ import { logoutAction } from "@/app/login/actions";
 import type { SessionUser } from "@/lib/auth";
 import type { CheckStatus, HealthReport } from "@/lib/health";
 import type { RequestLogEntry } from "@/lib/request-log";
+import {
+  dataTableClass,
+  dataTableHeadConsoleClass,
+  dataTableScrollClass,
+} from "@/lib/ui";
 
 type FlagTone = "ok" | "warn" | "down";
 
@@ -240,9 +245,9 @@ export function HealthConsole({ user }: { user: SessionUser | null }) {
             Limpar
           </button>
         </div>
-        <div className="overflow-hidden rounded-2xl border border-zinc-200 dark:border-zinc-800">
-          <table className="w-full text-left text-sm">
-            <thead className="bg-zinc-100 text-xs uppercase tracking-wider text-zinc-600 dark:bg-zinc-900 dark:text-zinc-500">
+        <div className={`${dataTableScrollClass} rounded-2xl`}>
+          <table className={dataTableClass}>
+            <thead className={dataTableHeadConsoleClass}>
               <tr>
                 <th className="px-4 py-3 font-medium">Hora</th>
                 <th className="px-4 py-3 font-medium">Método</th>
