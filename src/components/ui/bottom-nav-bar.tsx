@@ -2,11 +2,38 @@
 
 import { motion } from "framer-motion";
 import type { ComponentType } from "react";
+import { useSyncExternalStore } from "react";
 import Link from "next/link";
 
 import { cn } from "@/lib/utils";
 
 const LABEL_WIDTH = 56;
+const TABLET_MIN_WIDTH_PX = 768;
+
+const tabletMediaQuery =
+  typeof window !== "undefined"
+    ? window.matchMedia(`(min-width: ${TABLET_MIN_WIDTH_PX}px)`)
+    : null;
+
+function subscribeTabletMq(onChange: () => void) {
+  if (!tabletMediaQuery) {
+    return () => {};
+  }
+  tabletMediaQuery.addEventListener("change", onChange);
+  return () => tabletMediaQuery.removeEventListener("change", onChange);
+}
+
+function getTabletMqSnapshot() {
+  return tabletMediaQuery?.matches ?? false;
+}
+
+function useExpandNavLabels() {
+  return useSyncExternalStore(
+    subscribeTabletMq,
+    getTabletMqSnapshot,
+    () => false,
+  );
+}
 
 export type BottomNavIcon = ComponentType<{
   size?: number;
@@ -33,6 +60,8 @@ export function BottomNavBar({
   className,
   stickyBottom = false,
 }: BottomNavBarProps) {
+  const expandLabels = useExpandNavLabels();
+
   return (
     <motion.nav
       initial={{ scale: 0.9, opacity: 0 }}
@@ -49,6 +78,7 @@ export function BottomNavBar({
       {items.map((item) => {
         const Icon = item.icon;
         const isActive = Boolean(item.active);
+        const showLabel = isActive && expandLabels;
 
         return (
           <Link
@@ -59,8 +89,9 @@ export function BottomNavBar({
             className={cn(
               "relative flex h-10 max-h-[44px] min-h-[40px] min-w-[40px] items-center gap-0 rounded-full px-2.5 py-2 transition-colors duration-200",
               isActive
-                ? "gap-2 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+                ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
                 : "bg-transparent text-zinc-500 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800",
+              showLabel && "gap-2",
               "focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40",
             )}
           >
@@ -71,30 +102,34 @@ export function BottomNavBar({
               className="shrink-0 transition-colors duration-200"
             />
 
-            <motion.div
-              initial={false}
-              animate={{
-                width: isActive ? `${LABEL_WIDTH}px` : "0px",
-                opacity: isActive ? 1 : 0,
-                marginLeft: isActive ? "6px" : "0px",
-              }}
-              transition={{
-                width: { type: "spring", stiffness: 350, damping: 32 },
-                opacity: { duration: 0.19 },
-                marginLeft: { duration: 0.19 },
-              }}
-              className="flex max-w-[56px] items-center overflow-hidden"
-            >
-              <span
-                className={cn(
-                  "select-none overflow-hidden text-ellipsis whitespace-nowrap text-xs font-medium leading-none",
-                  isActive ? "text-emerald-600 dark:text-emerald-400" : "opacity-0",
-                )}
-                title={item.label}
+            {expandLabels ? (
+              <motion.div
+                initial={false}
+                animate={{
+                  width: showLabel ? `${LABEL_WIDTH}px` : "0px",
+                  opacity: showLabel ? 1 : 0,
+                  marginLeft: showLabel ? "6px" : "0px",
+                }}
+                transition={{
+                  width: { type: "spring", stiffness: 350, damping: 32 },
+                  opacity: { duration: 0.19 },
+                  marginLeft: { duration: 0.19 },
+                }}
+                className="flex max-w-[56px] items-center overflow-hidden"
               >
-                {item.label}
-              </span>
-            </motion.div>
+                <span
+                  className={cn(
+                    "select-none overflow-hidden text-ellipsis whitespace-nowrap text-xs font-medium leading-none",
+                    showLabel
+                      ? "text-emerald-600 dark:text-emerald-400"
+                      : "opacity-0",
+                  )}
+                  title={item.label}
+                >
+                  {item.label}
+                </span>
+              </motion.div>
+            ) : null}
           </Link>
         );
       })}
