@@ -40,7 +40,7 @@ export default async function DrawPage() {
             : "Sem próximo jogo"}
         </h1>
         <p className="text-sm text-zinc-600 dark:text-zinc-400">
-          Só quem confirmou e pagou entra. Dois times de até 6, balanceados por
+          Só quem confirmou e pagou entra. Dois times de 5 ou 6, balanceados por
           nível, no máximo um Capitão por lado. O resto começa de próximo.
         </p>
       </header>
@@ -87,6 +87,7 @@ export default async function DrawPage() {
           reserve={reserve}
           drawId={draw.id}
           canSwap={admin}
+          teamSize={draw.teamSize}
         />
         </Reveal>
       )}

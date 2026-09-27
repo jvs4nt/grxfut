@@ -1,13 +1,9 @@
-import { runDrawAction } from "@/app/(app)/sorteio/actions";
-import { PendingForm } from "@/components/busy-overlay";
-import { buttonClass } from "@/lib/ui";
+import { RunDrawTrigger } from "@/components/run-draw-trigger";
 
 export function RunDrawForm({ hasResult }: { hasResult: boolean }) {
   return (
-    <PendingForm action={runDrawAction}>
-      <button type="submit" className={buttonClass}>
-        {hasResult ? "Sortear de novo" : "Sortear times"}
-      </button>
-    </PendingForm>
+    <RunDrawTrigger
+      label={hasResult ? "Sortear de novo" : "Sortear times"}
+    />
   );
 }

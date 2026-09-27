@@ -34,6 +34,6 @@ export function AppMobileNav({ user }: { user: SessionUser }) {
   }));
 
   return (
-    <BottomNavBar className="sm:hidden" items={items} stickyBottom />
+    <BottomNavBar className="nav:hidden" items={items} stickyBottom />
   );
 }

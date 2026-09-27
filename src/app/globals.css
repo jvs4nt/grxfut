@@ -52,6 +52,8 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  /* Bottom nav até 1024px; pills no header a partir de 1025px */
+  --breakpoint-nav: 64.0625rem;
 }
 
 html {

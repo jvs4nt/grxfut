@@ -3,7 +3,11 @@ import { getDb } from "@/db";
 import { attendances, drawPlayers, draws, users } from "@/db/schema";
 import type { UserTier } from "@/lib/labels";
 
-export const TEAM_SIZE = 6;
+export const DEFAULT_DRAW_TEAM_SIZE = 6;
+
+export type DrawTeamSize = 5 | 6;
+
+export const TEAM_SIZE = DEFAULT_DRAW_TEAM_SIZE;
 
 export type DrawTeam = "team_a" | "team_b" | "draw_reserve";
 
@@ -18,9 +22,14 @@ export type DrawPlayer = {
 export type DrawResult = {
   id: string;
   matchId: string;
+  teamSize: DrawTeamSize;
   createdAt: Date;
   players: DrawPlayer[];
 };
+
+function parseDrawTeamSize(value: number | null | undefined): DrawTeamSize {
+  return value === 5 ? 5 : 6;
+}
 
 type PoolPlayer = {
   userId: string;
@@ -57,12 +66,13 @@ export async function getDrawForMatch(matchId: string): Promise<DrawResult | nul
   return {
     id: draw.id,
     matchId: draw.matchId,
+    teamSize: parseDrawTeamSize(draw.teamSize),
     createdAt: draw.createdAt,
     players,
   };
 }
 
-export async function runDraw(matchId: string) {
+export async function runDraw(matchId: string, teamSize: DrawTeamSize) {
   const db = getDb();
   const confirmed = await db
     .select({
@@ -81,13 +91,13 @@ export async function runDraw(matchId: string) {
     return { ok: false as const, error: "empty" };
   }
 
-  const assignments = assignTeams(confirmed);
+  const assignments = assignTeams(confirmed, teamSize);
 
   await db.delete(draws).where(eq(draws.matchId, matchId));
 
   const [draw] = await db
     .insert(draws)
-    .values({ matchId })
+    .values({ matchId, teamSize })
     .returning();
 
   if (!draw) {
@@ -156,7 +166,7 @@ export async function swapDrawPlayers(
   return { ok: true as const };
 }
 
-export function assignTeams(players: PoolPlayer[]) {
+export function assignTeams(players: PoolPlayer[], teamSize: DrawTeamSize) {
   const result: { userId: string; team: DrawTeam }[] = [];
   const captains = shuffle(players.filter((player) => player.tier === "capitao"));
   const rest = players.filter((player) => player.tier !== "capitao");
@@ -185,8 +195,8 @@ export function assignTeams(players: PoolPlayer[]) {
   let toA = teamA.length <= teamB.length;
 
   for (const player of ordered) {
-    const canA = teamA.length < TEAM_SIZE;
-    const canB = teamB.length < TEAM_SIZE;
+    const canA = teamA.length < teamSize;
+    const canB = teamB.length < teamSize;
 
     if (!canA && !canB) {
       result.push({ userId: player.userId, team: "draw_reserve" });

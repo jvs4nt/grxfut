@@ -72,24 +72,30 @@ export default async function EstatisticasPage({
       </section>
 
       <section className={cardClass}>
-        <div className="flex items-center justify-end gap-4 pr-1 text-zinc-500">
-          <GiSoccerBall className="h-5 w-5" aria-label="Gols" />
-          <GiBootKick className="h-5 w-5" aria-label="Assistências" />
-          <GiBaseballGlove className="h-5 w-5" aria-label="Defesas" />
-          <span className="w-12 text-right text-xs font-semibold uppercase tracking-wider">
-            Pts
-          </span>
-        </div>
         {ranking.length === 0 ? (
-          <p className="mt-4 text-sm text-zinc-600 dark:text-zinc-400">
+          <p className="text-sm text-zinc-600 dark:text-zinc-400">
             Nenhuma estatística gravada neste período.
           </p>
         ) : (
-          <ol className="mt-4 flex flex-col gap-2">
-            {ranking.map((player, index) => (
-              <RankingRow key={player.userId} place={index + 1} player={player} />
-            ))}
-          </ol>
+          <div
+            className="max-h-[min(70dvh,32rem)] overflow-auto overscroll-y-contain [-webkit-overflow-scrolling:touch] sm:max-h-[min(75dvh,36rem)]"
+          >
+            <div
+              className="sticky top-0 z-10 -mx-5 flex items-center justify-end gap-4 border-b border-zinc-200/80 bg-white/95 px-5 pb-3 pr-6 text-zinc-500 backdrop-blur-sm dark:border-zinc-800/80 dark:bg-zinc-900/95"
+            >
+              <GiSoccerBall className="h-5 w-5 shrink-0" aria-label="Gols" />
+              <GiBootKick className="h-5 w-5 shrink-0" aria-label="Assistências" />
+              <GiBaseballGlove className="h-5 w-5 shrink-0" aria-label="Defesas" />
+              <span className="w-12 shrink-0 text-right text-xs font-semibold uppercase tracking-wider">
+                Pts
+              </span>
+            </div>
+            <ol className="mt-3 flex min-w-[17rem] flex-col gap-2">
+              {ranking.map((player, index) => (
+                <RankingRow key={player.userId} place={index + 1} player={player} />
+              ))}
+            </ol>
+          </div>
         )}
       </section>
     </main>
@@ -104,12 +110,14 @@ function RankingRow({
   player: StatPlayerLine;
 }) {
   return (
-    <li className={listRowClass}>
-      <div className="flex min-w-0 items-center gap-3">
-        <span className="w-6 text-sm font-semibold text-zinc-500">{place}</span>
+    <li className={`${listRowClass} flex-nowrap gap-2`}>
+      <div className="flex min-w-0 flex-1 items-center gap-3">
+        <span className="w-6 shrink-0 text-sm font-semibold text-zinc-500">
+          {place}
+        </span>
         <span className="truncate font-medium">{player.name}</span>
       </div>
-      <div className="flex items-center gap-4 text-sm tabular-nums text-zinc-700 dark:text-zinc-300">
+      <div className="flex shrink-0 items-center gap-4 text-sm tabular-nums text-zinc-700 dark:text-zinc-300">
         <span className="w-5 text-center" aria-label={`${player.goals} gols`}>
           {player.goals}
         </span>

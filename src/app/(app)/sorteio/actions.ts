@@ -1,7 +1,13 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { deleteDraw, getDrawForMatch, runDraw, swapDrawPlayers } from "@/lib/draw";
+import {
+  deleteDraw,
+  getDrawForMatch,
+  runDraw,
+  swapDrawPlayers,
+  type DrawTeamSize,
+} from "@/lib/draw";
 import { getAdminSession } from "@/lib/guards";
 import { getNextScheduledMatch } from "@/lib/matches";
 
@@ -14,10 +20,23 @@ function refreshApp() {
   revalidatePath("/", "layout");
 }
 
-export async function runDrawAction() {
+function parseTeamSize(formData: FormData): DrawTeamSize | null {
+  const raw = Number(formData.get("teamSize"));
+  if (raw === 5 || raw === 6) {
+    return raw;
+  }
+  return null;
+}
+
+export async function runDrawAction(formData: FormData) {
   const admin = await getAdminSession();
 
   if (!admin.ok) {
+    return;
+  }
+
+  const teamSize = parseTeamSize(formData);
+  if (!teamSize) {
     return;
   }
 
@@ -27,7 +46,7 @@ export async function runDrawAction() {
     return;
   }
 
-  await runDraw(match.id);
+  await runDraw(match.id, teamSize);
   refreshApp();
 }
 

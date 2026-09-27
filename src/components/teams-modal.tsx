@@ -1,22 +1,18 @@
 "use client";
 
 import { useCallback, useId, useState } from "react";
-import {
-  runDrawAction,
-} from "@/app/(app)/sorteio/actions";
-import { PendingForm } from "@/components/busy-overlay";
 import { DeleteDrawForm } from "@/components/delete-draw-form";
+import { RunDrawTrigger } from "@/components/run-draw-trigger";
 import { PitchBoard, type PitchPlayer } from "@/components/pitch-board";
 import { ModalBackdrop, ModalPanel } from "@/components/modal-backdrop";
-import {
-  buttonClass,
-  secondaryButtonClass,
-} from "@/lib/ui";
+import type { DrawTeamSize } from "@/lib/draw";
+import { secondaryButtonClass } from "@/lib/ui";
 
 export type TeamPlayer = PitchPlayer;
 
 export type HomeDraw = {
   id: string;
+  teamSize: DrawTeamSize;
   teamA: TeamPlayer[];
   teamB: TeamPlayer[];
   reserve: TeamPlayer[];
@@ -37,15 +33,11 @@ export function HomeTeamsControls({
   if (!draw) {
     if (admin) {
       return (
-        <PendingForm action={runDrawAction}>
-          <button
-            type="submit"
-            disabled={!canDraw}
-            className={`${buttonClass} w-full`}
-          >
-            SORTEAR TIMES
-          </button>
-        </PendingForm>
+        <RunDrawTrigger
+          label="SORTEAR TIMES"
+          className="w-full"
+          disabled={!canDraw}
+        />
       );
     }
 
@@ -112,11 +104,7 @@ function TeamsDialog({
 
         {admin ? (
           <div className="mt-5 flex flex-wrap gap-3">
-            <PendingForm action={runDrawAction}>
-              <button type="submit" className={buttonClass}>
-                Sortear de novo
-              </button>
-            </PendingForm>
+            <RunDrawTrigger label="Sortear de novo" />
             <DeleteDrawForm onSuccess={onClose} />
           </div>
         ) : null}
@@ -128,6 +116,7 @@ function TeamsDialog({
             reserve={draw.reserve}
             drawId={draw.id}
             canSwap={admin}
+            teamSize={draw.teamSize}
           />
         </div>
       </ModalPanel>

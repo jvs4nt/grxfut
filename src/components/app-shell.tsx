@@ -42,12 +42,12 @@ export function AppShell({
         />
       ) : null}
       <header className="sticky top-0 z-40 border-b border-zinc-200/80 bg-background/80 backdrop-blur-md dark:border-zinc-800/80">
-        <div className="mx-auto flex w-full max-w-5xl flex-col gap-4 px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mx-auto flex w-full max-w-5xl flex-col gap-4 px-6 py-4 nav:flex-row nav:items-center nav:justify-between">
           <div className="flex items-center justify-between gap-4">
             <Link href="/" className="flex items-center gap-2">
               <img src="/logo.png" alt="GARUX" className="h-26 w-auto" />
             </Link>
-            <div className="flex items-center gap-2 sm:hidden">
+            <div className="flex items-center gap-2 nav:hidden">
               <ThemeToggle />
               {user.role !== "guest" ? (
                 <SettingsModal username={user.username} name={user.name} />
@@ -62,7 +62,7 @@ export function AppShell({
               </form>
             </div>
           </div>
-          <nav className="hidden flex-wrap gap-1 sm:flex">
+          <nav className="hidden flex-wrap gap-1 nav:flex">
             {navItemsForRole(user.role).map((item) => {
               const active = isNavItemActive(pathname, item.href);
 
@@ -80,7 +80,7 @@ export function AppShell({
               );
             })}
           </nav>
-          <div className="hidden items-center gap-3 text-sm sm:flex">
+          <div className="hidden items-center gap-3 text-sm nav:flex">
             <span className="text-zinc-800 dark:text-zinc-300">
               {user.username}
               <span className="ml-2 rounded-full border border-zinc-300 px-2 py-0.5 text-xs uppercase tracking-wide text-zinc-600 dark:border-zinc-700 dark:text-zinc-400">
@@ -102,7 +102,7 @@ export function AppShell({
           </div>
         </div>
       </header>
-      <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col px-6 py-8 pb-24 sm:pb-8">
+      <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col px-6 py-8 pb-24 nav:pb-8">
         {children}
       </div>
       <AppMobileNav user={user} />

@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { boolean, date, index, integer, pgEnum, pgTable, text, time, timestamp, unique, uniqueIndex, uuid } from "drizzle-orm/pg-core";
+import { boolean, date, index, integer, pgEnum, pgTable, smallint, text, time, timestamp, unique, uniqueIndex, uuid } from "drizzle-orm/pg-core";
 
 export const userRoleEnum = pgEnum("user_role", ["admin", "member", "guest"]);
 export const userTierEnum = pgEnum("user_tier", ["capitao", "tenente", "soldado"]);
@@ -84,6 +84,7 @@ export const draws = pgTable("draws", {
     .notNull()
     .unique()
     .references(() => matches.id, { onDelete: "cascade" }),
+  teamSize: smallint("team_size").notNull().default(6),
   createdAt: timestamp("created_at", { withTimezone: true })
     .defaultNow()
     .notNull(),

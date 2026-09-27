@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { swapDrawPlayersAction, type FormState } from "@/app/(app)/sorteio/actions";
 import { ActionForm, useBusyAction } from "@/components/busy-overlay";
 import { JerseyIcon, SwapIcon } from "@/components/icons";
-import { TEAM_SIZE } from "@/lib/draw";
+import { DEFAULT_DRAW_TEAM_SIZE, type DrawTeamSize } from "@/lib/draw";
 import { USER_TIERS, type UserTier } from "@/lib/labels";
 import { iconButtonClass, inputClass } from "@/lib/ui";
 
@@ -35,12 +35,14 @@ export function PitchBoard({
   reserve,
   drawId,
   canSwap = false,
+  teamSize = DEFAULT_DRAW_TEAM_SIZE,
 }: {
   teamA: PitchPlayer[];
   teamB: PitchPlayer[];
   reserve: PitchPlayer[];
   drawId?: string;
   canSwap?: boolean;
+  teamSize?: DrawTeamSize;
 }) {
   const [swappingUserId, setSwappingUserId] = useState<string | null>(null);
   const closeSwap = useCallback(() => setSwappingUserId(null), []);
@@ -49,44 +51,63 @@ export function PitchBoard({
     closeSwap();
   }, [teamA, teamB, reserve, closeSwap]);
 
+  const compactPitch = teamSize === 5;
+
+  const pitchHalves = (
+    <>
+      <PitchHalf
+        title="Time A"
+        side="a"
+        players={teamA}
+        teamSize={teamSize}
+        targets={[
+          { label: "Time B", players: teamB },
+          { label: "Próximo", players: reserve },
+        ]}
+        drawId={drawId}
+        canSwap={canSwap}
+        swappingUserId={swappingUserId}
+        onToggleSwap={setSwappingUserId}
+        onCloseSwap={closeSwap}
+      />
+      <PitchHalf
+        title="Time B"
+        side="b"
+        players={teamB}
+        teamSize={teamSize}
+        targets={[
+          { label: "Time A", players: teamA },
+          { label: "Próximo", players: reserve },
+        ]}
+        drawId={drawId}
+        canSwap={canSwap}
+        swappingUserId={swappingUserId}
+        onToggleSwap={setSwappingUserId}
+        onCloseSwap={closeSwap}
+      />
+    </>
+  );
+
   return (
-    <div className="flex flex-col gap-6 lg:flex-row">
-      <div className="relative min-h-80 flex-1 overflow-hidden rounded-3xl border border-emerald-500/20 bg-emerald-950">
-        <div className="pointer-events-none absolute inset-y-6 left-1/2 w-px bg-white/20" />
-        <div className="pointer-events-none absolute left-1/2 top-1/2 h-16 w-16 -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/15" />
-        <p className="sr-only">Joga agora</p>
-        <div className="grid min-h-80 grid-cols-2">
-          <PitchHalf
-            title="Time A"
-            side="a"
-            players={teamA}
-            targets={[
-              { label: "Time B", players: teamB },
-              { label: "Próximo", players: reserve },
-            ]}
-            drawId={drawId}
-            canSwap={canSwap}
-            swappingUserId={swappingUserId}
-            onToggleSwap={setSwappingUserId}
-            onCloseSwap={closeSwap}
-          />
-          <PitchHalf
-            title="Time B"
-            side="b"
-            players={teamB}
-            targets={[
-              { label: "Time A", players: teamA },
-              { label: "Próximo", players: reserve },
-            ]}
-            drawId={drawId}
-            canSwap={canSwap}
-            swappingUserId={swappingUserId}
-            onToggleSwap={setSwappingUserId}
-            onCloseSwap={closeSwap}
-          />
+    <div className="flex flex-col items-start gap-6 lg:flex-row lg:items-start">
+      {compactPitch ? (
+        <div
+          className="relative grid w-full grid-cols-2 items-start self-start overflow-hidden rounded-3xl border border-emerald-500/20 bg-emerald-950"
+        >
+          <div className="pointer-events-none absolute inset-y-3 left-1/2 w-px -translate-x-1/2 bg-white/20" />
+          <div className="pointer-events-none absolute left-1/2 top-1/2 h-12 w-12 -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/15" />
+          <p className="sr-only">Joga agora</p>
+          {pitchHalves}
         </div>
-      </div>
-      <aside className="flex w-full flex-col gap-3 rounded-3xl border border-zinc-200 bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900/40 p-4 lg:w-52">
+      ) : (
+        <div className="relative min-h-80 w-full flex-1 overflow-hidden rounded-3xl border border-emerald-500/20 bg-emerald-950">
+          <div className="pointer-events-none absolute inset-y-6 left-1/2 w-px -translate-x-1/2 bg-white/20" />
+          <div className="pointer-events-none absolute left-1/2 top-1/2 h-16 w-16 -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/15" />
+          <p className="sr-only">Joga agora</p>
+          <div className="grid min-h-80 grid-cols-2">{pitchHalves}</div>
+        </div>
+      )}
+      <aside className="flex w-full flex-col gap-3 self-start rounded-3xl border border-zinc-200 bg-zinc-50 p-4 dark:border-zinc-800 dark:bg-zinc-900/40 lg:w-52">
         <h3 className="text-sm font-semibold uppercase tracking-wider text-zinc-600 dark:text-zinc-400">
           Próximo{" "}
           <span className="font-normal text-zinc-600 dark:text-zinc-500">({reserve.length})</span>
@@ -133,6 +154,7 @@ function PitchHalf({
   title,
   side,
   players,
+  teamSize,
   targets,
   drawId,
   canSwap,
@@ -143,6 +165,7 @@ function PitchHalf({
   title: string;
   side: "a" | "b";
   players: PitchPlayer[];
+  teamSize: DrawTeamSize;
   targets: SwapGroup[];
   drawId?: string;
   canSwap: boolean;
@@ -150,8 +173,9 @@ function PitchHalf({
   onToggleSwap: (userId: string | null) => void;
   onCloseSwap: () => void;
 }) {
-  const slots = padSlots(sortPlayers(players));
+  const slots = padSlots(sortPlayers(players), teamSize);
   const hasTargets = targets.some((group) => group.players.length > 0);
+  const compactPitch = teamSize === 5;
 
   return (
     <div className="flex flex-col gap-3 p-4">
@@ -159,9 +183,22 @@ function PitchHalf({
         {title}{" "}
         <span className="font-normal">({players.length})</span>
       </h3>
-      <ul className="grid flex-1 grid-cols-2 grid-rows-3 gap-3">
+      <ul
+        className={
+          compactPitch
+            ? "grid grid-cols-2 items-start gap-3"
+            : "grid flex-1 grid-cols-2 grid-rows-3 gap-3"
+        }
+      >
         {slots.map((player, index) => (
-          <li key={player?.userId ?? `empty-${side}-${index}`}>
+          <li
+            key={player?.userId ?? `empty-${side}-${index}`}
+            className={
+              compactPitch && index === teamSize - 1 && teamSize % 2 === 1
+                ? "col-span-2 flex justify-center"
+                : undefined
+            }
+          >
             <JerseySlot
               player={player}
               side={side}
@@ -324,6 +361,6 @@ function sortPlayers(players: PitchPlayer[]) {
   });
 }
 
-function padSlots(players: PitchPlayer[]) {
-  return Array.from({ length: TEAM_SIZE }, (_, index) => players[index] ?? null);
+function padSlots(players: PitchPlayer[], teamSize: DrawTeamSize) {
+  return Array.from({ length: teamSize }, (_, index) => players[index] ?? null);
 }

@@ -10,8 +10,9 @@ Deploy: Railway `grxfut-production.up.railway.app`, repo `jvs4nt/grxfut@master`.
 Status da fase: `**Status:** pronto|pendente` no README da pasta em roadmap/.
 
 ## Último
-Mobile (`< sm`): bottom nav com ícones (`bottom-nav-bar`); desktop mantém pills no header. Nav em `src/lib/nav.ts`.
+Nav: bottom bar até 1024px; pills no header a partir de 1025px (`--breakpoint-nav` / prefixo `nav:`).
 
 ## Pendente
+Rodar `npm run db:push` (coluna `team_size` em `draws`) em ambiente com TTY se ainda não aplicado.
 Fase 9: checklist manual em prod (login, fluxos CRUD); `CRON_SECRET` + cron Railway para guests (`vercel.json` não vale em Railway).
 Fase 10: checklist manual do jogo ao vivo (iniciar, eventos, encerrar, auditoria).

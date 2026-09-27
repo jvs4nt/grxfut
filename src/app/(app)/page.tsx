@@ -50,6 +50,7 @@ export default async function HomePage() {
   const homeDraw = draw
     ? {
         id: draw.id,
+        teamSize: draw.teamSize,
         teamA: draw.players
           .filter((player) => player.team === "team_a")
           .map(({ userId, name, tier }) => ({ userId, name, tier })),
