@@ -10,7 +10,7 @@ Deploy: Railway `grxfut-production.up.railway.app`, repo `jvs4nt/grxfut@master`.
 Status da fase: `**Status:** pronto|pendente` no README da pasta em roadmap/.
 
 ## Último
-Bottom nav: item ativo só ícone abaixo de 768px; label animada no tablet (768–1024px).
+`/jogo`: estatísticas ao vivo com UI otimista (contadores na hora; insert no Neon em background). `router.refresh` só ao iniciar e ao gravar/encerrar; outro aparelho atualiza ao recarregar.
 
 ## Pendente
 Rodar `npm run db:push` (coluna `team_size` em `draws`) em ambiente com TTY se ainda não aplicado.

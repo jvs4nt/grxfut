@@ -18,9 +18,12 @@ import { BackArrowIcon } from "@/components/icons";
 import { ModalBackdrop, ModalPanel } from "@/components/modal-backdrop";
 import { TIER_LABELS } from "@/lib/labels";
 import {
+  applyStatEvent,
+  clearPlayerStats,
   displayedClockSeconds,
   formatStatClock,
   sumStatPoints,
+  undoStatEvent,
   type MatchClock,
   type StatEventType,
   type StatPlayerLine,
@@ -75,6 +78,20 @@ function useClockSeconds(clock: MatchClock | null) {
   return displayedClockSeconds(clock, nowMs);
 }
 
+type LocalLive = {
+  sessionId: string;
+  clock: MatchClock;
+  players: StatPlayerLine[];
+};
+
+function liveFromProp(live: LocalLive): LocalLive {
+  return {
+    sessionId: live.sessionId,
+    clock: live.clock,
+    players: live.players,
+  };
+}
+
 export function MatchStatsPanel({
   matchId,
   live,
@@ -94,7 +111,7 @@ export function MatchStatsPanel({
   const router = useRouter();
   const { busy, run } = useBusy();
   const [error, setError] = useState<string | null>(null);
-  const [pendingKey, setPendingKey] = useState<string | null>(null);
+  const [localLive, setLocalLive] = useState<LocalLive | null>(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [summaryOpen, setSummaryOpen] = useState(false);
   const [frozenSeconds, setFrozenSeconds] = useState<number | null>(null);
@@ -103,8 +120,32 @@ export function MatchStatsPanel({
   const clearTitleId = useId();
   const titleId = useId();
 
-  async function refresh() {
+  const liveSessionId = live?.sessionId ?? null;
+
+  useEffect(() => {
+    if (!liveSessionId || !live) {
+      setLocalLive(null);
+      return;
+    }
+
+    setLocalLive((prev) =>
+      prev?.sessionId === liveSessionId ? prev : liveFromProp(live),
+    );
+  }, [liveSessionId, live]);
+
+  function refresh() {
     router.refresh();
+  }
+
+  function mergeLocalLive(patch: Partial<LocalLive>) {
+    setLocalLive((prev) => {
+      const base = prev ?? (live ? liveFromProp(live) : null);
+      if (!base) {
+        return null;
+      }
+
+      return { ...base, ...patch };
+    });
   }
 
   async function start() {
@@ -116,131 +157,193 @@ export function MatchStatsPanel({
       return;
     }
 
-    await refresh();
+    refresh();
   }
 
-  async function record(player: StatPlayerLine, type: StatEventType) {
-    if (!live) {
+  function record(player: StatPlayerLine, type: StatEventType) {
+    const session = localLive ?? live;
+    if (!session) {
       return;
     }
 
-    const key = `${player.userId}:${type}`;
-    setPendingKey(key);
     setError(null);
-    const result = await recordMatchStatAction(
+    mergeLocalLive({
+      players: applyStatEvent(session.players, player.userId, type),
+    });
+
+    void recordMatchStatAction(
       matchId,
-      live.sessionId,
+      session.sessionId,
       player.userId,
       type,
-    );
-    setPendingKey(null);
+    ).then((result) => {
+      if (result.ok) {
+        return;
+      }
 
-    if (!result.ok) {
       setError(result.error);
-      return;
-    }
+      setLocalLive((prev) => {
+        if (!prev) {
+          return prev;
+        }
 
-    await refresh();
+        return {
+          ...prev,
+          players: undoStatEvent(prev.players, player.userId, type),
+        };
+      });
+    });
   }
 
-  async function clearPlayer() {
-    if (!live || !clearTarget) {
+  function clearPlayer() {
+    const session = localLive ?? live;
+    if (!session || !clearTarget) {
       return;
     }
 
     const target = clearTarget;
-    setPendingKey(`clear:${target.userId}`);
-    setError(null);
-    const result = await clearPlayerStatsAction(
-      matchId,
-      live.sessionId,
-      target.userId,
-    );
-    setPendingKey(null);
-
-    if (!result.ok) {
-      setError(result.error);
+    const snapshot = session.players.find((line) => line.userId === target.userId);
+    if (!snapshot) {
       return;
     }
 
+    setError(null);
+    mergeLocalLive({
+      players: clearPlayerStats(session.players, target.userId),
+    });
     setClearTarget(null);
-    await refresh();
+
+    void clearPlayerStatsAction(
+      matchId,
+      session.sessionId,
+      target.userId,
+    ).then((result) => {
+      if (result.ok) {
+        return;
+      }
+
+      setError(result.error);
+      setLocalLive((prev) => {
+        if (!prev) {
+          return prev;
+        }
+
+        return {
+          ...prev,
+          players: prev.players.map((line) =>
+            line.userId === target.userId ? snapshot : line,
+          ),
+        };
+      });
+    });
   }
 
   async function pause() {
-    if (!live) {
+    const session = localLive ?? live;
+    if (!session) {
       return;
     }
 
     setError(null);
-    const result = await pauseMatchTimerAction(matchId, live.sessionId);
+    const result = await pauseMatchTimerAction(matchId, session.sessionId);
 
     if (!result.ok) {
       setError(result.error);
       return;
     }
 
-    await refresh();
+    const elapsed = result.durationSeconds ?? session.clock.elapsedSeconds;
+    mergeLocalLive({
+      clock: {
+        elapsedSeconds: elapsed,
+        running: false,
+        anchorAt: null,
+      },
+    });
   }
 
   async function resume() {
-    if (!live) {
+    const session = localLive ?? live;
+    if (!session) {
       return;
     }
 
     setError(null);
-    const result = await resumeMatchTimerAction(matchId, live.sessionId);
+    const result = await resumeMatchTimerAction(matchId, session.sessionId);
 
     if (!result.ok) {
       setError(result.error);
       return;
     }
 
-    await refresh();
+    mergeLocalLive({
+      clock: {
+        elapsedSeconds: session.clock.elapsedSeconds,
+        running: true,
+        anchorAt: new Date().toISOString(),
+      },
+    });
   }
 
   async function reset() {
-    if (!live) {
+    const session = localLive ?? live;
+    if (!session) {
       return;
     }
 
     setError(null);
-    const result = await resetMatchTimerAction(matchId, live.sessionId);
+    const result = await resetMatchTimerAction(matchId, session.sessionId);
 
     if (!result.ok) {
       setError(result.error);
       return;
     }
 
-    await refresh();
+    const running = session.clock.running;
+    mergeLocalLive({
+      clock: {
+        elapsedSeconds: 0,
+        running,
+        anchorAt: running ? new Date().toISOString() : null,
+      },
+    });
   }
 
   async function openSummary() {
-    if (!live) {
+    const session = localLive ?? live;
+    if (!session) {
       return;
     }
 
     setError(null);
-    const result = await pauseMatchTimerAction(matchId, live.sessionId);
+    const result = await pauseMatchTimerAction(matchId, session.sessionId);
 
     if (!result.ok) {
       setError(result.error);
       return;
     }
 
-    setFrozenSeconds(result.durationSeconds ?? 0);
+    const elapsed = result.durationSeconds ?? session.clock.elapsedSeconds;
+    setFrozenSeconds(elapsed);
+    mergeLocalLive({
+      clock: {
+        elapsedSeconds: elapsed,
+        running: false,
+        anchorAt: null,
+      },
+    });
     setSummaryOpen(true);
-    await refresh();
   }
 
   async function confirmFinish() {
-    if (!live) {
+    const session = localLive ?? live;
+    if (!session) {
       return;
     }
 
     setError(null);
     const result = await run(() =>
-      finishMatchStatSessionAction(matchId, live.sessionId),
+      finishMatchStatSessionAction(matchId, session.sessionId),
     );
 
     if (!result.ok) {
@@ -250,7 +353,7 @@ export function MatchStatsPanel({
 
     setSummaryOpen(false);
     setFrozenSeconds(null);
-    await refresh();
+    refresh();
   }
 
   if (!live) {
@@ -278,8 +381,9 @@ export function MatchStatsPanel({
     );
   }
 
-  const totalPoints = sumStatPoints(live.players);
-  const summarySeconds = frozenSeconds ?? live.clock.elapsedSeconds;
+  const displayLive = localLive ?? live;
+  const totalPoints = sumStatPoints(displayLive.players);
+  const summarySeconds = frozenSeconds ?? displayLive.clock.elapsedSeconds;
 
   return (
     <div className="flex flex-col gap-6">
@@ -290,12 +394,12 @@ export function MatchStatsPanel({
               Cronômetro
             </p>
             <MatchClockReadout
-              clock={live.clock}
+              clock={displayLive.clock}
               frozenSeconds={summaryOpen ? summarySeconds : null}
             />
           </div>
           <div className="flex flex-wrap gap-2">
-            {live.clock.running && !summaryOpen ? (
+            {displayLive.clock.running && !summaryOpen ? (
               <button type="button" onClick={pause} className={secondaryButtonClass}>
                 Pausar
               </button>
@@ -337,13 +441,13 @@ export function MatchStatsPanel({
       </button>
 
       <ul className="flex flex-col gap-2">
-        {live.players.map((player) => (
+        {displayLive.players.map((player) => (
           <li key={player.userId} className={`${listRowClass} items-start sm:items-center`}>
             <div className="flex min-w-0 items-center gap-2">
               <button
                 type="button"
                 onClick={() => setClearTarget(player)}
-                disabled={player.points === 0 || summaryOpen || pendingKey === `clear:${player.userId}`}
+                disabled={player.points === 0 || summaryOpen}
                 className={iconButtonClass}
                 aria-label={`Zerar estatísticas de ${player.name}`}
                 title="Zerar estatísticas"
@@ -360,14 +464,13 @@ export function MatchStatsPanel({
             <div className="flex flex-wrap gap-2">
               {EVENT_BUTTONS.map((event) => {
                 const Icon = event.icon;
-                const key = `${player.userId}:${event.type}`;
 
                 return (
                   <button
                     key={event.type}
                     type="button"
                     onClick={() => record(player, event.type)}
-                    disabled={pendingKey === key || summaryOpen}
+                    disabled={summaryOpen}
                     className={secondaryButtonClass}
                     aria-label={`${event.label} de ${player.name}`}
                     title={event.label}
@@ -397,12 +500,12 @@ export function MatchStatsPanel({
         aria-modal="true"
         aria-labelledby={clearTitleId}
         onClick={(event) => {
-          if (event.target === event.currentTarget && pendingKey === null) {
+          if (event.target === event.currentTarget) {
             setClearTarget(null);
           }
         }}
         onKeyDown={(event) => {
-          if (event.key === "Escape" && pendingKey === null) {
+          if (event.key === "Escape") {
             setClearTarget(null);
           }
         }}
@@ -417,8 +520,7 @@ export function MatchStatsPanel({
           <div className="mt-5 flex flex-wrap gap-2">
             <button
               type="button"
-              onClick={() => void clearPlayer()}
-              disabled={pendingKey !== null}
+              onClick={() => clearPlayer()}
               className={dangerButtonClass}
             >
               Zerar
@@ -426,7 +528,6 @@ export function MatchStatsPanel({
             <button
               type="button"
               onClick={() => setClearTarget(null)}
-              disabled={pendingKey !== null}
               className={secondaryButtonClass}
             >
               Cancelar
@@ -501,7 +602,7 @@ export function MatchStatsPanel({
           <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
             Duração {formatStatClock(summarySeconds)} · {totalPoints} pts
           </p>
-          <PlayerSummary players={playersWithStats(live.players)} />
+          <PlayerSummary players={playersWithStats(displayLive.players)} />
           <div className="mt-5 flex flex-wrap gap-2">
             <button
               type="button"

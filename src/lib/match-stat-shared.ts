@@ -60,3 +60,76 @@ export function displayedClockSeconds(clock: MatchClock, nowMs: number) {
 export function sumStatPoints(players: StatPlayerLine[]) {
   return players.reduce((total, player) => total + player.points, 0);
 }
+
+function patchPlayerLine(
+  players: StatPlayerLine[],
+  userId: string,
+  patch: (line: StatPlayerLine) => StatPlayerLine,
+): StatPlayerLine[] {
+  return players.map((line) => (line.userId === userId ? patch(line) : line));
+}
+
+export function applyStatEvent(
+  players: StatPlayerLine[],
+  userId: string,
+  type: StatEventType,
+): StatPlayerLine[] {
+  return patchPlayerLine(players, userId, (line) => {
+    const next = { ...line, points: line.points + STAT_POINTS[type] };
+
+    if (type === "goal") {
+      next.goals += 1;
+    } else if (type === "assist") {
+      next.assists += 1;
+    } else {
+      next.defenses += 1;
+    }
+
+    return next;
+  });
+}
+
+export function undoStatEvent(
+  players: StatPlayerLine[],
+  userId: string,
+  type: StatEventType,
+): StatPlayerLine[] {
+  return patchPlayerLine(players, userId, (line) => {
+    if (type === "goal" && line.goals < 1) {
+      return line;
+    }
+
+    if (type === "assist" && line.assists < 1) {
+      return line;
+    }
+
+    if (type === "defense" && line.defenses < 1) {
+      return line;
+    }
+
+    const next = { ...line, points: line.points - STAT_POINTS[type] };
+
+    if (type === "goal") {
+      next.goals -= 1;
+    } else if (type === "assist") {
+      next.assists -= 1;
+    } else {
+      next.defenses -= 1;
+    }
+
+    return next;
+  });
+}
+
+export function clearPlayerStats(
+  players: StatPlayerLine[],
+  userId: string,
+): StatPlayerLine[] {
+  return patchPlayerLine(players, userId, (line) => ({
+    ...line,
+    goals: 0,
+    assists: 0,
+    defenses: 0,
+    points: 0,
+  }));
+}
