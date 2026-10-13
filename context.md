@@ -10,7 +10,7 @@ Deploy: Railway `grxfut-production.up.railway.app`, repo `jvs4nt/grxfut@master`.
 Status da fase: `**Status:** pronto|pendente` no README da pasta em roadmap/.
 
 ## Último
-Bottom nav: item ativo só ícone abaixo de 768px; label animada no tablet (768–1024px).
+Modal PIX (confirmar pagamento): fechar com ×; ações Confirmar/Copiar em 2 colunas acima do aviso de confirmação.
 
 ## Pendente
 Rodar `npm run db:push` (coluna `team_size` em `draws`) em ambiente com TTY se ainda não aplicado.

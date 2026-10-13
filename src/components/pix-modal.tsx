@@ -5,7 +5,7 @@ import { confirmPixPaymentAction } from "@/app/(app)/membros/actions";
 import { useBusy } from "@/components/busy-overlay";
 import { ModalBackdrop, ModalPanel } from "@/components/modal-backdrop";
 import type { PixInfo } from "@/lib/pix";
-import { buttonClass, secondaryButtonClass } from "@/lib/ui";
+import { buttonClass, iconButtonClass, secondaryButtonClass } from "@/lib/ui";
 
 export function PixModal({
   matchId,
@@ -96,20 +96,16 @@ export function PixModal({
     >
       <ModalPanel className="my-auto">
         <div className="flex items-start justify-between gap-4">
-          <div>
-            <h2 id={titleId} className="text-lg font-semibold">
-              Pague pra confirmar
-            </h2>
-            <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
-              Pague o PIX e confirme aqui embaixo pra entrar na lista.
-            </p>
-          </div>
+          <h2 id={titleId} className="text-lg font-semibold">
+            Pague pra confirmar
+          </h2>
           <button
             type="button"
             onClick={onClose}
-            className={secondaryButtonClass}
+            className={`${iconButtonClass} shrink-0 rounded-lg p-1.5 text-base leading-none text-zinc-500 dark:text-zinc-400`}
+            aria-label="Fechar"
           >
-            Fechar
+            ×
           </button>
         </div>
 
@@ -139,15 +135,25 @@ export function PixModal({
           </code>
         </details>
 
-        <button
-          type="button"
-          onClick={copyPayload}
-          className={`${secondaryButtonClass} mt-3 w-full`}
-        >
-          <span aria-live="polite">
-            {copied ? "Código copiado!" : "Copiar código PIX"}
-          </span>
-        </button>
+        <div className="mt-4 grid grid-cols-2 gap-3">
+          <button
+            type="button"
+            onClick={confirm}
+            disabled={busy}
+            className={`${buttonClass} w-full px-3 text-center`}
+          >
+            Confirmar pagamento
+          </button>
+          <button
+            type="button"
+            onClick={copyPayload}
+            className={`${secondaryButtonClass} w-full px-3 text-center`}
+          >
+            <span aria-live="polite">
+              {copied ? "Código copiado!" : "Copiar código PIX"}
+            </span>
+          </button>
+        </div>
 
         <p className="mt-4 rounded-xl border border-amber-500/30 bg-amber-500/5 px-3 py-2 text-xs text-amber-200">
           Só confirme depois de pagar de verdade. O administrador confere o
@@ -159,15 +165,6 @@ export function PixModal({
             {error}
           </p>
         ) : null}
-
-        <button
-          type="button"
-          onClick={confirm}
-          disabled={busy}
-          className={`${buttonClass} mt-4 w-full`}
-        >
-          Confirmar pagamento
-        </button>
       </ModalPanel>
     </ModalBackdrop>
   );
