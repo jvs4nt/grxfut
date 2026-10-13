@@ -102,7 +102,6 @@ export async function recordMatchStatAction(
     return result;
   }
 
-  refreshStats();
   return { ok: true };
 }
 
@@ -137,7 +136,6 @@ export async function clearPlayerStatsAction(
     return result;
   }
 
-  refreshStats();
   return { ok: true };
 }
 

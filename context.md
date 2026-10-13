@@ -11,6 +11,7 @@ Status da fase: `**Status:** pronto|pendente` no README da pasta em roadmap/.
 
 ## Último
 Modal PIX (confirmar pagamento): fechar com ×; ações Confirmar/Copiar em 2 colunas acima do aviso de confirmação.
+`/jogo`: estatísticas ao vivo com UI otimista (contadores na hora; insert no Neon em background). `router.refresh` só ao iniciar e ao gravar/encerrar; outro aparelho atualiza ao recarregar.
 
 ## Pendente
 Rodar `npm run db:push` (coluna `team_size` em `draws`) em ambiente com TTY se ainda não aplicado.
