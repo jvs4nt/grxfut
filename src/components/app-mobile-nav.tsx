@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  CalendarDays,
   CreditCard,
   Dices,
   DollarSign,
@@ -18,6 +19,7 @@ const NAV_ICONS: Record<string, BottomNavIcon> = {
   "/": Home,
   "/membros": Users,
   "/pagamento": CreditCard,
+  "/mensal": CalendarDays,
   "/sorteio": Dices,
   "/jogo": GiSoccerBall,
   "/estatisticas": Trophy,

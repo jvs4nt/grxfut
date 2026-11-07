@@ -4,6 +4,7 @@ export const APP_NAV = [
   { href: "/", label: "Início" },
   { href: "/membros", label: "Membros" },
   { href: "/pagamento", label: "Pagamento" },
+  { href: "/mensal", label: "Mensal" },
   { href: "/sorteio", label: "Sorteio" },
   { href: "/jogo", label: "Jogo" },
   { href: "/estatisticas", label: "Estatísticas" },
@@ -12,6 +13,7 @@ export const APP_NAV = [
 
 const GUEST_HIDDEN_HREFS = new Set([
   "/membros",
+  "/mensal",
   "/sorteio",
   "/jogo",
   "/estatisticas",

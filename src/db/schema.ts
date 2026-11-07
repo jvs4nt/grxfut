@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { boolean, date, index, integer, pgEnum, pgTable, smallint, text, time, timestamp, unique, uniqueIndex, uuid } from "drizzle-orm/pg-core";
+import { boolean, date, index, integer, jsonb, pgEnum, pgTable, smallint, text, time, timestamp, unique, uniqueIndex, uuid } from "drizzle-orm/pg-core";
 
 export const userRoleEnum = pgEnum("user_role", ["admin", "member", "guest"]);
 export const userTierEnum = pgEnum("user_tier", ["capitao", "tenente", "soldado"]);
@@ -200,6 +200,16 @@ export const fundTransactions = pgTable("fund_transactions", {
     .notNull()
     .references(() => users.id),
   createdAt: timestamp("created_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+});
+
+export const mensalSettings = pgTable("mensal_settings", {
+  id: text("id").primaryKey(),
+  monthName: text("month_name").notNull().default("Dezembro"),
+  amount: integer("amount").notNull().default(3717), // stored in cents (R$ 37,17)
+  members: jsonb("members").$type<string[]>().notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
     .defaultNow()
     .notNull(),
 });
