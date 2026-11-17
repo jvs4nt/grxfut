@@ -10,9 +10,8 @@ Deploy: Railway `grxfut-production.up.railway.app`, repo `jvs4nt/grxfut@master`.
 Status da fase: `**Status:** pronto|pendente` no README da pasta em roadmap/.
 
 ## Último
-Sessão de conta inativa ou apagada encerra no getSession (cookie limpo; no render, via `/api/session/end`).
-`/api/dev/requests` só em development e só admin; o proxy não registra request em produção.
-Cron de guests responde 401 sem `CRON_SECRET`. Schedule em `cron/railway.toml` (`0 3 * * 1`).
+Navbar: engrenagem abre modal com tema (interruptor), alterar dados e sair (contorno vermelho). Guest não vê alterar dados.
+Sessão inativa perde o cookie. `/api/dev/requests` só em development e só admin. Cron de guests exige `CRON_SECRET`.
 
 ## Pendente
 Rodar `npm run db:push` (coluna `team_size` em `draws`) em ambiente com TTY se ainda não aplicado.
