@@ -62,3 +62,41 @@ export function currentMonthLabelInSaoPaulo(now = new Date()) {
 
   return label.charAt(0).toUpperCase() + label.slice(1);
 }
+
+/** Mês corrente em São Paulo no formato `YYYY-MM`. */
+export function currentPeriodInSaoPaulo() {
+  return todayInSaoPaulo().slice(0, 7);
+}
+
+export function isValidPeriod(value: string) {
+  return /^\d{4}-(0[1-9]|1[0-2])$/.test(value);
+}
+
+const MONTH_NAMES = [
+  "Janeiro",
+  "Fevereiro",
+  "Março",
+  "Abril",
+  "Maio",
+  "Junho",
+  "Julho",
+  "Agosto",
+  "Setembro",
+  "Outubro",
+  "Novembro",
+  "Dezembro",
+];
+
+/** `"2026-12"` → `"Dezembro/2026"`. */
+export function formatPeriod(period: string) {
+  const [year, month] = period.split("-");
+  const name = MONTH_NAMES[Number(month) - 1];
+  return name ? `${name}/${year}` : period;
+}
+
+export function formatCents(cents: number) {
+  return (cents / 100).toLocaleString("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  });
+}

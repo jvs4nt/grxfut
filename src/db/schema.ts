@@ -28,6 +28,7 @@ export const users = pgTable("users", {
   role: userRoleEnum("role").notNull(),
   tier: userTierEnum("tier").notNull(),
   active: boolean("active").default(true).notNull(),
+  mensalista: boolean("mensalista").default(false).notNull(),
   createdAt: timestamp("created_at", { withTimezone: true })
     .defaultNow()
     .notNull(),
@@ -206,10 +207,33 @@ export const fundTransactions = pgTable("fund_transactions", {
 
 export const mensalSettings = pgTable("mensal_settings", {
   id: text("id").primaryKey(),
-  monthName: text("month_name").notNull().default("Dezembro"),
+  /** Mês de referência no formato `YYYY-MM`. Nulo = mês atual. */
+  period: text("period"),
   amount: integer("amount").notNull().default(3717), // stored in cents (R$ 37,17)
-  members: jsonb("members").$type<string[]>().notNull(),
+  /** @deprecated Legado (mês em texto livre). Não é mais lido; remover numa migração futura. */
+  monthName: text("month_name").notNull().default("Dezembro"),
+  /** @deprecated Legado (nomes soltos). Mensalistas agora são `users.mensalista`. */
+  members: jsonb("members").$type<string[]>().notNull().default(sql`'[]'::jsonb`),
   updatedAt: timestamp("updated_at", { withTimezone: true })
     .defaultNow()
     .notNull(),
 });
+
+/** Uma linha = o mensalista pagou aquele mês. Desmarcar apaga a linha. */
+export const mensalPayments = pgTable(
+  "mensal_payments",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    period: text("period").notNull(),
+    paidAt: timestamp("paid_at", { withTimezone: true }).defaultNow().notNull(),
+    markedBy: uuid("marked_by").references(() => users.id, {
+      onDelete: "set null",
+    }),
+  },
+  (table) => [
+    unique("mensal_payments_user_period_unique").on(table.userId, table.period),
+  ],
+);

@@ -8,6 +8,7 @@ import {
   setAttendanceStatus,
 } from "@/lib/attendance";
 import type { PaymentStatus, UserRole, UserTier } from "@/lib/labels";
+import { listMensalistaIds } from "@/lib/mensal";
 
 export type PaymentRow = {
   id: string | null;
@@ -92,15 +93,22 @@ export async function listPayments(matchId: string): Promise<PaymentRow[]> {
 export async function listPaymentPageRows(
   matchId: string,
 ): Promise<PaymentPageRow[]> {
-  const [confirmedRows, attendances] = await Promise.all([
+  const [allConfirmedRows, attendances, mensalistaIds] = await Promise.all([
     listPayments(matchId),
     listAttendances(matchId),
+    listMensalistaIds(),
   ]);
+
+  // Mensalistas pagam por mês (checklist da aba Mensal), não por jogo.
+  const confirmedRows = allConfirmedRows.filter(
+    (row) => !mensalistaIds.has(row.userId),
+  );
 
   const confirmedIds = new Set(confirmedRows.map((row) => row.userId));
   const awaitingPix = attendances
     .filter((row) => row.status === "pending_payment")
     .filter((row) => !confirmedIds.has(row.userId))
+    .filter((row) => !mensalistaIds.has(row.userId))
     .map(
       (row): PaymentPageRow => ({
         id: null,

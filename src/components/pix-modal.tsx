@@ -170,7 +170,7 @@ export function PixModal({
   );
 }
 
-function fallbackCopy(text: string) {
+export function fallbackCopy(text: string) {
   const area = document.createElement("textarea");
   area.value = text;
   area.setAttribute("readonly", "");
