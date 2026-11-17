@@ -2,7 +2,6 @@
 
 import type { ReactNode } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { logoutAction } from "@/app/login/actions";
 import { AppMobileNav } from "@/components/app-mobile-nav";
 import { PaymentModal } from "@/components/payment-modal";
@@ -11,7 +10,6 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import type { SessionUser } from "@/lib/auth";
 import { ROLE_LABELS } from "@/lib/labels";
 import type { PaymentStatus } from "@/lib/labels";
-import { isNavItemActive, navItemsForUser } from "@/lib/nav";
 
 export type PaymentModalState = {
   matchId: string;
@@ -29,8 +27,6 @@ export function AppShell({
   paymentModal: PaymentModalState;
   children: ReactNode;
 }) {
-  const pathname = usePathname();
-
   return (
     <div className="flex min-h-full flex-1 flex-col">
       {user.role === "member" && paymentModal ? (
@@ -62,24 +58,7 @@ export function AppShell({
               </form>
             </div>
           </div>
-          <nav className="hidden flex-wrap gap-1 nav:flex">
-            {navItemsForUser(user).map((item) => {
-              const active = isNavItemActive(pathname, item.href);
-
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={`rounded-full px-3 py-1.5 text-sm transition-all duration-200 ease-out ${active
-                    ? "bg-zinc-900 text-zinc-50 shadow-sm dark:bg-zinc-100 dark:text-zinc-950"
-                    : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 hover:shadow-sm dark:text-zinc-400 dark:hover:bg-zinc-900 dark:hover:text-zinc-100"
-                    }`}
-                >
-                  {item.label}
-                </Link>
-              );
-            })}
-          </nav>
+          <AppMobileNav user={user} className="hidden nav:flex" />
           <div className="hidden items-center gap-3 text-sm nav:flex">
             <span className="text-zinc-800 dark:text-zinc-300">
               {user.username}
@@ -105,7 +84,7 @@ export function AppShell({
       <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col px-6 py-8 pb-24 nav:pb-8">
         {children}
       </div>
-      <AppMobileNav user={user} />
+      <AppMobileNav user={user} className="nav:hidden" stickyBottom />
       <footer className="border-t border-zinc-200/80 bg-background/60 backdrop-blur-sm dark:border-zinc-800/80">
         <div className="mx-auto flex w-full max-w-5xl gap-4 px-6 py-4 text-xs text-zinc-500 dark:text-zinc-600">
           <Link href="/roadmap" className="text-zinc-500 transition-colors duration-200 hover:text-zinc-800 dark:text-zinc-600 dark:hover:text-zinc-400">

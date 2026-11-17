@@ -26,7 +26,15 @@ const NAV_ICONS: Record<string, BottomNavIcon> = {
   "/caixa": DollarSign,
 };
 
-export function AppMobileNav({ user }: { user: SessionUser }) {
+export function AppMobileNav({
+  user,
+  className,
+  stickyBottom = false,
+}: {
+  user: SessionUser;
+  className?: string;
+  stickyBottom?: boolean;
+}) {
   const pathname = usePathname();
   const items = navItemsForUser(user).map((item) => ({
     label: item.label,
@@ -36,6 +44,10 @@ export function AppMobileNav({ user }: { user: SessionUser }) {
   }));
 
   return (
-    <BottomNavBar className="nav:hidden" items={items} stickyBottom />
+    <BottomNavBar
+      className={className}
+      items={items}
+      stickyBottom={stickyBottom}
+    />
   );
 }
