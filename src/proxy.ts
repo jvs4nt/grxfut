@@ -17,11 +17,16 @@ function isPublicPath(pathname: string) {
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  if (shouldLogRequest(pathname)) {
+  if (process.env.NODE_ENV !== "production" && shouldLogRequest(pathname)) {
     const logUrl = new URL("/api/dev/requests", request.url);
+    const headers = new Headers({ "content-type": "application/json" });
+    const cookie = request.headers.get("cookie");
+    if (cookie) {
+      headers.set("cookie", cookie);
+    }
     void fetch(logUrl, {
       method: "POST",
-      headers: { "content-type": "application/json" },
+      headers,
       body: JSON.stringify({
         method: request.method,
         path: pathname,

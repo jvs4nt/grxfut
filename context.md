@@ -2,7 +2,7 @@
 
 ## Resumo
 Webapp do fut: Next.js App Router, Drizzle, Neon, Tailwind. Spec em doc.md, stack em stack.md, fases em roadmap/.
-Login só usuário/senha (bcrypt + cookie httpOnly `garux_session`, `secure` em produção). Role/tier vêm do banco via getSession(). Sem signup, OAuth ou recovery.
+Login só usuário/senha (bcrypt + cookie httpOnly `garux_session`, `secure` em produção). Role/tier vêm do banco via getSession(); conta inativa ou apagada perde o cookie. Sem signup, OAuth ou recovery.
 Rotas: `/` home do fut, `/membros`, `/pagamento`, `/caixa`, `/sorteio`, `/jogo`, `/estatisticas`. `/login` e `/api/health` públicos; o resto exige sessão. `/dev` e `/roadmap` são internos. Guest não entra em `/jogo` nem em `/estatisticas`.
 Admin cria, edita (usuário/senha) e exclui membros em `/membros` (só role member). Seed inicial: `npm run db:seed-admin` (creds no .env).
 `/caixa`: membros leem saldo/extrato; só admin adiciona, retira ou edita (lápis = “Edição manual”).
@@ -10,10 +10,11 @@ Deploy: Railway `grxfut-production.up.railway.app`, repo `jvs4nt/grxfut@master`.
 Status da fase: `**Status:** pronto|pendente` no README da pasta em roadmap/.
 
 ## Último
-Modal PIX (confirmar pagamento): fechar com ×; ações Confirmar/Copiar em 2 colunas acima do aviso de confirmação.
-`/jogo`: estatísticas ao vivo com UI otimista (contadores na hora; insert no Neon em background). `router.refresh` só ao iniciar e ao gravar/encerrar; outro aparelho atualiza ao recarregar.
+Sessão de conta inativa ou apagada encerra no getSession (cookie limpo; no render, via `/api/session/end`).
+`/api/dev/requests` só em development e só admin; o proxy não registra request em produção.
+Cron de guests responde 401 sem `CRON_SECRET`. Schedule em `cron/railway.toml` (`0 3 * * 1`).
 
 ## Pendente
 Rodar `npm run db:push` (coluna `team_size` em `draws`) em ambiente com TTY se ainda não aplicado.
-Fase 9: checklist manual em prod (login, fluxos CRUD); `CRON_SECRET` + cron Railway para guests (`vercel.json` não vale em Railway).
+Fase 9: checklist manual em prod (login, fluxos CRUD). Cron no painel se o serviço `guest-cron` não tiver root `cron/`.
 Fase 10: checklist manual do jogo ao vivo (iniciar, eventos, encerrar, auditoria).

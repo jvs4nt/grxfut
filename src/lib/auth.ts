@@ -81,8 +81,32 @@ export const getSession = cache(async (): Promise<SessionUser | null> => {
     .where(eq(users.id, claims.userId))
     .limit(1);
 
-  return user ?? null;
+  if (!user || !user.active) {
+    return endInvalidSession();
+  }
+
+  return user;
 });
+
+async function endInvalidSession(): Promise<null> {
+  try {
+    await destroySession();
+  } catch (error) {
+    if (isReadonlyCookieError(error)) {
+      redirect("/api/session/end");
+    }
+    throw error;
+  }
+
+  return null;
+}
+
+function isReadonlyCookieError(error: unknown) {
+  return (
+    error instanceof Error &&
+    error.message.startsWith("Cookies can only be modified")
+  );
+}
 
 export async function requireSession(): Promise<SessionUser> {
   const user = await getSession();
