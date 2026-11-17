@@ -6,10 +6,14 @@ import {
   matchStatSessions,
   matches,
   playerStatTotals,
+  statAdjustments,
   users,
 } from "@/db/schema";
 import { listAttendances, splitAttendances } from "@/lib/attendance";
-import { currentMonthRangeInSaoPaulo } from "@/lib/dates";
+import {
+  currentMonthRangeInSaoPaulo,
+  currentPeriodInSaoPaulo,
+} from "@/lib/dates";
 import type { UserTier } from "@/lib/labels";
 import {
   STAT_POINTS,
@@ -586,7 +590,10 @@ export async function listAuditEvents(matchId: string): Promise<AuditEventRow[]>
 
 export type StatRankingPeriod = "month" | "all";
 
-export async function listStatRanking(period: StatRankingPeriod) {
+/** Soma eventos + ajustes por jogador, sem limitar a zero (base dos ajustes). */
+async function computeStatLines(
+  period: StatRankingPeriod,
+): Promise<Map<string, StatPlayerLine>> {
   const db = getDb();
   const filters = [eq(matchStatSessions.status, "finished")];
 
@@ -595,25 +602,43 @@ export async function listStatRanking(period: StatRankingPeriod) {
     filters.push(gte(matches.date, start), lt(matches.date, endExclusive));
   }
 
-  const rows = await db
-    .select({
-      userId: users.id,
-      name: users.name,
-      tier: users.tier,
-      type: matchStatEvents.type,
-    })
-    .from(matchStatEvents)
-    .innerJoin(
-      matchStatSessions,
-      eq(matchStatSessions.id, matchStatEvents.sessionId),
-    )
-    .innerJoin(matches, eq(matches.id, matchStatSessions.matchId))
-    .innerJoin(users, eq(users.id, matchStatEvents.targetUserId))
-    .where(and(...filters));
+  const [eventRows, adjustmentRows] = await Promise.all([
+    db
+      .select({
+        userId: users.id,
+        name: users.name,
+        tier: users.tier,
+        type: matchStatEvents.type,
+      })
+      .from(matchStatEvents)
+      .innerJoin(
+        matchStatSessions,
+        eq(matchStatSessions.id, matchStatEvents.sessionId),
+      )
+      .innerJoin(matches, eq(matches.id, matchStatSessions.matchId))
+      .innerJoin(users, eq(users.id, matchStatEvents.targetUserId))
+      .where(and(...filters)),
+    db
+      .select({
+        userId: users.id,
+        name: users.name,
+        tier: users.tier,
+        goals: statAdjustments.goals,
+        assists: statAdjustments.assists,
+        defenses: statAdjustments.defenses,
+      })
+      .from(statAdjustments)
+      .innerJoin(users, eq(users.id, statAdjustments.userId))
+      .where(
+        period === "month"
+          ? eq(statAdjustments.period, currentPeriodInSaoPaulo())
+          : undefined,
+      ),
+  ]);
 
   const lines = new Map<string, StatPlayerLine>();
 
-  for (const row of rows) {
+  function lineFor(row: { userId: string; name: string; tier: UserTier }) {
     const line = lines.get(row.userId) ?? {
       userId: row.userId,
       name: row.name,
@@ -623,6 +648,12 @@ export async function listStatRanking(period: StatRankingPeriod) {
       defenses: 0,
       points: 0,
     };
+    lines.set(row.userId, line);
+    return line;
+  }
+
+  for (const row of eventRows) {
+    const line = lineFor(row);
 
     if (row.type === "goal") {
       line.goals += 1;
@@ -631,12 +662,40 @@ export async function listStatRanking(period: StatRankingPeriod) {
     } else {
       line.defenses += 1;
     }
-
-    line.points += STAT_POINTS[row.type];
-    lines.set(row.userId, line);
   }
 
+  for (const row of adjustmentRows) {
+    const line = lineFor(row);
+    line.goals += row.goals;
+    line.assists += row.assists;
+    line.defenses += row.defenses;
+  }
+
+  return lines;
+}
+
+export async function listStatRanking(period: StatRankingPeriod) {
+  const lines = await computeStatLines(period);
+
+  // Um ajuste no mês também desconta do all-time; se o all-time já tinha sido
+  // corrigido para baixo, a soma pode ficar negativa. Na tela, o piso é zero.
   return [...lines.values()]
+    .map((line) => {
+      const goals = Math.max(0, line.goals);
+      const assists = Math.max(0, line.assists);
+      const defenses = Math.max(0, line.defenses);
+
+      return {
+        ...line,
+        goals,
+        assists,
+        defenses,
+        points:
+          goals * STAT_POINTS.goal +
+          assists * STAT_POINTS.assist +
+          defenses * STAT_POINTS.defense,
+      };
+    })
     .filter((line) => line.points > 0)
     .sort(
       (a, b) =>
@@ -644,4 +703,56 @@ export async function listStatRanking(period: StatRankingPeriod) {
         b.goals - a.goals ||
         a.name.localeCompare(b.name, "pt-BR"),
     );
+}
+
+/**
+ * Admin define os totais de um jogador numa aba do ranking. Grava só a
+ * diferença em relação ao que o ranking mostra hoje, calculada no servidor.
+ * Na aba "month" o ajuste conta no mês atual e no all-time; na "all", só no all-time.
+ */
+export async function setPlayerStatTotals(input: {
+  userId: string;
+  scope: StatRankingPeriod;
+  goals: number;
+  assists: number;
+  defenses: number;
+  adminId: string;
+}) {
+  const target = [input.goals, input.assists, input.defenses];
+
+  if (target.some((value) => !Number.isInteger(value) || value < 0 || value > 999)) {
+    return { ok: false as const, error: "Use números inteiros entre 0 e 999." };
+  }
+
+  const db = getDb();
+  const [player] = await db
+    .select({ id: users.id })
+    .from(users)
+    .where(eq(users.id, input.userId))
+    .limit(1);
+
+  if (!player) {
+    return { ok: false as const, error: "Jogador não encontrado." };
+  }
+
+  const lines = await computeStatLines(input.scope);
+  const current = lines.get(input.userId);
+  const delta = {
+    goals: input.goals - (current?.goals ?? 0),
+    assists: input.assists - (current?.assists ?? 0),
+    defenses: input.defenses - (current?.defenses ?? 0),
+  };
+
+  if (delta.goals === 0 && delta.assists === 0 && delta.defenses === 0) {
+    return { ok: true as const };
+  }
+
+  await db.insert(statAdjustments).values({
+    userId: input.userId,
+    period: input.scope === "month" ? currentPeriodInSaoPaulo() : null,
+    ...delta,
+    createdBy: input.adminId,
+  });
+
+  return { ok: true as const };
 }
