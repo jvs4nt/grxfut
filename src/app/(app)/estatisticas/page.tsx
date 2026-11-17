@@ -1,11 +1,17 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { GiBaseballGlove, GiBootKick, GiSoccerBall } from "react-icons/gi";
-import { requireSession } from "@/lib/auth";
+import { isAdmin, requireSession } from "@/lib/auth";
 import { currentMonthLabelInSaoPaulo } from "@/lib/dates";
 import { listStatRanking, type StatRankingPeriod } from "@/lib/match-stats";
 import type { StatPlayerLine } from "@/lib/match-stat-shared";
 import { cardClass, listRowClass } from "@/lib/ui";
+import { listUsers } from "@/lib/users";
+import {
+  AddPlayerStatButton,
+  StatEditButton,
+  type StatCandidate,
+} from "./stat-editor";
 
 export const dynamic = "force-dynamic";
 
@@ -31,11 +37,25 @@ export default async function EstatisticasPage({
 
   const { periodo } = await searchParams;
   const tab = parsePeriod(periodo);
-  const ranking = await listStatRanking(tab.period as StatRankingPeriod);
+  const scope = tab.period as StatRankingPeriod;
+  const admin = isAdmin(user);
+  const [ranking, users] = await Promise.all([
+    listStatRanking(scope),
+    admin ? listUsers() : Promise.resolve([]),
+  ]);
   const subtitle =
     tab.period === "month"
       ? currentMonthLabelInSaoPaulo()
       : "Todas as partidas encerradas";
+  const scopeLabel =
+    tab.period === "month" ? `Mês atual · ${subtitle}` : "All-time";
+  const rankedIds = new Set(ranking.map((line) => line.userId));
+  const candidates: StatCandidate[] = users
+    .filter(
+      (u) => u.active && u.role !== "guest" && !rankedIds.has(u.id),
+    )
+    .map((u) => ({ userId: u.id, name: u.name }))
+    .sort((a, b) => a.name.localeCompare(b.name, "pt-BR"));
 
   return (
     <main className="flex flex-col gap-6">
@@ -72,6 +92,15 @@ export default async function EstatisticasPage({
       </section>
 
       <section className={cardClass}>
+        {admin ? (
+          <div className="mb-4 flex flex-col gap-2">
+            <AddPlayerStatButton
+              candidates={candidates}
+              scope={scope}
+              scopeLabel={scopeLabel}
+            />
+          </div>
+        ) : null}
         {ranking.length === 0 ? (
           <p className="text-sm text-zinc-600 dark:text-zinc-400">
             Nenhuma estatística gravada neste período.
@@ -89,10 +118,24 @@ export default async function EstatisticasPage({
               <span className="w-12 shrink-0 text-right text-xs font-semibold uppercase tracking-wider">
                 Pts
               </span>
+              {admin ? <span className="w-7 shrink-0" aria-hidden /> : null}
             </div>
             <ol className="mt-3 flex min-w-[17rem] flex-col gap-2">
               {ranking.map((player, index) => (
-                <RankingRow key={player.userId} place={index + 1} player={player} />
+                <RankingRow
+                  key={player.userId}
+                  place={index + 1}
+                  player={player}
+                  edit={
+                    admin ? (
+                      <StatEditButton
+                        player={player}
+                        scope={scope}
+                        scopeLabel={scopeLabel}
+                      />
+                    ) : null
+                  }
+                />
               ))}
             </ol>
           </div>
@@ -105,9 +148,11 @@ export default async function EstatisticasPage({
 function RankingRow({
   place,
   player,
+  edit,
 }: {
   place: number;
   player: StatPlayerLine;
+  edit: React.ReactNode;
 }) {
   return (
     <li className={`${listRowClass} flex-nowrap gap-2`}>
@@ -134,6 +179,7 @@ function RankingRow({
           {player.defenses}
         </span>
         <span className="w-12 text-right font-semibold">{player.points}</span>
+        {edit}
       </div>
     </li>
   );

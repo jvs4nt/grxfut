@@ -237,3 +237,29 @@ export const mensalPayments = pgTable(
     unique("mensal_payments_user_period_unique").on(table.userId, table.period),
   ],
 );
+
+/**
+ * Correções manuais do ranking feitas por admin. Cada linha é uma diferença
+ * (pode ser negativa) somada aos eventos das partidas.
+ * `period` = `YYYY-MM`: conta naquele mês e no all-time. `null`: só no all-time.
+ */
+export const statAdjustments = pgTable(
+  "stat_adjustments",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    period: text("period"),
+    goals: integer("goals").notNull().default(0),
+    assists: integer("assists").notNull().default(0),
+    defenses: integer("defenses").notNull().default(0),
+    createdBy: uuid("created_by").references(() => users.id, {
+      onDelete: "set null",
+    }),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => [index("stat_adjustments_user_period_idx").on(table.userId, table.period)],
+);
