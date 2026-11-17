@@ -10,9 +10,11 @@ import { getPixQrSvg } from "@/lib/pix-qr";
 export async function RsvpForm({
   matchId,
   state,
+  mensalista = false,
 }: {
   matchId: string;
   state: RsvpState;
+  mensalista?: boolean;
 }) {
   // O QR é gerado no servidor e desce como string: assim o pacote `qrcode`
   // nunca entra no bundle do cliente.
@@ -22,6 +24,7 @@ export async function RsvpForm({
     <RsvpControls
       matchId={matchId}
       state={state}
+      mensalista={mensalista}
       pix={{
         payload: PIX_PAYLOAD,
         pixKey: PIX_KEY,

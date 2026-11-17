@@ -1,48 +1,75 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { isAdmin, requireSession } from "@/lib/auth";
+import { isValidPeriod } from "@/lib/dates";
+import { getAdminSession } from "@/lib/guards";
 import {
-  saveMensalistas,
-  saveMensalMonthAndAmount,
-  type MensalState,
+  getMensalSettings,
+  saveMensalSettings,
+  setMensalistas,
+  setMensalPaid,
+  type MensalSettings,
 } from "@/lib/mensal";
 
+type Result<T = undefined> =
+  | { ok: true; data: T }
+  | { ok: false; error: string };
+
+function refreshApp() {
+  revalidatePath("/", "layout");
+}
+
 export async function updateMensalConfigAction(input: {
-  monthName: string;
+  period: string;
   amountStr: string;
-}): Promise<MensalState> {
-  const user = await requireSession();
-  if (!isAdmin(user)) {
-    throw new Error("Não autorizado");
+}): Promise<Result<MensalSettings>> {
+  const admin = await getAdminSession();
+  if (!admin.ok) {
+    return { ok: false, error: admin.error };
   }
 
-  const monthName = input.monthName.trim();
-  if (!monthName) {
-    throw new Error("Informe o nome do mês.");
+  const period = input.period.trim();
+  if (!isValidPeriod(period)) {
+    return { ok: false, error: "Escolha o mês e o ano." };
   }
 
   const parsed = Number.parseFloat(input.amountStr.replace(",", "."));
   if (Number.isNaN(parsed) || parsed < 0) {
-    throw new Error("Valor inválido.");
+    return { ok: false, error: "Valor inválido." };
   }
 
-  const amount = Math.round(parsed * 100);
-  const updated = await saveMensalMonthAndAmount({ monthName, amount });
-  revalidatePath("/mensal");
-  return updated;
+  const updated = await saveMensalSettings({
+    period,
+    amount: Math.round(parsed * 100),
+  });
+  refreshApp();
+  return { ok: true, data: updated };
 }
 
 export async function updateMensalistasAction(
-  members: string[],
-): Promise<MensalState> {
-  const user = await requireSession();
-  if (!isAdmin(user)) {
-    throw new Error("Não autorizado");
+  userIds: string[],
+): Promise<Result> {
+  const admin = await getAdminSession();
+  if (!admin.ok) {
+    return { ok: false, error: admin.error };
   }
 
-  const updated = await saveMensalistas(members);
-  revalidatePath("/mensal");
-  return updated;
+  await setMensalistas(userIds);
+  refreshApp();
+  return { ok: true, data: undefined };
 }
 
+export async function toggleMensalPaidAction(
+  userId: string,
+  paid: boolean,
+): Promise<Result> {
+  const admin = await getAdminSession();
+  if (!admin.ok) {
+    return { ok: false, error: admin.error };
+  }
+
+  const { period } = await getMensalSettings();
+  await setMensalPaid({ userId, period, paid, adminId: admin.user.id });
+  refreshApp();
+  return { ok: true, data: undefined };
+}

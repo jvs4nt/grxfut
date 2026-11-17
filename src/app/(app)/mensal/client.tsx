@@ -1,248 +1,272 @@
 "use client";
 
-import { useState } from "react";
-import { PencilIcon, TrashIcon } from "@/components/icons";
+import { useOptimistic, useState, useTransition } from "react";
+import { PencilIcon } from "@/components/icons";
 import { ModalBackdrop, ModalPanel } from "@/components/modal-backdrop";
+import { MonthPicker } from "@/components/month-picker";
 import { Reveal } from "@/components/reveal";
-import type { MensalState } from "@/lib/mensal";
+import { formatCents, formatPeriod } from "@/lib/dates";
+import type {
+  MensalCandidate,
+  MensalistaRow,
+  MensalSettings,
+} from "@/lib/mensal";
 import { revealDelay } from "@/lib/reveal";
 import {
   buttonClass,
   cardClass,
   iconButtonClass,
-  iconDangerButtonClass,
   inputClass,
   listRowClass,
   secondaryButtonClass,
 } from "@/lib/ui";
-import { updateMensalConfigAction, updateMensalistasAction } from "./actions";
+import {
+  toggleMensalPaidAction,
+  updateMensalConfigAction,
+  updateMensalistasAction,
+} from "./actions";
+
+const PAID_BADGE =
+  "inline-flex items-center rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 text-xs font-semibold uppercase tracking-wide text-emerald-800 dark:text-emerald-200";
+const PENDING_BADGE =
+  "inline-flex items-center rounded-full border border-amber-500/30 bg-amber-500/10 px-2.5 py-1 text-xs font-semibold uppercase tracking-wide text-amber-800 dark:text-amber-200";
 
 export function MensalClient({
-  initialState,
+  settings,
+  mensalistas,
+  candidates,
   isAdmin,
 }: {
-  initialState: MensalState;
+  settings: MensalSettings;
+  mensalistas: MensalistaRow[];
+  candidates: MensalCandidate[];
   isAdmin: boolean;
 }) {
-  const [monthName, setMonthName] = useState(initialState.monthName);
-  const [amount, setAmount] = useState(initialState.amount);
-  const [members, setMembers] = useState<string[]>(initialState.members);
-
   const [modal, setModal] = useState<"config" | "members" | null>(null);
-
-  // Inputs do modal de mês/valor
-  const [monthInput, setMonthInput] = useState(initialState.monthName);
-  const [amountInput, setAmountInput] = useState(
-    (initialState.amount / 100).toFixed(2),
-  );
-
-  // Inputs do modal de mensalistas
-  const [draftMembers, setDraftMembers] = useState<string[]>(
-    initialState.members,
-  );
-  const [newMemberName, setNewMemberName] = useState("");
-
-  const [isPending, setIsPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [toggleError, setToggleError] = useState<string | null>(null);
+  const [isSaving, startSaving] = useTransition();
+  const [, startToggle] = useTransition();
 
-  const formattedAmount = (amount / 100).toLocaleString("pt-BR", {
-    style: "currency",
-    currency: "BRL",
-  });
+  // Checklist otimista: o check muda na hora; o revalidate traz o estado real.
+  const [rows, applyPaid] = useOptimistic(
+    mensalistas,
+    (current, change: { userId: string; paid: boolean }) =>
+      current.map((row) =>
+        row.userId === change.userId ? { ...row, paid: change.paid } : row,
+      ),
+  );
 
-  const openConfigModal = () => {
-    setMonthInput(monthName);
-    setAmountInput((amount / 100).toFixed(2));
+  const [periodInput, setPeriodInput] = useState(settings.period);
+  const [amountInput, setAmountInput] = useState(
+    (settings.amount / 100).toFixed(2),
+  );
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+
+  const periodLabel = formatPeriod(settings.period);
+  const amountLabel = formatCents(settings.amount);
+  const paidCount = rows.filter((row) => row.paid).length;
+
+  function openConfig() {
+    setPeriodInput(settings.period);
+    setAmountInput((settings.amount / 100).toFixed(2));
     setError(null);
     setModal("config");
-  };
+  }
 
-  const openMembersModal = () => {
-    setDraftMembers([...members]);
-    setNewMemberName("");
-    setMonthInput(monthName);
-    setAmountInput((amount / 100).toFixed(2));
+  function openMembers() {
+    setSelected(
+      new Set(candidates.filter((c) => c.mensalista).map((c) => c.userId)),
+    );
     setError(null);
     setModal("members");
-  };
+  }
 
-  const handleAddDraftMember = () => {
-    const trimmed = newMemberName.trim();
-    if (!trimmed) return;
-    setDraftMembers((prev) => [...prev, trimmed]);
-    setNewMemberName("");
-  };
+  function toggleSelected(userId: string) {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(userId)) {
+        next.delete(userId);
+      } else {
+        next.add(userId);
+      }
+      return next;
+    });
+  }
 
-  const handleRemoveDraftMember = (index: number) => {
-    setDraftMembers((prev) => prev.filter((_, idx) => idx !== index));
-  };
+  function togglePaid(userId: string, paid: boolean) {
+    setToggleError(null);
+    startToggle(async () => {
+      applyPaid({ userId, paid });
+      const result = await toggleMensalPaidAction(userId, paid);
+      if (!result.ok) {
+        setToggleError(result.error);
+      }
+    });
+  }
 
-  const handleChangeDraftMember = (index: number, value: string) => {
-    setDraftMembers((prev) =>
-      prev.map((item, idx) => (idx === index ? value : item)),
-    );
-  };
-
-  const handleSaveConfig = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!isAdmin) return;
-
-    setIsPending(true);
+  function saveConfig(event: React.FormEvent) {
+    event.preventDefault();
     setError(null);
-    try {
-      const updated = await updateMensalConfigAction({
-        monthName: monthInput,
+    startSaving(async () => {
+      const result = await updateMensalConfigAction({
+        period: periodInput,
         amountStr: amountInput,
       });
-      setMonthName(updated.monthName);
-      setAmount(updated.amount);
+      if (!result.ok) {
+        setError(result.error);
+        return;
+      }
       setModal(null);
-    } catch (err) {
-      console.error(err);
-      setError("Verifique o nome do mês e o valor informado.");
-    } finally {
-      setIsPending(false);
-    }
-  };
+    });
+  }
 
-  const handleSaveMembers = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!isAdmin) return;
-
-    const finalMembers = [...draftMembers];
-    if (newMemberName.trim()) {
-      finalMembers.push(newMemberName.trim());
-    }
-
-    setIsPending(true);
+  function saveMembers(event: React.FormEvent) {
+    event.preventDefault();
     setError(null);
-    try {
-      const configUpdated = await updateMensalConfigAction({
-        monthName: monthInput,
-        amountStr: amountInput,
-      });
-      const membersUpdated = await updateMensalistasAction(finalMembers);
-      setMonthName(configUpdated.monthName);
-      setAmount(configUpdated.amount);
-      setMembers(membersUpdated.members);
-      setNewMemberName("");
+    startSaving(async () => {
+      const result = await updateMensalistasAction([...selected]);
+      if (!result.ok) {
+        setError(result.error);
+        return;
+      }
       setModal(null);
-    } catch (err) {
-      console.error(err);
-      setError("Não foi possível salvar as alterações.");
-    } finally {
-      setIsPending(false);
-    }
-  };
+    });
+  }
 
   return (
     <main className="flex flex-col gap-8">
-      {/* Card de destaque do Mês e Valor do Mensal */}
       <Reveal
         className={`${cardClass} flex flex-col items-center justify-center p-8`}
         delayMs={revealDelay(0)}
       >
-        <div className="flex items-center gap-2">
-          <span className="text-sm font-semibold uppercase tracking-widest text-emerald-500 dark:text-emerald-400">
-            Mensal · {monthName}
-          </span>
-        </div>
+        <span className="text-sm font-semibold uppercase tracking-widest text-emerald-500 dark:text-emerald-400">
+          Mensal · {periodLabel}
+        </span>
 
         <div className="mt-2 flex items-center gap-3">
           <span className="text-5xl font-extrabold tracking-tight text-zinc-900 dark:text-zinc-50">
-            {formattedAmount}
+            {amountLabel}
           </span>
-          {isAdmin && (
+          {isAdmin ? (
             <button
               type="button"
-              onClick={openConfigModal}
+              onClick={openConfig}
               className="rounded-full p-2 text-zinc-400 transition hover:bg-zinc-100 hover:text-zinc-900 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
               title="Editar mês e valor do mensal"
               aria-label="Editar mês e valor do mensal"
             >
               <PencilIcon className="h-5 w-5" />
             </button>
-          )}
+          ) : null}
         </div>
         <p className="mt-2 text-xs text-zinc-500 dark:text-zinc-400">
-          Valor por mensalista referente ao mês de {monthName}
+          Valor por mensalista referente a {periodLabel}
         </p>
       </Reveal>
 
-      {/* Lista de Mensalistas */}
       <Reveal as="section" className={cardClass} delayMs={revealDelay(1)}>
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-2">
             <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">
               Mensalistas{" "}
               <span className="text-sm font-normal text-zinc-600 dark:text-zinc-500">
-                ({members.length})
+                ({paidCount} de {rows.length} pagos)
               </span>
             </h2>
-            {isAdmin && (
+            {isAdmin ? (
               <button
                 type="button"
-                onClick={openMembersModal}
+                onClick={openMembers}
                 className={iconButtonClass}
-                title="Editar mensalistas, mês e valor"
-                aria-label="Editar mensalistas, mês e valor"
+                title="Escolher mensalistas"
+                aria-label="Escolher mensalistas"
               >
                 <PencilIcon className="h-4 w-4" />
               </button>
-            )}
+            ) : null}
           </div>
         </div>
 
-        {members.length === 0 ? (
+        {toggleError ? (
+          <p role="alert" className="mt-3 text-xs text-red-600 dark:text-red-400">
+            {toggleError}
+          </p>
+        ) : null}
+
+        {rows.length === 0 ? (
           <p className="mt-4 text-sm text-zinc-600 dark:text-zinc-500">
             Nenhum mensalista cadastrado.
           </p>
         ) : (
-          <ol className="mt-4 flex flex-col gap-2">
-            {members.map((name, index) => (
-              <li key={`${index}-${name}`} className={listRowClass}>
-                <div className="flex items-center gap-3">
-                  <span className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-zinc-100 text-xs font-semibold text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">
-                    {index + 1}
-                  </span>
+          <ul className="mt-4 flex flex-col gap-2">
+            {rows.map((row) => (
+              <li key={row.userId} className={listRowClass}>
+                {isAdmin ? (
+                  <label className="flex flex-1 cursor-pointer items-center gap-3">
+                    <input
+                      type="checkbox"
+                      checked={row.paid}
+                      onChange={(event) =>
+                        togglePaid(row.userId, event.target.checked)
+                      }
+                      className="h-5 w-5 shrink-0 accent-emerald-500"
+                      aria-label={`${row.name} pagou ${periodLabel}`}
+                    />
+                    <span className="font-medium text-zinc-900 dark:text-zinc-100">
+                      {row.name}
+                    </span>
+                  </label>
+                ) : (
                   <span className="font-medium text-zinc-900 dark:text-zinc-100">
-                    {name}
+                    {row.name}
                   </span>
-                </div>
-                <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
-                  {formattedAmount}
+                )}
+                <span className={row.paid ? PAID_BADGE : PENDING_BADGE}>
+                  {row.paid ? "Pago" : "Pendente"}
                 </span>
               </li>
             ))}
-          </ol>
+          </ul>
         )}
       </Reveal>
 
-      {/* Modal: Editar apenas Mês e Valor */}
       <ModalBackdrop open={modal === "config"}>
         <ModalPanel>
           <h3 className="mb-4 text-lg font-bold text-zinc-900 dark:text-zinc-100">
-            Editar Mês e Valor do Mensal
+            Editar mês e valor do mensal
           </h3>
-          <form onSubmit={handleSaveConfig} className="flex flex-col gap-4">
+          <form onSubmit={saveConfig} className="flex flex-col gap-4">
             <div>
-              <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
-                Mês em questão
-              </label>
-              <input
-                type="text"
-                required
-                value={monthInput}
-                onChange={(e) => setMonthInput(e.target.value)}
-                className={`${inputClass} w-full`}
-                placeholder="Ex: Dezembro"
+              <p
+                id="mensal-period-label"
+                className="mb-1 text-sm font-medium text-zinc-700 dark:text-zinc-300"
+              >
+                Mês de referência ·{" "}
+                <span className="text-emerald-600 dark:text-emerald-400">
+                  {formatPeriod(periodInput)}
+                </span>
+              </p>
+              <MonthPicker
+                key={modal === "config" ? settings.period : "closed"}
+                value={periodInput}
+                onChange={setPeriodInput}
+                labelledBy="mensal-period-label"
               />
+              <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+                Trocar o mês começa um checklist novo. O dos meses anteriores
+                fica guardado.
+              </p>
             </div>
             <div>
-              <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
-                Valor do Mensal (R$)
+              <label
+                htmlFor="mensal-amount"
+                className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300"
+              >
+                Valor do mensal (R$)
               </label>
               <input
+                id="mensal-amount"
                 type="number"
                 step="0.01"
                 min="0"
@@ -254,162 +278,85 @@ export function MensalClient({
               />
             </div>
 
-            {error && (
+            {error ? (
               <p className="text-xs font-medium text-red-600 dark:text-red-400">
                 {error}
               </p>
-            )}
+            ) : null}
 
             <div className="mt-2 flex justify-end gap-2">
               <button
                 type="button"
                 onClick={() => setModal(null)}
-                disabled={isPending}
+                disabled={isSaving}
                 className={secondaryButtonClass}
               >
                 Cancelar
               </button>
-              <button
-                type="submit"
-                disabled={isPending}
-                className={buttonClass}
-              >
-                {isPending ? "Salvando..." : "Salvar"}
+              <button type="submit" disabled={isSaving} className={buttonClass}>
+                {isSaving ? "Salvando..." : "Salvar"}
               </button>
             </div>
           </form>
         </ModalPanel>
       </ModalBackdrop>
 
-      {/* Modal: Editar Mensalistas (e também Mês/Valor) */}
       <ModalBackdrop open={modal === "members"}>
         <ModalPanel className="max-w-lg">
           <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">
-            Editar Mensal e Mensalistas ({draftMembers.length})
+            Escolher mensalistas ({selected.size})
           </h3>
           <p className="mt-1 text-xs text-zinc-600 dark:text-zinc-400">
-            Altere o mês/valor ou adicione e remova mensalistas da lista.
+            Marque os usuários cadastrados que pagam por mês.
           </p>
 
-          <form
-            onSubmit={handleSaveMembers}
-            className="mt-4 flex flex-col gap-4"
-          >
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              <div>
-                <label className="mb-1 block text-xs font-medium text-zinc-700 dark:text-zinc-300">
-                  Mês em questão
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={monthInput}
-                  onChange={(e) => setMonthInput(e.target.value)}
-                  className={`${inputClass} w-full py-2 text-sm`}
-                  placeholder="Ex: Dezembro"
-                />
-              </div>
-              <div>
-                <label className="mb-1 block text-xs font-medium text-zinc-700 dark:text-zinc-300">
-                  Valor do Mensal (R$)
-                </label>
-                <input
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  required
-                  value={amountInput}
-                  onChange={(e) => setAmountInput(e.target.value)}
-                  className={`${inputClass} w-full py-2 text-sm`}
-                  placeholder="37.17"
-                />
-              </div>
-            </div>
-
-            <div className="border-t border-zinc-200 pt-3 dark:border-zinc-800">
-              <label className="mb-1.5 block text-xs font-medium text-zinc-700 dark:text-zinc-300">
-                Adicionar mensalista
-              </label>
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  value={newMemberName}
-                  onChange={(e) => setNewMemberName(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      e.preventDefault();
-                      handleAddDraftMember();
-                    }
-                  }}
-                  placeholder="Nome do novo mensalista..."
-                  className={`${inputClass} flex-1 py-2 text-sm`}
-                />
-                <button
-                  type="button"
-                  onClick={handleAddDraftMember}
-                  className={secondaryButtonClass}
-                >
-                  Adicionar
-                </button>
-              </div>
-            </div>
-
-            <div className="max-h-72 overflow-y-auto pr-1">
-              {draftMembers.length === 0 ? (
+          <form onSubmit={saveMembers} className="mt-4 flex flex-col gap-4">
+            <div className="max-h-80 overflow-y-auto pr-1">
+              {candidates.length === 0 ? (
                 <p className="py-4 text-center text-sm text-zinc-500">
-                  Lista vazia. Adicione um mensalista acima.
+                  Nenhum usuário cadastrado.
                 </p>
               ) : (
-                <ul className="flex flex-col gap-2">
-                  {draftMembers.map((name, index) => (
-                    <li key={index} className="flex items-center gap-2">
-                      <span className="w-6 shrink-0 text-right text-xs font-semibold text-zinc-500">
-                        {index + 1}.
-                      </span>
-                      <input
-                        type="text"
-                        value={name}
-                        onChange={(e) =>
-                          handleChangeDraftMember(index, e.target.value)
-                        }
-                        className={`${inputClass} flex-1 py-1.5 text-sm`}
-                      />
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveDraftMember(index)}
-                        className={iconDangerButtonClass}
-                        title={`Retirar ${name}`}
-                        aria-label={`Retirar ${name}`}
-                      >
-                        <TrashIcon className="h-4 w-4" />
-                      </button>
+                <ul className="flex flex-col gap-1">
+                  {candidates.map((candidate) => (
+                    <li key={candidate.userId}>
+                      <label className="flex cursor-pointer items-center gap-3 rounded-lg px-2 py-2 hover:bg-zinc-100 dark:hover:bg-zinc-800/60">
+                        <input
+                          type="checkbox"
+                          checked={selected.has(candidate.userId)}
+                          onChange={() => toggleSelected(candidate.userId)}
+                          className="h-4 w-4 shrink-0 accent-emerald-500"
+                        />
+                        <span className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
+                          {candidate.name}
+                        </span>
+                        <span className="text-xs text-zinc-500 dark:text-zinc-400">
+                          @{candidate.username}
+                        </span>
+                      </label>
                     </li>
                   ))}
                 </ul>
               )}
             </div>
 
-            {error && (
+            {error ? (
               <p className="text-xs font-medium text-red-600 dark:text-red-400">
                 {error}
               </p>
-            )}
+            ) : null}
 
             <div className="mt-2 flex justify-end gap-2">
               <button
                 type="button"
                 onClick={() => setModal(null)}
-                disabled={isPending}
+                disabled={isSaving}
                 className={secondaryButtonClass}
               >
                 Cancelar
               </button>
-              <button
-                type="submit"
-                disabled={isPending}
-                className={buttonClass}
-              >
-                {isPending ? "Salvando..." : "Salvar"}
+              <button type="submit" disabled={isSaving} className={buttonClass}>
+                {isSaving ? "Salvando..." : "Salvar"}
               </button>
             </div>
           </form>
@@ -418,4 +365,3 @@ export function MensalClient({
     </main>
   );
 }
-

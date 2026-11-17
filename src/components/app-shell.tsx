@@ -11,7 +11,7 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import type { SessionUser } from "@/lib/auth";
 import { ROLE_LABELS } from "@/lib/labels";
 import type { PaymentStatus } from "@/lib/labels";
-import { isNavItemActive, navItemsForRole } from "@/lib/nav";
+import { isNavItemActive, navItemsForUser } from "@/lib/nav";
 
 export type PaymentModalState = {
   matchId: string;
@@ -63,7 +63,7 @@ export function AppShell({
             </div>
           </div>
           <nav className="hidden flex-wrap gap-1 nav:flex">
-            {navItemsForRole(user.role).map((item) => {
+            {navItemsForUser(user).map((item) => {
               const active = isNavItemActive(pathname, item.href);
 
               return (

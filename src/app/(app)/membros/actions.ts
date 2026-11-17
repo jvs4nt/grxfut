@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { getSession } from "@/lib/auth";
 import {
   cancelAttendance,
+  confirmAttendance,
   confirmPaymentAndAttendance,
   startAttendancePendingPayment,
   setAttendanceStatus,
@@ -12,6 +13,7 @@ import {
 import { getAdminSession } from "@/lib/guards";
 import { parseRole, parseTier } from "@/lib/labels";
 import { getNextScheduledMatch } from "@/lib/matches";
+import { getMensalSettings, isMensalPaid } from "@/lib/mensal";
 import { ensurePaymentsForMatch } from "@/lib/payments";
 import {
   createGuestUser,
@@ -165,6 +167,18 @@ export async function startAttendanceAction(
     return { ok: false, error: "O jogo mudou. Atualize a página." };
   }
 
+  // Mensalista com o mês pago entra direto nos confirmados; sem o mês pago,
+  // fica aguardando até o admin marcar o pagamento no checklist do Mensal.
+  if (user.mensalista) {
+    const { period } = await getMensalSettings();
+
+    if (await isMensalPaid(user.id, period)) {
+      await confirmAttendance(match.id, user.id);
+      refreshApp();
+      return { ok: true, needsPayment: false };
+    }
+  }
+
   const result = await startAttendancePendingPayment(match.id, user.id);
   refreshApp();
 
@@ -184,6 +198,13 @@ export async function confirmPixPaymentAction(
 
   if (!match) {
     return { ok: false, error: "O jogo mudou. Atualize a página." };
+  }
+
+  if (user.mensalista) {
+    return {
+      ok: false,
+      error: "Mensalista não confirma pagamento: o admin marca na aba Mensal.",
+    };
   }
 
   const result = await confirmPaymentAndAttendance(match.id, user.id);

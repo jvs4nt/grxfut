@@ -1,157 +1,203 @@
-import { eq, sql } from "drizzle-orm";
+import { and, asc, eq, inArray, ne } from "drizzle-orm";
 import { getDb } from "@/db";
-import { mensalSettings } from "@/db/schema";
+import { mensalPayments, mensalSettings, users } from "@/db/schema";
+import { getAttendanceForUser, setAttendanceStatus } from "@/lib/attendance";
+import { currentPeriodInSaoPaulo, isValidPeriod } from "@/lib/dates";
+import type { UserRole, UserTier } from "@/lib/labels";
+import { getNextScheduledMatch } from "@/lib/matches";
 
-export const INITIAL_MENSALISTAS: string[] = [
-  "Danwod",
-  "Diego",
-  "Felipe",
-  "Fleek",
-  "Gabriel",
-  "Gordo",
-  "Luan",
-  "Matheus",
-  "Murilol",
-  "NFL Dan",
-  "Oliveira",
-  "Pablo",
-  "Pedro França",
-  "Roberto",
-  "Santana",
-  "Tuga",
-  "Vinício",
-];
-
-export const DEFAULT_MENSAL_MONTH = "Dezembro";
 export const DEFAULT_MENSAL_AMOUNT = 3717; // R$ 37,17 em centavos
 
 const SETTINGS_ROW_ID = "default";
 
-export type MensalState = {
-  monthName: string;
-  amount: number; // em centavos
-  members: string[];
+export type MensalSettings = {
+  /** `YYYY-MM` */
+  period: string;
+  /** centavos */
+  amount: number;
 };
 
-export async function ensureMensalSettingsTable() {
+export type MensalistaRow = {
+  userId: string;
+  name: string;
+  username: string;
+  tier: UserTier;
+  paid: boolean;
+};
+
+export type MensalCandidate = {
+  userId: string;
+  name: string;
+  username: string;
+  role: UserRole;
+  mensalista: boolean;
+};
+
+export async function getMensalSettings(): Promise<MensalSettings> {
   const db = getDb();
-  await db.execute(sql`
-    CREATE TABLE IF NOT EXISTS "mensal_settings" (
-      "id" text PRIMARY KEY NOT NULL,
-      "month_name" text DEFAULT 'Dezembro' NOT NULL,
-      "amount" integer DEFAULT 3717 NOT NULL,
-      "members" jsonb NOT NULL,
-      "updated_at" timestamp with time zone DEFAULT now() NOT NULL
-    );
-  `);
+  const [row] = await db
+    .select({ period: mensalSettings.period, amount: mensalSettings.amount })
+    .from(mensalSettings)
+    .where(eq(mensalSettings.id, SETTINGS_ROW_ID))
+    .limit(1);
+
+  return {
+    period:
+      row?.period && isValidPeriod(row.period)
+        ? row.period
+        : currentPeriodInSaoPaulo(),
+    amount: typeof row?.amount === "number" ? row.amount : DEFAULT_MENSAL_AMOUNT,
+  };
 }
 
-export async function getMensalState(): Promise<MensalState> {
-  try {
-    const db = getDb();
-    await ensureMensalSettingsTable();
-
-    const [row] = await db
-      .select()
-      .from(mensalSettings)
-      .where(eq(mensalSettings.id, SETTINGS_ROW_ID))
-      .limit(1);
-
-    if (!row) {
-      await db
-        .insert(mensalSettings)
-        .values({
-          id: SETTINGS_ROW_ID,
-          monthName: DEFAULT_MENSAL_MONTH,
-          amount: DEFAULT_MENSAL_AMOUNT,
-          members: INITIAL_MENSALISTAS,
-        })
-        .onConflictDoNothing();
-
-      return {
-        monthName: DEFAULT_MENSAL_MONTH,
-        amount: DEFAULT_MENSAL_AMOUNT,
-        members: [...INITIAL_MENSALISTAS],
-      };
-    }
-
-    return {
-      monthName: row.monthName || DEFAULT_MENSAL_MONTH,
-      amount: typeof row.amount === "number" ? row.amount : DEFAULT_MENSAL_AMOUNT,
-      members: Array.isArray(row.members) ? row.members : [...INITIAL_MENSALISTAS],
-    };
-  } catch (error) {
-    console.error("Erro ao carregar configurações do mensal:", error);
-    return {
-      monthName: DEFAULT_MENSAL_MONTH,
-      amount: DEFAULT_MENSAL_AMOUNT,
-      members: [...INITIAL_MENSALISTAS],
-    };
-  }
-}
-
-export async function saveMensalMonthAndAmount(input: {
-  monthName: string;
-  amount: number;
-}): Promise<MensalState> {
-  const current = await getMensalState();
-  const monthName = input.monthName.trim() || DEFAULT_MENSAL_MONTH;
+export async function saveMensalSettings(
+  input: MensalSettings,
+): Promise<MensalSettings> {
+  const period = input.period;
   const amount = Math.max(0, Math.round(input.amount));
 
   const db = getDb();
   await db
     .insert(mensalSettings)
-    .values({
-      id: SETTINGS_ROW_ID,
-      monthName,
-      amount,
-      members: current.members,
-      updatedAt: new Date(),
-    })
+    .values({ id: SETTINGS_ROW_ID, period, amount, updatedAt: new Date() })
     .onConflictDoUpdate({
       target: mensalSettings.id,
-      set: {
-        monthName,
-        amount,
-        updatedAt: new Date(),
-      },
+      set: { period, amount, updatedAt: new Date() },
     });
 
-  return {
-    monthName,
-    amount,
-    members: current.members,
-  };
+  return { period, amount };
 }
 
-export async function saveMensalistas(members: string[]): Promise<MensalState> {
-  const current = await getMensalState();
-  const cleaned = members
-    .map((name) => name.trim())
-    .filter((name) => name.length > 0);
-
+/** Mensalistas ativos com o status de pagamento do mês informado. */
+export async function listMensalistas(period: string): Promise<MensalistaRow[]> {
   const db = getDb();
-  await db
-    .insert(mensalSettings)
-    .values({
-      id: SETTINGS_ROW_ID,
-      monthName: current.monthName,
-      amount: current.amount,
-      members: cleaned,
-      updatedAt: new Date(),
+  const rows = await db
+    .select({
+      userId: users.id,
+      name: users.name,
+      username: users.username,
+      tier: users.tier,
+      paymentId: mensalPayments.id,
     })
-    .onConflictDoUpdate({
-      target: mensalSettings.id,
-      set: {
-        members: cleaned,
-        updatedAt: new Date(),
-      },
-    });
+    .from(users)
+    .leftJoin(
+      mensalPayments,
+      and(
+        eq(mensalPayments.userId, users.id),
+        eq(mensalPayments.period, period),
+      ),
+    )
+    .where(and(eq(users.mensalista, true), eq(users.active, true)))
+    .orderBy(asc(users.name));
 
-  return {
-    monthName: current.monthName,
-    amount: current.amount,
-    members: cleaned,
-  };
+  return rows.map(({ paymentId, ...row }) => ({
+    ...row,
+    paid: paymentId !== null,
+  }));
 }
 
+/** Usuários que podem ser marcados como mensalistas (todos menos convidados). */
+export async function listMensalCandidates(): Promise<MensalCandidate[]> {
+  const db = getDb();
+  return db
+    .select({
+      userId: users.id,
+      name: users.name,
+      username: users.username,
+      role: users.role,
+      mensalista: users.mensalista,
+    })
+    .from(users)
+    .where(and(ne(users.role, "guest"), eq(users.active, true)))
+    .orderBy(asc(users.name));
+}
+
+/** Define exatamente quem é mensalista: marca os ids informados e desmarca o resto. */
+export async function setMensalistas(userIds: string[]) {
+  const db = getDb();
+  const ids = [...new Set(userIds)];
+
+  await db
+    .update(users)
+    .set({ mensalista: false })
+    .where(eq(users.mensalista, true));
+
+  if (ids.length > 0) {
+    await db
+      .update(users)
+      .set({ mensalista: true })
+      .where(and(inArray(users.id, ids), ne(users.role, "guest")));
+  }
+}
+
+export async function isMensalPaid(userId: string, period: string) {
+  const db = getDb();
+  const [row] = await db
+    .select({ id: mensalPayments.id })
+    .from(mensalPayments)
+    .where(
+      and(eq(mensalPayments.userId, userId), eq(mensalPayments.period, period)),
+    )
+    .limit(1);
+
+  return Boolean(row);
+}
+
+/**
+ * Checklist do admin. Marcar como pago também promove a presença do mensalista
+ * no próximo jogo de "aguardando pagamento" para "confirmado".
+ */
+export async function setMensalPaid(input: {
+  userId: string;
+  period: string;
+  paid: boolean;
+  adminId: string;
+}) {
+  const db = getDb();
+
+  if (!input.paid) {
+    await db
+      .delete(mensalPayments)
+      .where(
+        and(
+          eq(mensalPayments.userId, input.userId),
+          eq(mensalPayments.period, input.period),
+        ),
+      );
+    return;
+  }
+
+  await db
+    .insert(mensalPayments)
+    .values({
+      userId: input.userId,
+      period: input.period,
+      markedBy: input.adminId,
+    })
+    .onConflictDoNothing({
+      target: [mensalPayments.userId, mensalPayments.period],
+    });
+
+  const match = await getNextScheduledMatch();
+
+  if (!match) {
+    return;
+  }
+
+  const attendance = await getAttendanceForUser(match.id, input.userId);
+
+  if (attendance?.status === "pending_payment") {
+    await setAttendanceStatus(match.id, input.userId, "confirmed");
+  }
+}
+
+/** Ids dos mensalistas ativos, para tirar da lista de pagamento por jogo. */
+export async function listMensalistaIds(): Promise<Set<string>> {
+  const db = getDb();
+  const rows = await db
+    .select({ id: users.id })
+    .from(users)
+    .where(eq(users.mensalista, true));
+
+  return new Set(rows.map((row) => row.id));
+}

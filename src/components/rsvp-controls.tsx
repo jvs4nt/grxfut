@@ -16,10 +16,13 @@ export function RsvpControls({
   matchId,
   state,
   pix,
+  mensalista = false,
 }: {
   matchId: string;
   state: RsvpState;
   pix: PixInfo;
+  /** Mensalista paga pelo botão do mensal; o PIX avulso não aparece. */
+  mensalista?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -34,7 +37,7 @@ export function RsvpControls({
       return;
     }
 
-    if (result.needsPayment) {
+    if (result.needsPayment && !mensalista) {
       setOpen(true);
     }
   }
@@ -61,7 +64,24 @@ export function RsvpControls({
         </button>
       ) : null}
 
-      {state === "pending" ? (
+      {state === "pending" && mensalista ? (
+        <>
+          <p className="text-xs text-amber-700 dark:text-amber-300">
+            Presença aguardando o mensal. Assim que o admin marcar seu
+            pagamento, você entra nos confirmados.
+          </p>
+          <button
+            type="button"
+            onClick={cancel}
+            disabled={busy}
+            className={secondaryButtonClass}
+          >
+            Desistir
+          </button>
+        </>
+      ) : null}
+
+      {state === "pending" && !mensalista ? (
         <>
           <button
             type="button"
@@ -106,12 +126,14 @@ export function RsvpControls({
         dispara o revalidate, `state` vai de "out" para "pending" e um modal
         montado dentro daquele ramo fecharia sozinho no meio do fluxo.
       */}
-      <PixModal
-        matchId={matchId}
-        pix={pix}
-        open={open}
-        onClose={() => setOpen(false)}
-      />
+      {mensalista ? null : (
+        <PixModal
+          matchId={matchId}
+          pix={pix}
+          open={open}
+          onClose={() => setOpen(false)}
+        />
+      )}
     </div>
   );
 }

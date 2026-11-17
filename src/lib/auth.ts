@@ -23,6 +23,7 @@ export type SessionUser = {
   role: "admin" | "member" | "guest";
   tier: "capitao" | "tenente" | "soldado";
   active: boolean;
+  mensalista: boolean;
 };
 
 export function hashPassword(password: string) {
@@ -74,6 +75,7 @@ export const getSession = cache(async (): Promise<SessionUser | null> => {
       role: users.role,
       tier: users.tier,
       active: users.active,
+      mensalista: users.mensalista,
     })
     .from(users)
     .where(eq(users.id, claims.userId))
