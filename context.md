@@ -11,6 +11,7 @@ Status da fase: `**Status:** pronto|pendente` no README da pasta em roadmap/.
 
 ## Último
 No PC, a navegação do header é a mesma pílula de ícones do celular (ativo em esmeralda). A barra de baixo fica só abaixo do breakpoint `nav`.
+Navbar: engrenagem abre modal com tema (interruptor), alterar dados e sair (contorno vermelho). Guest não vê alterar dados.
 Sessão inativa perde o cookie. `/api/dev/requests` só em development e só admin. Cron de guests exige `CRON_SECRET`.
 
 ## Pendente

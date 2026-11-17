@@ -1,17 +1,15 @@
 "use client";
 
-import { useCallback, useEffect, useId, useState } from "react";
+import { useEffect, useId } from "react";
 import {
   updateOwnAccountAction,
   type FormState,
 } from "@/app/(app)/account/actions";
 import { ActionForm, useBusyAction } from "@/components/busy-overlay";
-import { UserIcon } from "@/components/icons";
 import { ModalBackdrop, ModalPanel } from "@/components/modal-backdrop";
 import { PasswordInput } from "@/components/password-input";
 import {
   buttonClass,
-  iconButtonClass,
   inputClass,
   labelClass,
   secondaryButtonClass,
@@ -22,65 +20,52 @@ const initial: FormState = { error: null };
 export function SettingsModal({
   username,
   name,
+  open,
+  onClose,
 }: {
   username: string;
   name: string;
+  open: boolean;
+  onClose: () => void;
 }) {
-  const [open, setOpen] = useState(false);
   const titleId = useId();
-  const close = useCallback(() => setOpen(false), []);
 
   return (
-    <>
-      <button
-        type="button"
-        onClick={() => setOpen(true)}
-        className={iconButtonClass}
-        aria-label="Configurações"
-        title="Configurações"
-      >
-        <UserIcon />
-      </button>
-      <ModalBackdrop
-        open={open}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby={titleId}
-        onClick={(event) => {
-          if (event.target === event.currentTarget) {
-            close();
-          }
-        }}
-        onKeyDown={(event) => {
-          if (event.key === "Escape") {
-            close();
-          }
-        }}
-      >
-        <ModalPanel>
-          <div className="flex items-start justify-between gap-4">
-            <h2 id={titleId} className="text-lg font-semibold">
-              Configurações
-            </h2>
-            <button
-              type="button"
-              onClick={close}
-              className={secondaryButtonClass}
-            >
-              Fechar
-            </button>
-          </div>
-          <div className="mt-5">
-            <SettingsForm
-              key={`${username}-${name}`}
-              username={username}
-              name={name}
-              onSuccess={close}
-            />
-          </div>
-        </ModalPanel>
-      </ModalBackdrop>
-    </>
+    <ModalBackdrop
+      open={open}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby={titleId}
+      onClick={(event) => {
+        if (event.target === event.currentTarget) {
+          onClose();
+        }
+      }}
+      onKeyDown={(event) => {
+        if (event.key === "Escape") {
+          onClose();
+        }
+      }}
+    >
+      <ModalPanel>
+        <div className="flex items-start justify-between gap-4">
+          <h2 id={titleId} className="text-lg font-semibold">
+            Configurações
+          </h2>
+          <button type="button" onClick={onClose} className={secondaryButtonClass}>
+            Fechar
+          </button>
+        </div>
+        <div className="mt-5">
+          <SettingsForm
+            key={`${username}-${name}`}
+            username={username}
+            name={name}
+            onSuccess={onClose}
+          />
+        </div>
+      </ModalPanel>
+    </ModalBackdrop>
   );
 }
 

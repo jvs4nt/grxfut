@@ -2,11 +2,9 @@
 
 import type { ReactNode } from "react";
 import Link from "next/link";
-import { logoutAction } from "@/app/login/actions";
+import { AccountMenu } from "@/components/account-menu";
 import { AppMobileNav } from "@/components/app-mobile-nav";
 import { PaymentModal } from "@/components/payment-modal";
-import { SettingsModal } from "@/components/settings-modal";
-import { ThemeToggle } from "@/components/theme-toggle";
 import type { SessionUser } from "@/lib/auth";
 import { ROLE_LABELS } from "@/lib/labels";
 import type { PaymentStatus } from "@/lib/labels";
@@ -44,18 +42,7 @@ export function AppShell({
               <img src="/logo.png" alt="GARUX" className="h-26 w-auto" />
             </Link>
             <div className="flex items-center gap-2 nav:hidden">
-              <ThemeToggle />
-              {user.role !== "guest" ? (
-                <SettingsModal username={user.username} name={user.name} />
-              ) : null}
-              <form action={logoutAction}>
-                <button
-                  type="submit"
-                  className="text-xs font-medium text-zinc-600 transition hover:text-zinc-900 dark:text-zinc-500 dark:hover:text-zinc-200"
-                >
-                  Sair
-                </button>
-              </form>
+              <AccountMenu user={user} />
             </div>
           </div>
           <AppMobileNav user={user} className="hidden nav:flex" />
@@ -66,18 +53,7 @@ export function AppShell({
                 {ROLE_LABELS[user.role]}
               </span>
             </span>
-            <ThemeToggle />
-            {user.role !== "guest" ? (
-              <SettingsModal username={user.username} name={user.name} />
-            ) : null}
-            <form action={logoutAction}>
-              <button
-                type="submit"
-                className="text-xs font-medium text-zinc-600 transition hover:text-zinc-900 dark:text-zinc-500 dark:hover:text-zinc-200"
-              >
-                Sair
-              </button>
-            </form>
+            <AccountMenu user={user} />
           </div>
         </div>
       </header>
